@@ -5,6 +5,11 @@ uniform float u_time;
 
 uniform sampler2D u_sampler1;
 uniform sampler2D u_sampler2;
+uniform sampler2D u_sampler3;
+
+uniform vec3 u_ambientLight;
+uniform vec3 u_normalizedLightDir;
+uniform vec3 u_lightColor;
 
 in vec3 v2f_normal;
 in vec2 v2f_texCoords;
@@ -54,8 +59,18 @@ float lightingMask(vec3 p, vec3 lightPos){
 }
 
 void main(){
-	vec4 tex = texture(u_sampler1, v2f_texCoords);	
-	gl_FragColor = tex;
+	vec3 rockTex = texture(u_sampler1, v2f_texCoords).xyz;	
+	vec3 noiseTex = texture(u_sampler2, v2f_texCoords).xyz - vec3(.5f);	
+	vec3 paintTex = texture(u_sampler3, v2f_texCoords).xyz;	
+
+	vec3 col = mix(rockTex, vec3(0.f, 0.f, 8.f), paintTex.r);
+	col = mix(col, vec3(0.f, 8.f, 5.f), paintTex.g);
+	col = mix(col, vec3(1.f, 0.f, 0.f), noiseTex);
+
+	vec3 lambertian = dot(v2f_normal, u_normalizedLightDir) * u_lightColor;
+	vec3 light = clamp(lambertian + u_ambientLight, 0.f, 1.f);
+
+	gl_FragColor = vec4(col * light, 1.f);
 
 	return;
 	vec2 uv = gl_FragCoord.xy / u_resolution;

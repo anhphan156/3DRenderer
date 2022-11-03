@@ -21,11 +21,13 @@ public:
 	GLuint GetUniWVP() { return m_uniWVP; };
 	GLuint GetUniSampler1() { return m_uniSampler1; }
 	GLuint GetUniSampler2() { return m_uniSampler2; }
+	GLuint GetUniSampler3() { return m_uniSampler3; }
 
 	void LoadShaders(const char* _vertexFilePath, const char* _fragmentFilePath);
 	void Cleanup();
 
-	void SetUniformVec3(const char* _name, vec3 value);
+	void SetUniformVec3(const char* _name, const vec3& _value);
+	void SetUniformMat4(const char* _name, const mat4& _value);
 
 private:
 	void CreateShaderProgram(const char* _vertexFilePath, const char* _fragmentFilePath);
@@ -46,6 +48,7 @@ private:
 	GLuint m_uniWVP;
 	GLuint m_uniSampler1;
 	GLuint m_uniSampler2;
+	GLuint m_uniSampler3;
 };
 
 #endif // !SHADER_H

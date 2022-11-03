@@ -23,7 +23,7 @@ private:
 	std::vector<GLfloat> m_vertexData;
 
 	class Shader* m_shader;
-	Texture m_texture;
+	Texture m_textures[3];
 
 	glm::mat4 m_world;
 };
