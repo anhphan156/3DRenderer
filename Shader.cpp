@@ -4,6 +4,9 @@
 Shader::Shader() {
 	m_programID = 0;
 	m_attrVertices = 0;
+	m_attrNormal = 0;
+	m_attrTexCoords = 0;
+
 	m_result = GL_FALSE;
 	m_infoLogLength = 0;
 }
@@ -12,11 +15,23 @@ void Shader::Cleanup() {
 	glDeleteProgram(m_programID);
 }
 
+void Shader::SetUniformVec3(const char* _name, vec3 _value) {
+	GLint loc = glGetUniformLocation(m_programID, _name);
+	if (loc != -1) {
+		glUniform3fv(loc, 1, &_value[0]);
+	}
+}
+
 void Shader::LoadAttributes() {
 	m_attrVertices = glGetAttribLocation(m_programID, "vertices");
+	m_attrNormal = glGetAttribLocation(m_programID, "normal");
+	m_attrTexCoords = glGetAttribLocation(m_programID, "texCoords");
+
 	m_uniResolution = glGetUniformLocation(m_programID, "u_resolution");
 	m_uniTime = glGetUniformLocation(m_programID, "u_time");
 	m_uniWVP = glGetUniformLocation(m_programID, "u_wvp");
+	m_uniSampler1 = glGetUniformLocation(m_programID, "u_sampler1");
+	m_uniSampler2 = glGetUniformLocation(m_programID, "u_sampler2");
 }
 
 void Shader::LoadShaders(const char* _vertexFilePath, const char* _fragmentFilePath)

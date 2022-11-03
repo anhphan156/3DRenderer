@@ -8,7 +8,7 @@ Camera::Camera() {
 }
 
 Camera::Camera(Resolution _resolution) {
-	m_location = glm::vec3(0.f, 0.f, 10.f);
+	m_location = glm::vec3(0.f, 5.f, 10.f);
 	m_lookAt = glm::vec3(0.f, 0.f, 0.f);
 
 	m_view = glm::lookAt(
@@ -25,9 +25,9 @@ Camera::Camera(Resolution _resolution) {
 	);
 }
 
-void Camera::cameraDisplacement(vec3 displacement) {
-	m_location += displacement;
-	m_lookAt += displacement;
+void Camera::cameraDisplacement(vec3 velocity) {
+	m_location += velocity;
+	m_lookAt += velocity;
 	m_view = glm::lookAt(
 		m_location,
 		m_lookAt,

@@ -3,6 +3,12 @@
 uniform vec2 u_resolution;
 uniform float u_time;
 
+uniform sampler2D u_sampler1;
+uniform sampler2D u_sampler2;
+
+in vec3 v2f_normal;
+in vec2 v2f_texCoords;
+
 float sphereSDF(vec3 p){
 	float sphere = length(p - vec3(2.f, 1.f, 3.f)) - 1.f;
 
@@ -48,6 +54,10 @@ float lightingMask(vec3 p, vec3 lightPos){
 }
 
 void main(){
+	vec4 tex = texture(u_sampler1, v2f_texCoords);	
+	gl_FragColor = tex;
+
+	return;
 	vec2 uv = gl_FragCoord.xy / u_resolution;
 
 	uv.x *= u_resolution.x / u_resolution.y;

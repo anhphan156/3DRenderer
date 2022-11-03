@@ -1,0 +1,7 @@
+﻿  Mesh.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
+C:\Users\anhph\source\repos\OpenGLLearning2\Dependencies\glfw\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
+C:\Users\anhph\source\repos\OpenGLLearning2\Mesh.cpp(112,60): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\anhph\source\repos\OpenGLLearning2\Mesh.cpp(112,47): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\anhph\source\repos\OpenGLLearning2\Mesh.cpp(149,49): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+  OpenGLLearning2.vcxproj -> C:\Users\anhph\source\repos\OpenGLLearning2\Debug\OpenGLLearning2.exe

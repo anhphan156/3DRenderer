@@ -15,13 +15,16 @@ public:
 	void Initialize();
 	void Run();
 
-	void keyInputHandling(int key, int action);
+	void keyInputHandling();
 	void mouseInputHandling(float xVec, float yVec);
 
 private:
 	Mesh m_mesh;
 	Shader m_shader;
 	Camera m_camera;
+	GLFWwindow* m_window;
+
+	float dt = 0.f;
 };
 
 #endif // !GAME_CONTROLLER_H
