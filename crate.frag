@@ -20,7 +20,7 @@ void main(){
 	vec3 noiseTex = texture(u_sampler2, v2f_texCoords).xyz - vec3(.5f);	
 	vec3 paintTex = texture(u_sampler3, v2f_texCoords).xyz;	
 
-	vec3 col = mix(rockTex, vec3(0.f, 0.f, 8.f), paintTex.r);
+	vec3 col = mix(rockTex, vec3(0.f, 0.f, .9f), paintTex.r);
 	col = mix(col, vec3(.9f, .1f, .1f), paintTex.g);
 	col = mix(col, vec3(1.f, 0.f, 0.f), noiseTex);
 
