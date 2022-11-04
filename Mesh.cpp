@@ -60,10 +60,10 @@ void Mesh::Create(Shader* _shader) {
 		  1.f, -1.f,  1.f, 0.f, 0.f, 1.f, 0.66f, 0.f,
 
 		  // Back
-		 -1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, 1.f,
+		 -1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, .99f,
 		 -1.f,  1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, 0.66f,
 		  1.f,  1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, 0.66f,
-		  1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, 1.f,
+		  1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, .99f,
 
 		 // Left
 		  -1.f, -1.f, -1.f, -1.f, 0.f, 0.f, 0.f, 0.66f,
@@ -72,10 +72,10 @@ void Mesh::Create(Shader* _shader) {
 		  -1.f, -1.f,  1.f, -1.f, 0.f, 0.f, 0.f, .33f,
 
 		  // Right
-		  1.f, -1.f, -1.f, 1.f, 0.f, 0.f, 1.f, .66f,
+		  1.f, -1.f, -1.f, 1.f, 0.f, 0.f, .99f, .66f,
 		  1.f,  1.f, -1.f, 1.f, 0.f, 0.f, .66f, .66f,
 		  1.f,  1.f,  1.f, 1.f, 0.f, 0.f, .66f, .33f,
-		  1.f, -1.f,  1.f, 1.f, 0.f, 0.f, 1.f, .33f,
+		  1.f, -1.f,  1.f, 1.f, 0.f, 0.f, .99f, .33f,
 	};
 	glGenBuffers(1, &m_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
