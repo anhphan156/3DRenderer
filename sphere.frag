@@ -10,8 +10,19 @@ in vec3 v2f_fragPos;
 in vec3 v2f_ro;
 in vec3 v2f_hitPos;
 
+float smin( float a, float b, float k )
+{
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+}
+
 float sphereSDF(vec3 p){
-	return length(p - vec3(0.f, 0.f, -4.f)) - 2.f;
+	float sphere1 = length(p - vec3(0.f, -2.f, sin(u_time) -4.f)) - .3f;
+	float sphere2 = length(p - vec3(0.8f, -2.f, sin(u_time + 3.14f / 2.f) -4.f)) - .3f;
+	float sphere3 = length(p - vec3(0.8f, -1.4f, sin(u_time + 3.14f) -4.f)) - .3f;
+	float sphere4 = length(p - vec3(sin(u_time) + 0.8f, -1.4f, -4.f)) - .3f;
+
+	return smin(smin(smin(sphere1, sphere2, .5f), sphere3, .5f), sphere4, .7f);
 }
 
 vec3 normal(vec3 p){
@@ -60,9 +71,9 @@ void main(){
 	vec3 p = ro + rd*d0;
 
 	vec3 lightPos = vec3(0.f, 0.f, 3.f);
-	lightPos.xz = vec2(sin(u_time), cos(u_time));
 
-	vec3 color = vec3(lightingMask(p, lightPos) * vec3(.8, .4, .6));
+	//vec3 color = vec3(lightingMask(p, lightPos) * vec3(.8, .4, .6));
+	vec3 color = mix(vec3(1.f), normal(p), lightingMask(p, lightPos));
 	
 	gl_FragColor = vec4(color, 1.f);
 }

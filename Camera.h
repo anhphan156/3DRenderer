@@ -13,6 +13,7 @@ public:
 	mat4 getProjection() const { return m_projection; };
 	mat4 getView() const { return m_view; };
 	vec3 getLocation() { return m_location; };
+	vec3 getWSCamera();
 
 	void cameraDisplacement(vec3 displacement);
 	void cameraTurn(vec3 lookAt);

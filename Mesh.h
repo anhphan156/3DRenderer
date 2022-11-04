@@ -18,7 +18,7 @@ public:
 	void SetLightPos(const vec3& lightPos) { m_lightPos = lightPos; }
 
 	void SetPosition(const vec3& position) { m_position = position; }
-	void SetAngle(float angle) { m_angle = angle; }
+	void SetRotation(float angle, const vec3& rotationAxis) { m_angle = angle; m_rotationAxis = rotationAxis; }
 	void SetScale(const vec3& scale) { m_scale = scale; }
 
 private:
@@ -36,6 +36,7 @@ private:
 	// Transform
 	vec3 m_position;
 	float m_angle;
+	vec3 m_rotationAxis;
 	vec3 m_scale;
 
 	mat4 m_world;

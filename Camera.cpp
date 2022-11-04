@@ -25,6 +25,14 @@ Camera::Camera(Resolution _resolution) {
 	);
 }
 
+vec3 Camera::getWSCamera()
+{
+	glm::vec4 wsCameraHomo = glm::inverse(m_projection * m_view) * glm::vec4(0.f, 0.f, -1.f, 0.f);
+	vec3 wsCamera = vec3(wsCameraHomo)/ wsCameraHomo.w;
+
+	return wsCamera;
+}
+
 void Camera::cameraDisplacement(vec3 velocity) {
 	m_location += velocity;
 	m_lookAt += velocity;

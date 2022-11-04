@@ -15,6 +15,7 @@ Mesh::Mesh() {
 	m_scale = vec3(1.f);
 	m_position = vec3(1.f);
 	m_angle = 0.f;
+	m_rotationAxis = vec3(1.f);
 	m_world = glm::mat4(1.f);
 }
 
@@ -140,10 +141,14 @@ void Mesh::Render(const mat4& view, const mat4& projection)
 {
 	// Transformation
 	mat4 scale = glm::scale(mat4(1.f), m_scale);
-	mat4 rotate = glm::rotate(mat4(1.f), (float)glfwGetTime(), glm::vec3(0.f, 1.f, 0.f)); 
+	mat4 rotate = glm::rotate(mat4(1.f), m_angle, m_rotationAxis); 
 	mat4 translate = glm::translate(mat4(1.f), m_position);
 	m_world = translate * rotate * scale;
 	glm::mat4 wvp = projection * view * m_world;
+
+	// WS Camera
+	glm::vec4 wsCameraHomo = glm::inverse(projection * view) * glm::vec4(0.f, 0.f, -1.f, 0.f);
+	vec3 wsCamera = vec3(wsCameraHomo)/ wsCameraHomo.w;
 
 	// Binding buffers
 	glBindVertexArray(m_vao);
@@ -168,6 +173,7 @@ void Mesh::Render(const mat4& view, const mat4& projection)
 	m_shader->SetUniformVec3("u_lightPos", m_lightPos);
 	m_shader->SetUniformVec3("u_lightColor", {.9f, .7f, .8f});
 	m_shader->SetUniformVec3("u_ambientLight", {.1f, .1f, .1f});
+	m_shader->SetUniformVec3("u_cameraWorldPos", wsCamera);
 
 	// Draw
 	glDrawElements(GL_TRIANGLES, m_indexData.size(), GL_UNSIGNED_INT, nullptr);
