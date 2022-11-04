@@ -10,6 +10,11 @@ Mesh::Mesh() {
 	m_vertexData = {};
 	m_indexData = {};
 	m_shader = nullptr;
+	m_lightPos = vec3(1.f);
+
+	m_scale = vec3(1.f);
+	m_position = vec3(1.f);
+	m_angle = 0.f;
 	m_world = glm::mat4(1.f);
 }
 
@@ -54,21 +59,21 @@ void Mesh::Create(Shader* _shader) {
 		  1.f, -1.f,  1.f, 0.f, 0.f, 1.f, 0.66f, 0.f,
 
 		  // Back
-		 -1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, 0.66f,
-		 -1.f,  1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, 1.f,
-		  1.f,  1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, 1.f,
-		  1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, 0.66f,
+		 -1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, 1.f,
+		 -1.f,  1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, 0.66f,
+		  1.f,  1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, 0.66f,
+		  1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, 1.f,
 
 		 // Left
-		  -1.f, -1.f, -1.f, -1.f, 0.f, 0.f, 0.f, 0.33f,
-		  -1.f,  1.f, -1.f, -1.f, 0.f, 0.f, 0.f, 0.66f,
-		  -1.f,  1.f,  1.f, -1.f, 0.f, 0.f, .33f, .66f,
-		  -1.f, -1.f,  1.f, -1.f, 0.f, 0.f, .33f, .33f,
+		  -1.f, -1.f, -1.f, -1.f, 0.f, 0.f, 0.f, 0.66f,
+		  -1.f,  1.f, -1.f, -1.f, 0.f, 0.f, .33f, .66f, 
+		  -1.f,  1.f,  1.f, -1.f, 0.f, 0.f, .33f, .33f,
+		  -1.f, -1.f,  1.f, -1.f, 0.f, 0.f, 0.f, .33f,
 
 		  // Right
-		  1.f, -1.f, -1.f, 1.f, 0.f, 0.f, .66f, .33f,
+		  1.f, -1.f, -1.f, 1.f, 0.f, 0.f, 1.f, .66f,
 		  1.f,  1.f, -1.f, 1.f, 0.f, 0.f, .66f, .66f,
-		  1.f,  1.f,  1.f, 1.f, 0.f, 0.f, 1.f, .66f,
+		  1.f,  1.f,  1.f, 1.f, 0.f, 0.f, .66f, .33f,
 		  1.f, -1.f,  1.f, 1.f, 0.f, 0.f, 1.f, .33f,
 	};
 	glGenBuffers(1, &m_vertexBuffer);
@@ -131,17 +136,19 @@ void Mesh::Cleanup() {
 	}
 }
 
-void Mesh::Render(glm::mat4 view, glm::mat4 projection) 
+void Mesh::Render(const mat4& view, const mat4& projection) 
 {
 	// Transformation
+	mat4 scale = glm::scale(mat4(1.f), m_scale);
 	mat4 rotate = glm::rotate(mat4(1.f), (float)glfwGetTime(), glm::vec3(0.f, 1.f, 0.f)); 
-	mat4 translate = glm::translate(mat4(1.f), vec3(0.f, 0.f, sin((float)glfwGetTime()) * 10.f - 10.f));
-	m_world = translate * rotate;
+	mat4 translate = glm::translate(mat4(1.f), m_position);
+	m_world = translate * rotate * scale;
 	glm::mat4 wvp = projection * view * m_world;
 
 	// Binding buffers
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ib);
+	glUseProgram(m_shader->GetProgramID());
 
 	// Bind Textures
 	glActiveTexture(GL_TEXTURE0);
@@ -155,14 +162,18 @@ void Mesh::Render(glm::mat4 view, glm::mat4 projection)
 	glUniform1i(m_shader->GetUniSampler3(), 2);
 
 	// Uniform
-	glUseProgram(m_shader->GetProgramID());
 	glUniform1f(m_shader->GetUniTime(), glfwGetTime());
 	glUniformMatrix4fv(m_shader->GetUniWVP(), 1, GL_FALSE, &wvp[0][0]);
 	m_shader->SetUniformMat4("u_modelToWorld", m_world);
-	m_shader->SetUniformVec3("u_normalizedLightDir", glm::normalize(vec3(2.f, 1.f, 0.f)));
+	m_shader->SetUniformVec3("u_lightPos", m_lightPos);
 	m_shader->SetUniformVec3("u_lightColor", {.9f, .7f, .8f});
 	m_shader->SetUniformVec3("u_ambientLight", {.1f, .1f, .1f});
 
 	// Draw
 	glDrawElements(GL_TRIANGLES, m_indexData.size(), GL_UNSIGNED_INT, nullptr);
+
+	// Unbind
+	glBindVertexArray(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glUseProgram(0);
 }

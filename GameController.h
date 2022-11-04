@@ -19,8 +19,7 @@ public:
 	void mouseInputHandling(float xVec, float yVec);
 
 private:
-	Mesh m_mesh;
-	Shader m_shader;
+	Mesh m_meshes[2];
 	Camera m_camera;
 	GLFWwindow* m_window;
 

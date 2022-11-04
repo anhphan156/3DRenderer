@@ -163,8 +163,10 @@
     <ClInclude Include="WindowController.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShader.frag" />
-    <None Include="VertexShader.vert" />
+    <None Include="crate.frag" />
+    <None Include="crate.vert" />
+    <None Include="sphere.frag" />
+    <None Include="sphere.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

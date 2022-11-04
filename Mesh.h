@@ -13,7 +13,13 @@ public:
 
 	void Create(class Shader* _shader);
 	void Cleanup();
-	void Render(glm::mat4, glm::mat4);
+	void Render(const mat4&, const mat4&);
+
+	void SetLightPos(const vec3& lightPos) { m_lightPos = lightPos; }
+
+	void SetPosition(const vec3& position) { m_position = position; }
+	void SetAngle(float angle) { m_angle = angle; }
+	void SetScale(const vec3& scale) { m_scale = scale; }
 
 private:
 	GLuint m_vao;
@@ -25,7 +31,14 @@ private:
 	class Shader* m_shader;
 	Texture m_textures[3];
 
-	glm::mat4 m_world;
+	vec3 m_lightPos;
+
+	// Transform
+	vec3 m_position;
+	float m_angle;
+	vec3 m_scale;
+
+	mat4 m_world;
 };
 
 #endif
