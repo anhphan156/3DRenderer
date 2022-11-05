@@ -1,8 +1,11 @@
 #include "WindowController.h"
 #include "GameController.h"
+#include "ToolWindow.h"
 #include <chrono>
 #include <thread>
 #include <iostream>
+
+using Exercise2::ToolWindow;
 
 GameController::GameController() {
 	m_camera = {};
@@ -47,44 +50,32 @@ void GameController::Initialize() {
 	m_window = WindowController::GetInstance().GetWindow(); // glfwInit()
 	M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW");
 	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
-	glClearColor(0.f, 0.f, .4f, 1.f);
-
-	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.f, 0.f, .0f, 1.f);
 
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
 }
 
 void GameController::Run() {
-	Shader crateShader = Shader();
-	crateShader.LoadShaders("crate.vert", "crate.frag");
+	ToolWindow^ window = gcnew Exercise2::ToolWindow();
+	window->Show();
 
-	Shader sphereShader = Shader();
-	sphereShader.LoadShaders("sphere.vert", "sphere.frag");
+	Shader woodShader = Shader();
+	woodShader.LoadShaders("wood.vert", "wood.frag");
 
-	vec3 lightPos = vec3(2.f, 2.f, 2.f);
-
-	m_meshes[0] = Mesh();
-	m_meshes[0].Create(&crateShader);
-	m_meshes[0].SetPosition(vec3(0.f, 0.f, 0.f));
-	m_meshes[0].SetLightPos(lightPos);
-
-	m_meshes[1] = Mesh();
-	m_meshes[1].Create(&sphereShader);
-	m_meshes[1].SetPosition(lightPos);
-	m_meshes[1].SetScale(vec3(.3f));
+	m_mesh = Mesh();
+	m_mesh.Create(&woodShader);
+	m_mesh.SetPosition(vec3(0.f, 0.f, 0.f));
+	m_mesh.SetRotation(-3.14f / 4.f, vec3(0.f, 1.f, 0.f));
 
 	int framecount = 0;
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
 	do {
-		m_meshes[1].SetScale(vec3(cos((float)glfwGetTime())/3.f));
-
+		System::Windows::Forms::Application::DoEvents();
+		m_mesh.SetColors(vec3(ToolWindow::Y, ToolWindow::U, ToolWindow::V) / 100.f, ToolWindow::InvertColors);
 		// Render
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for (auto& mesh : m_meshes) {
-			mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
-			mesh.Render(m_camera.getView(), m_camera.getProjection());
-		}
+		glClear(GL_COLOR_BUFFER_BIT);
+		m_mesh.Render(m_camera.getView(), m_camera.getProjection());
 		glfwSwapBuffers(m_window);
 
 		// Input
@@ -97,8 +88,6 @@ void GameController::Run() {
 			std::this_thread::sleep_for(std::chrono::milliseconds((long)sleepTime));
 		}
 		dt = (glfwGetTime() - timePreviousFrame);
-		//std::cout << dt << std::endl;
-		//std::cout << ++framecount << " " << glfwGetTime() <<  std::endl;
 		timePreviousFrame = glfwGetTime();
 
 	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);

@@ -29,7 +29,7 @@ void Texture::LoadTexture(std::string _name)
 	stbi_set_flip_vertically_on_load(true);
 	GLubyte* data = stbi_load(_name.c_str(), &m_width, &m_height, &m_channels, 0);
 	M_ASSERT(data != nullptr, "Failed to load texture");
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);

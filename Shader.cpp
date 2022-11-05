@@ -4,7 +4,7 @@
 Shader::Shader() {
 	m_programID = 0;
 	m_attrVertices = 0;
-	m_attrNormal = 0;
+	m_attrColor = 0;
 	m_attrTexCoords = 0;
 
 	m_result = GL_FALSE;
@@ -22,24 +22,21 @@ void Shader::SetUniformVec3(const char* _name, const vec3& _value) {
 	}
 }
 
-void Shader::SetUniformMat4(const char* _name, const mat4& _value) {
+void Shader::SetUniformFloat(const char* _name, float value) {
 	GLint loc = glGetUniformLocation(m_programID, _name);
 	if (loc != -1) {
-		glUniformMatrix4fv(loc, 1, GL_FALSE, &_value[0][0]);
+		glUniform1f(loc, value);
 	}
 }
 
 void Shader::LoadAttributes() {
 	m_attrVertices = glGetAttribLocation(m_programID, "vertices");
-	m_attrNormal = glGetAttribLocation(m_programID, "normal");
+	m_attrColor = glGetAttribLocation(m_programID, "color");
 	m_attrTexCoords = glGetAttribLocation(m_programID, "texCoords");
 
-	m_uniResolution = glGetUniformLocation(m_programID, "u_resolution");
-	m_uniTime = glGetUniformLocation(m_programID, "u_time");
 	m_uniWVP = glGetUniformLocation(m_programID, "u_wvp");
 	m_uniSampler1 = glGetUniformLocation(m_programID, "u_sampler1");
 	m_uniSampler2 = glGetUniformLocation(m_programID, "u_sampler2");
-	m_uniSampler3 = glGetUniformLocation(m_programID, "u_sampler3");
 }
 
 void Shader::LoadShaders(const char* _vertexFilePath, const char* _fragmentFilePath)
