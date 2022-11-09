@@ -3,6 +3,24 @@
 #include "Resolution.h"
 #include "WindowController.h"
 
+Mesh::Mesh(const Shape& shape) {
+	m_shape = shape;
+
+	m_vao = 0;
+	m_vertexBuffer = 0;
+	m_ib = 0;
+	m_vertexData = {};
+	m_indexData = {};
+	m_shader = nullptr;
+	m_lightPos = vec3(1.f);
+
+	m_scale = vec3(1.f);
+	m_position = vec3(1.f);
+	m_angle = 0.f;
+	m_rotationAxis = vec3(1.f);
+	m_world = glm::mat4(1.f);
+}
+
 Mesh::Mesh() {
 	m_vao = 0;
 	m_vertexBuffer = 0;
@@ -39,68 +57,13 @@ void Mesh::Create(Shader* _shader) {
 	glBindVertexArray(m_vao);
 
 	// Vertex array
-	m_vertexData = {
-		 /* Position    *//* Normal    *//* TexCoords */
-		 // Up
-		 -1.f,  1.f,  1.f, 0.f, 1.f, 0.f, 0.33f, 0.33f,
-		 -1.f,  1.f, -1.f, 0.f, 1.f, 0.f, 0.33f, 0.66f,
-		  1.f,  1.f, -1.f, 0.f, 1.f, 0.f, 0.66f, 0.66f,
-		  1.f,  1.f,  1.f, 0.f, 1.f, 0.f, 0.66f, 0.33f,
-
-		 // Down
-		 -1.f, -1.f,  1.f, 0.f, -1.f, 0.f, 0.f, 0.f,
-		 -1.f, -1.f, -1.f, 0.f, -1.f, 0.f, 0.f, 0.33f,
-		  1.f, -1.f, -1.f, 0.f, -1.f, 0.f, 0.33f, 0.33f,
-		  1.f, -1.f,  1.f, 0.f, -1.f, 0.f, 0.33f, 0.f,
-
-		 // Front
-		 -1.f, -1.f,  1.f, 0.f, 0.f, 1.f, 0.33f, 0.f,
-		 -1.f,  1.f,  1.f, 0.f, 0.f, 1.f, 0.33f, 0.33f,
-		  1.f,  1.f,  1.f, 0.f, 0.f, 1.f, 0.66f, 0.33f,
-		  1.f, -1.f,  1.f, 0.f, 0.f, 1.f, 0.66f, 0.f,
-
-		  // Back
-		 -1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, .99f,
-		 -1.f,  1.f, -1.f, 0.f, 0.f, -1.f, 0.33f, 0.66f,
-		  1.f,  1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, 0.66f,
-		  1.f, -1.f, -1.f, 0.f, 0.f, -1.f, 0.66f, .99f,
-
-		 // Left
-		  -1.f, -1.f, -1.f, -1.f, 0.f, 0.f, 0.f, 0.66f,
-		  -1.f,  1.f, -1.f, -1.f, 0.f, 0.f, .33f, .66f, 
-		  -1.f,  1.f,  1.f, -1.f, 0.f, 0.f, .33f, .33f,
-		  -1.f, -1.f,  1.f, -1.f, 0.f, 0.f, 0.f, .33f,
-
-		  // Right
-		  1.f, -1.f, -1.f, 1.f, 0.f, 0.f, .99f, .66f,
-		  1.f,  1.f, -1.f, 1.f, 0.f, 0.f, .66f, .66f,
-		  1.f,  1.f,  1.f, 1.f, 0.f, 0.f, .66f, .33f,
-		  1.f, -1.f,  1.f, 1.f, 0.f, 0.f, .99f, .33f,
-	};
+	m_vertexData = m_shape.m_vertexData;
 	glGenBuffers(1, &m_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, m_vertexData.size() * sizeof(float), m_vertexData.data(), GL_STATIC_DRAW);
 
 	// ibo
-	m_indexData = {
-		0, 1, 2,
-		2, 3, 0,
-
-		0 + 4, 1 + 4, 2 + 4,
-		2 + 4, 3 + 4, 0 + 4,
-
-		0 + 8, 1 + 8, 2 + 8,
-		2 + 8, 3 + 8, 0 + 8,
-
-		0 + 12, 1 + 12, 2 + 12,
-		2 + 12, 3 + 12, 0 + 12,
-
-		0 + 16, 1 + 16, 2 + 16,
-		2 + 16, 3 + 16, 0 + 16,
-
-		0 + 20, 1 + 20, 2 + 20,
-		2 + 20, 3 + 20, 0 + 20
-	};
+	m_indexData = m_shape.m_indexData;
 	glGenBuffers(1, &m_ib);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ib);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indexData.size() * sizeof(GLuint), m_indexData.data(), GL_STATIC_DRAW);

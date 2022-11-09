@@ -1,5 +1,6 @@
 #include "WindowController.h"
 #include "GameController.h"
+#include "Shape.h"
 #include <chrono>
 #include <thread>
 #include <iostream>
@@ -61,14 +62,16 @@ void GameController::Run() {
 	Shader sphereShader = Shader();
 	sphereShader.LoadShaders("sphere.vert", "sphere.frag");
 
+	Shape unwrappedCube = UnWrappedCube();
+
 	vec3 lightPos = vec3(2.f, 2.f, 2.f);
 
-	m_meshes[0] = Mesh();
+	m_meshes[0] = Mesh(unwrappedCube);
 	m_meshes[0].Create(&crateShader);
 	m_meshes[0].SetPosition(vec3(0.f, 0.f, 0.f));
 	m_meshes[0].SetLightPos(lightPos);
 
-	m_meshes[1] = Mesh();
+	m_meshes[1] = Mesh(unwrappedCube);
 	m_meshes[1].Create(&sphereShader);
 	m_meshes[1].SetPosition(lightPos);
 	m_meshes[1].SetScale(vec3(.3f));
@@ -77,6 +80,7 @@ void GameController::Run() {
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
 	do {
+		//m_meshes[0].Render(m_camera.getView(), m_camera.getProjection());
 		m_meshes[1].SetScale(vec3(cos((float)glfwGetTime())/3.f));
 
 		// Render

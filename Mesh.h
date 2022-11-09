@@ -5,10 +5,12 @@
 #include <vector>
 #include "StandardIncludes.h"
 #include "Texture.h"
+#include "Shape.h"
 
 class Mesh {
 public:
 	Mesh();
+	Mesh(const Shape&);
 	virtual ~Mesh();
 
 	void Create(class Shader* _shader);
@@ -21,12 +23,16 @@ public:
 	void SetRotation(float angle, const vec3& rotationAxis) { m_angle = angle; m_rotationAxis = rotationAxis; }
 	void SetScale(const vec3& scale) { m_scale = scale; }
 
+	void SetShape(const Shape& shape) { m_shape = shape; }
+
 private:
 	GLuint m_vao;
 	GLuint m_ib;
 	GLuint m_vertexBuffer;
 	std::vector<GLuint> m_indexData;
 	std::vector<GLfloat> m_vertexData;
+
+	Shape m_shape;
 
 	class Shader* m_shader;
 	Texture m_textures[3];
