@@ -75,7 +75,7 @@ void main(){
 
 	vec3 color = mix(vec3(1.f), normal(p), lightingMask(p, ro));
 	
-	//gl_FragColor = vec4(color, 1.f);
+	// borders
 	vec2 uv = fract(vec2(v2f_texCoords * 3.f));
 
 	vec2 band = step(vec2(.05), uv);

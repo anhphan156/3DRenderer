@@ -2,6 +2,7 @@
 #include "shader.h"
 #include "Resolution.h"
 #include "WindowController.h"
+#include "Camera.h"
 
 Mesh::Mesh(const Shape& shape) {
 	m_shape = shape;
@@ -100,18 +101,19 @@ void Mesh::Cleanup() {
 	}
 }
 
-void Mesh::Render(const mat4& view, const mat4& projection) 
+void Mesh::Render(const Camera& _camera) 
 {
 	// Transformation
 	mat4 scale = glm::scale(mat4(1.f), m_scale);
 	mat4 rotate = glm::rotate(mat4(1.f), m_angle, m_rotationAxis); 
 	mat4 translate = glm::translate(mat4(1.f), m_position);
 	m_world = translate * rotate * scale;
-	glm::mat4 wvp = projection * view * m_world;
+	glm::mat4 wvp = _camera.getProjection() * _camera.getView() * m_world;
 
 	// WS Camera
-	glm::vec4 wsCameraHomo = glm::inverse(projection * view) * glm::vec4(0.f, 0.f, -1.f, 0.f);
-	vec3 wsCamera = vec3(wsCameraHomo)/ wsCameraHomo.w;
+	//glm::vec4 wsCameraHomo = glm::inverse(_camera.getProjection() * _camera.getView()) * glm::vec4(0.f, 0.f, -1.f, 0.f);
+	//vec3 wsCamera = vec3(wsCameraHomo)/ wsCameraHomo.w;
+	vec3 wsCamera = _camera.getWSCamera();
 
 	// Binding buffers
 	glBindVertexArray(m_vao);

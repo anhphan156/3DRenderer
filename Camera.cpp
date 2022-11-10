@@ -25,12 +25,14 @@ Camera::Camera(Resolution _resolution) {
 	);
 }
 
-vec3 Camera::getWSCamera()
+vec3 Camera::getWSCamera() const
 {
-	glm::vec4 wsCameraHomo = glm::inverse(m_projection * m_view) * glm::vec4(0.f, 0.f, -1.f, 0.f);
-	vec3 wsCamera = vec3(wsCameraHomo)/ wsCameraHomo.w;
+	//glm::vec4 wsCameraHomo = glm::inverse(m_projection * m_view) * glm::vec4(0.f, 0.f, -1.f, 0.f);
+	//vec3 wsCamera = vec3(wsCameraHomo)/ wsCameraHomo.w;
 
-	return wsCamera;
+	//return wsCamera;
+
+	return m_location;
 }
 
 void Camera::cameraDisplacement(vec3 velocity) {

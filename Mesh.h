@@ -5,6 +5,7 @@
 #include <vector>
 #include "StandardIncludes.h"
 #include "Texture.h"
+#include "Camera.h"
 #include "Shape.h"
 
 class Mesh {
@@ -15,7 +16,7 @@ public:
 
 	void Create(class Shader* _shader);
 	void Cleanup();
-	void Render(const mat4&, const mat4&);
+	void Render(const Camera&);
 
 	void SetLightPos(const vec3& lightPos) { m_lightPos = lightPos; }
 

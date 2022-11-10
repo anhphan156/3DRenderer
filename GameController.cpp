@@ -80,14 +80,17 @@ void GameController::Run() {
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
 	do {
+		//lightPos = vec3(sin((float)glfwGetTime()) * 4.f, 3.f, 0.f);
 		//m_meshes[0].Render(m_camera.getView(), m_camera.getProjection());
 		m_meshes[1].SetScale(vec3(cos((float)glfwGetTime())/3.f));
+		m_meshes[1].SetPosition(lightPos);
+		m_meshes[0].SetLightPos(lightPos);
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (auto& mesh : m_meshes) {
 			mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
-			mesh.Render(m_camera.getView(), m_camera.getProjection());
+			mesh.Render(m_camera);
 		}
 		glfwSwapBuffers(m_window);
 
