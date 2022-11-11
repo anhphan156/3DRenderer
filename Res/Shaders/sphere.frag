@@ -76,7 +76,7 @@ void main(){
 	vec3 color = mix(vec3(1.f), normal(p), lightingMask(p, ro));
 	
 	// borders
-	vec2 uv = fract(vec2(v2f_texCoords * 3.f));
+	vec2 uv = v2f_texCoords;
 
 	vec2 band = step(vec2(.05), uv);
 	vec2 band2 = step(vec2(.05), .975f - uv);

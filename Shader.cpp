@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include <vector>
+#include "Texture.h"
 
 Shader::Shader() {
 	m_programID = 0;
@@ -9,20 +9,46 @@ Shader::Shader() {
 
 	m_result = GL_FALSE;
 	m_infoLogLength = 0;
+
+	m_textures = {};
 }
 
 void Shader::Cleanup() {
 	glDeleteProgram(m_programID);
 }
 
-void Shader::SetUniformVec3(const char* _name, const vec3& _value) {
+void Shader::AddTexture(const shared_ptr<class Texture> _texture) {
+	m_textures.push_back(_texture);
+}
+
+void Shader::ClearTexture()
+{
+	for (auto& texture : m_textures) {
+		texture->CleanUp();
+	}
+}
+
+void Shader::BindTextures() const {
+	for (int i = 0; i < m_textures.size() && i < 32; i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, m_textures[i]->GetTexture());
+		GLuint m_uniSamplerLoc = glGetUniformLocation(m_programID, ("u_textures.sampler" + std::to_string(i)).c_str());
+		glUniform1i(m_uniSamplerLoc, i);
+	}
+}
+void Shader::SetUniformFloat(const char* _name, float _value) const {
+	GLint loc = glGetUniformLocation(m_programID, _name);
+	if (loc != -1) glUniform1f(loc, _value);
+}
+
+void Shader::SetUniformVec3(const char* _name, const vec3& _value) const {
 	GLint loc = glGetUniformLocation(m_programID, _name);
 	if (loc != -1) {
 		glUniform3fv(loc, 1, &_value[0]);
 	}
 }
 
-void Shader::SetUniformMat4(const char* _name, const mat4& _value) {
+void Shader::SetUniformMat4(const char* _name, const mat4& _value) const {
 	GLint loc = glGetUniformLocation(m_programID, _name);
 	if (loc != -1) {
 		glUniformMatrix4fv(loc, 1, GL_FALSE, &_value[0][0]);
@@ -35,11 +61,7 @@ void Shader::LoadAttributes() {
 	m_attrTexCoords = glGetAttribLocation(m_programID, "texCoords");
 
 	m_uniResolution = glGetUniformLocation(m_programID, "u_resolution");
-	m_uniTime = glGetUniformLocation(m_programID, "u_time");
 	m_uniWVP = glGetUniformLocation(m_programID, "u_wvp");
-	m_uniSampler1 = glGetUniformLocation(m_programID, "u_sampler1");
-	m_uniSampler2 = glGetUniformLocation(m_programID, "u_sampler2");
-	m_uniSampler3 = glGetUniformLocation(m_programID, "u_sampler3");
 }
 
 void Shader::LoadShaders(const char* _vertexFilePath, const char* _fragmentFilePath)

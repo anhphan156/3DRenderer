@@ -9,6 +9,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/random.hpp>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -17,7 +18,13 @@
 #endif
 
 #include <string>
+#include <vector>
 #include <fstream>
+#include <memory>
+
+using std::shared_ptr;
+using std::make_shared;
+using std::vector;
 
 const int FPS = 60;
 const float MPF = 1000 / FPS;

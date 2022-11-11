@@ -29,7 +29,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -164,10 +164,11 @@
     <ClInclude Include="WindowController.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="crate.frag" />
-    <None Include="crate.vert" />
-    <None Include="sphere.frag" />
-    <None Include="sphere.vert" />
+    <None Include="Res\shaders.config" />
+    <None Include="Res\Shaders\crate.frag" />
+    <None Include="Res\Shaders\crate.vert" />
+    <None Include="Res\Shaders\sphere.frag" />
+    <None Include="Res\Shaders\sphere.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

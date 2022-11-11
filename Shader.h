@@ -17,17 +17,18 @@ public:
 	GLuint GetAttrTexCoords() { return m_attrTexCoords; }
 
 	GLuint GetUniResolution() { return m_uniResolution; };
-	GLuint GetUniTime() { return m_uniTime; };
 	GLuint GetUniWVP() { return m_uniWVP; };
-	GLuint GetUniSampler1() { return m_uniSampler1; }
-	GLuint GetUniSampler2() { return m_uniSampler2; }
-	GLuint GetUniSampler3() { return m_uniSampler3; }
 
 	void LoadShaders(const char* _vertexFilePath, const char* _fragmentFilePath);
 	void Cleanup();
 
-	void SetUniformVec3(const char* _name, const vec3& _value);
-	void SetUniformMat4(const char* _name, const mat4& _value);
+	void SetUniformFloat(const char* _name, float _value) const;
+	void SetUniformVec3(const char* _name, const vec3& _value) const;
+	void SetUniformMat4(const char* _name, const mat4& _value) const;
+
+	void AddTexture(const shared_ptr<class Texture>);
+	void ClearTexture();
+	void BindTextures() const;
 
 private:
 	void CreateShaderProgram(const char* _vertexFilePath, const char* _fragmentFilePath);
@@ -44,11 +45,9 @@ private:
 	GLuint m_attrTexCoords;
 
 	GLuint m_uniResolution;
-	GLuint m_uniTime;
 	GLuint m_uniWVP;
-	GLuint m_uniSampler1;
-	GLuint m_uniSampler2;
-	GLuint m_uniSampler3;
+
+	vector<shared_ptr<class Texture>> m_textures;
 };
 
 #endif // !SHADER_H

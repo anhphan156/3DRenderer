@@ -10,7 +10,6 @@
 
 class Mesh {
 public:
-	Mesh();
 	Mesh(const Shape&);
 	virtual ~Mesh();
 
@@ -30,13 +29,10 @@ private:
 	GLuint m_vao;
 	GLuint m_ib;
 	GLuint m_vertexBuffer;
-	std::vector<GLuint> m_indexData;
-	std::vector<GLfloat> m_vertexData;
 
 	Shape m_shape;
 
 	class Shader* m_shader;
-	Texture m_textures[3];
 
 	vec3 m_lightPos;
 

@@ -76,16 +76,19 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="crate.frag">
+    <None Include="Res\Shaders\crate.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="crate.vert">
+    <None Include="Res\Shaders\crate.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="sphere.frag">
+    <None Include="Res\Shaders\sphere.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="sphere.vert">
+    <None Include="Res\Shaders\sphere.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\shaders.config">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

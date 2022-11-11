@@ -1,12 +1,16 @@
 #include "WindowController.h"
 #include "GameController.h"
 #include "Shape.h"
+#include "Shader.h"
+#include "Texture.h"
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <fstream>
 
 GameController::GameController() {
 	m_camera = {};
+	m_meshes.clear();
 }
 GameController::~GameController(){}
 
@@ -53,43 +57,67 @@ void GameController::Initialize() {
 	glEnable(GL_DEPTH_TEST);
 
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
+
+	srand(time(0));
+}
+
+void GameController::ShaderInit(ShaderMap& shaderMap) const {
+	std::ifstream shaderConfig("Res/shaders.config");
+
+	std::string shaderName;
+	int textureCount;
+	std::string textureName;
+
+	while (shaderConfig) {
+		shaderConfig >> shaderName >> textureCount;
+
+		shaderMap[shaderName] = make_shared<Shader>();
+		shaderMap[shaderName]->LoadShaders(("Res/Shaders/" + shaderName + ".vert").c_str(), ("Res/Shaders/" + shaderName + ".frag").c_str());
+
+		for (int i = 0; i < textureCount; i++) {
+			shaderConfig >> textureName;
+			auto texture = make_shared<Texture>();
+			texture->LoadTexture("Res/Textures/" + textureName);
+
+			shaderMap[shaderName]->AddTexture(texture);
+		}
+	}
 }
 
 void GameController::Run() {
-	Shader crateShader = Shader();
-	crateShader.LoadShaders("crate.vert", "crate.frag");
+	// Shader Init
+	ShaderMap shaders;
+	ShaderInit(shaders);
 
-	Shader sphereShader = Shader();
-	sphereShader.LoadShaders("sphere.vert", "sphere.frag");
-
-	Shape unwrappedCube = UnWrappedCube();
+	// Shape Init
+	Shape cube = Cube();
 
 	vec3 lightPos = vec3(2.f, 2.f, 2.f);
 
-	m_meshes[0] = Mesh(unwrappedCube);
-	m_meshes[0].Create(&crateShader);
-	m_meshes[0].SetPosition(vec3(0.f, 0.f, 0.f));
-	m_meshes[0].SetLightPos(lightPos);
+	// Mesh Init
+	m_meshes.push_back(Mesh(cube));
+	m_meshes[0].Create(shaders["sphere"].get());
+	m_meshes[0].SetPosition(lightPos);
+	m_meshes[0].SetScale(vec3(.3f));
 
-	m_meshes[1] = Mesh(unwrappedCube);
-	m_meshes[1].Create(&sphereShader);
-	m_meshes[1].SetPosition(lightPos);
-	m_meshes[1].SetScale(vec3(.3f));
+	for (int i = 0; i < 10; i++) {
+		auto mesh = Mesh(cube);
+		mesh.Create(shaders["crate"].get());
+		mesh.SetLightPos(lightPos);
+		mesh.SetScale(vec3(.5f));
+		mesh.SetPosition(vec3(glm::linearRand(-1.f, 1.f), glm::linearRand(-1.f, 1.f), glm::linearRand(-1.f, 1.f)) * 5.f);
+		m_meshes.push_back(mesh);
+	}
 
-	int framecount = 0;
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
 	do {
-		//lightPos = vec3(sin((float)glfwGetTime()) * 4.f, 3.f, 0.f);
-		//m_meshes[0].Render(m_camera.getView(), m_camera.getProjection());
-		m_meshes[1].SetScale(vec3(cos((float)glfwGetTime())/3.f));
-		m_meshes[1].SetPosition(lightPos);
-		m_meshes[0].SetLightPos(lightPos);
+		m_meshes[0].SetScale(vec3(.3f, cos((float)glfwGetTime())/3.f, .3f));
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (auto& mesh : m_meshes) {
-			mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
+			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);
 		}
 		glfwSwapBuffers(m_window);
@@ -104,9 +132,15 @@ void GameController::Run() {
 			std::this_thread::sleep_for(std::chrono::milliseconds((long)sleepTime));
 		}
 		dt = (glfwGetTime() - timePreviousFrame);
-		//std::cout << dt << std::endl;
-		//std::cout << ++framecount << " " << glfwGetTime() <<  std::endl;
 		timePreviousFrame = glfwGetTime();
 
 	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);
+
+	for (auto& mesh : m_meshes) {
+		mesh.Cleanup();
+	}
+
+	for (const auto& shader : shaders) {
+		shader.second->Cleanup();
+	}
 }
