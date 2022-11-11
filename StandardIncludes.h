@@ -21,6 +21,7 @@
 #include <vector>
 #include <fstream>
 #include <memory>
+#include <random>
 
 using std::shared_ptr;
 using std::make_shared;

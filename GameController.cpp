@@ -52,7 +52,7 @@ void GameController::Initialize() {
 	m_window = WindowController::GetInstance().GetWindow(); // glfwInit()
 	M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW");
 	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
-	glClearColor(0.f, 0.f, .4f, 1.f);
+	glClearColor(.1f, .1f, .1f, 1.f);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -92,30 +92,41 @@ void GameController::Run() {
 	// Shape Init
 	Shape cube = Cube();
 
-	vec3 lightPos = vec3(2.f, 2.f, 2.f);
-
-	// Mesh Init
-	m_meshes.push_back(Mesh(cube));
-	m_meshes[0].Create(shaders["sphere"].get());
-	m_meshes[0].SetPosition(lightPos);
-	m_meshes[0].SetScale(vec3(.3f));
-
-	for (int i = 0; i < 10; i++) {
+	// light mesh init
+	vec3 lightPos = vec3(3.5f, 0.f, -.5f);
+	vector<Mesh> lights;
+	for (int i = 0; i < 4; i++) {
 		auto mesh = Mesh(cube);
-		mesh.Create(shaders["crate"].get());
-		mesh.SetLightPos(lightPos);
-		mesh.SetScale(vec3(.5f));
-		mesh.SetPosition(vec3(glm::linearRand(-1.f, 1.f), glm::linearRand(-1.f, 1.f), glm::linearRand(-1.f, 1.f)) * 5.f);
-		m_meshes.push_back(mesh);
+		mesh.Create(shaders["sphere"].get());
+		mesh.SetPosition(lightPos + vec3(0.f, 0.f, i / 1.5f));
+		mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
+		mesh.SetScale(vec3(.1f));
+		mesh.SetRotation(3.14f / 2.f * i, vec3(0.f, 1.f, 0.f));
+		lights.push_back(mesh);
+	}
+
+	// cube mesh init
+	for (int col = 0; col < 10; col++) {
+		for (int count = 0; count < 10; count++) {
+			auto mesh = Mesh(cube);
+			mesh.Create(shaders["crate"].get());
+			mesh.SetLightMesh(lights);
+			mesh.SetScale(vec3(.2f));
+			mesh.SetPosition(vec3(0.f, -.5f + count / 10.f, -.2f + col / 10.f) * 5.f);
+			m_meshes.push_back(mesh);
+		}
 	}
 
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
 	do {
-		m_meshes[0].SetScale(vec3(.3f, cos((float)glfwGetTime())/3.f, .3f));
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		for (auto& mesh : lights) {
+			mesh.SetScale(vec3(.3f, cos((float)glfwGetTime())/3.f, .3f));
+			mesh.Render(m_camera);
+		}
 		for (auto& mesh : m_meshes) {
 			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);

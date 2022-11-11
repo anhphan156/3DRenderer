@@ -17,13 +17,16 @@ public:
 	void Cleanup();
 	void Render(const Camera&);
 
-	void SetLightPos(const vec3& lightPos) { m_lightPos = lightPos; }
+	void SetLightColor(const vec3 color) { m_lightColor = color; }
+	void SetLightMesh(const vector<Mesh>& lights) { m_lights = lights; }
 
 	void SetPosition(const vec3& position) { m_position = position; }
 	void SetRotation(float angle, const vec3& rotationAxis) { m_angle = angle; m_rotationAxis = rotationAxis; }
 	void SetScale(const vec3& scale) { m_scale = scale; }
 
-	void SetShape(const Shape& shape) { m_shape = shape; }
+	vec3 GetPosition() const { return m_position; }
+
+	std::string concat(std::string s1, int i, std::string s2);
 
 private:
 	GLuint m_vao;
@@ -34,7 +37,8 @@ private:
 
 	class Shader* m_shader;
 
-	vec3 m_lightPos;
+	vector<Mesh> m_lights;
+	vec3 m_lightColor;
 
 	// Transform
 	vec3 m_position;

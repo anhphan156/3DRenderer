@@ -11,13 +11,15 @@ Mesh::Mesh(const Shape& shape) {
 	m_vertexBuffer = 0;
 	m_ib = 0;
 	m_shader = nullptr;
-	m_lightPos = vec3(1.f);
 
 	m_scale = vec3(1.f);
 	m_position = vec3(1.f);
 	m_angle = 0.f;
 	m_rotationAxis = vec3(1.f);
 	m_world = glm::mat4(1.f);
+
+	m_lights.clear();
+	m_lightColor = vec3(1.f);
 }
 
 Mesh::~Mesh() {
@@ -91,11 +93,17 @@ void Mesh::Render(const Camera& _camera)
 	m_shader->SetUniformFloat("u_time", glfwGetTime());
 	m_shader->SetUniformMat4("u_modelToWorld", m_world);
 	m_shader->SetUniformVec3("u_cameraWorldPos", _camera.getWSCamera());
-	m_shader->SetUniformFloat("u_light.specularConcentration", 8.f);
-	m_shader->SetUniformVec3("u_light.position", m_lightPos);
-	m_shader->SetUniformVec3("u_light.ambientColor", {.1f, .1f, .1f});
-	m_shader->SetUniformVec3("u_light.lambertianColor", {.9f, .7f, .8f});
-	m_shader->SetUniformVec3("u_light.specularColor", vec3(3.f));
+	for (int i = 0; i < m_lights.size(); i++) {
+		m_shader->SetUniformVec3(concat("u_light[", i, "].position").c_str(), m_lights[i].GetPosition());
+		m_shader->SetUniformVec3(concat("u_light[", i, "].ambientColor").c_str(), {.1f, .1f, .1f});
+		m_shader->SetUniformVec3(concat("u_light[", i, "].lambertianColor").c_str(), m_lights[i].m_lightColor);
+		m_shader->SetUniformVec3(concat("u_light[", i, "].specularColor").c_str(), vec3(3.f));
+		m_shader->SetUniformFloat(concat("u_light[", i, "].specularConcentration").c_str(), 8.f);
+		m_shader->SetUniformVec3(concat("u_light[", i, "].attenuationFactor").c_str(), vec3(.032f, .09f, 1.f));
+		m_shader->SetUniformVec3(concat("u_light[", i, "].spotlightDirection").c_str(), vec3(0.f, cos(glfwGetTime() * 2.f + i), sin(glfwGetTime() * 2.f + i) * 2.f + 1.5f) - m_lights[i].GetPosition());
+		m_shader->SetUniformFloat(concat("u_light[", i, "].spotlightAngle").c_str(), 3.14f / 12.f);
+		m_shader->SetUniformFloat(concat("u_light[", i, "].spotlightFalloff").c_str(), 100.f);
+	}
 
 	// Draw
 	glDrawElements(GL_TRIANGLES, m_shape.m_indexData.size(), GL_UNSIGNED_INT, nullptr);
@@ -104,4 +112,8 @@ void Mesh::Render(const Camera& _camera)
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glUseProgram(0);
+}
+
+std::string Mesh::concat(std::string s1, int i, std::string s2) {
+	return s1 + std::to_string(i) + s2;
 }

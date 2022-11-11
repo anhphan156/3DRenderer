@@ -8,7 +8,7 @@ Camera::Camera() {
 }
 
 Camera::Camera(Resolution _resolution) {
-	m_location = glm::vec3(0.f, 5.f, 10.f);
+	m_location = glm::vec3(5.f, 1.f, 5.f);
 	m_lookAt = glm::vec3(0.f, 0.f, 0.f);
 
 	m_view = glm::lookAt(
