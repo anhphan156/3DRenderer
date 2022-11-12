@@ -5,6 +5,7 @@
 #include "Singleton.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "ImGuiLayer.h"
 #include <string>
 #include <memory>
 #include <map>
@@ -24,12 +25,13 @@ public:
 	void Run();
 
 	void keyInputHandling();
-	void mouseInputHandling(float xVec, float yVec);
+	void mouseInputHandling();
 
 	void ShaderInit(ShaderMap& shaderMap) const;
 
 private:
 	vector<Mesh> m_meshes;
+	vector<shared_ptr<ImGuiLayer>> m_layers;
 	Camera m_camera;
 	GLFWwindow* m_window;
 

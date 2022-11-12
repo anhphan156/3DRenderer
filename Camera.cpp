@@ -10,11 +10,13 @@ Camera::Camera() {
 Camera::Camera(Resolution _resolution) {
 	m_location = glm::vec3(5.f, 1.f, 5.f);
 	m_lookAt = glm::vec3(0.f, 0.f, 0.f);
+	m_up = vec3(0.f, 1.f, 0.f);
+	m_cameraForward = glm::normalize(m_lookAt - m_location);
 
 	m_view = glm::lookAt(
 		m_location,
 		m_lookAt,
-		glm::vec3(0.f, 1.f, 0.f)
+		m_up
 	);
 	
 	m_projection = glm::perspective(
@@ -36,8 +38,9 @@ vec3 Camera::getWSCamera() const
 }
 
 void Camera::cameraDisplacement(vec3 velocity) {
-	m_location += velocity;
+	m_location +=  velocity;
 	m_lookAt += velocity;
+	m_cameraForward = glm::normalize(m_lookAt - m_location);
 	m_view = glm::lookAt(
 		m_location,
 		m_lookAt,
@@ -52,6 +55,8 @@ void Camera::cameraTurn(vec3 lookAt) {
 		m_lookAt,
 		glm::vec3(0.f, 1.f, 0.f)
 	);
+
+	m_cameraForward = glm::normalize(m_lookAt - m_location);
 }
 
 Camera::~Camera() {}

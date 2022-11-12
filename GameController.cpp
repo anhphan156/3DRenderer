@@ -3,6 +3,10 @@
 #include "Shape.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Dependencies/imgui/imgui.h"
+#include "Dependencies/imgui/imgui_impl_glfw.h"
+#include "Dependencies/imgui/imgui_impl_opengl3.h"
+#include "Statistics.h"
 #include <chrono>
 #include <thread>
 #include <iostream>
@@ -15,34 +19,35 @@ GameController::GameController() {
 GameController::~GameController(){}
 
 void GameController::keyInputHandling() {
-	glfwPollEvents();
-
 	vec3 cameraVelocity = vec3(0.f, 0.f, 0.f);
-	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity.x = -1.f;
-	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity.x = 1.f;
-	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity.z = -1.f;
-	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity.z = 1.f;
+
+	vec3 camForward = m_camera.getCameraFoward();
+	vec3 camRight = vec3(glm::rotate(mat4(1.f), -3.14f / 2.f, m_camera.getUp()) * glm::vec4(camForward, 0.f));
+
+	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity = m_camera.getCameraFoward();
+	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity = -m_camera.getCameraFoward();;
+	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -camRight;
+	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = camRight;
 	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity.y = -1.f;
 	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity.y = 1.f;
+
 
 	m_camera.cameraDisplacement(cameraVelocity * dt);
 }
 
-void GameController::mouseInputHandling(float xVec, float yVec) {
-	m_camera.cameraTurn(vec3(xVec, yVec * -1, 0.f));
-}
-
-void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) return;
+void GameController::mouseInputHandling() {
+	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) return;
 
 	static double oldXPos;
 	static double oldYPos;
 
-	float xVec = (xpos - oldXPos > 0.f) ? .1f : -.1f;
-	float yVec = (ypos - oldYPos > 0.f) ? .1f : -.1f;
+	double xpos, ypos;
+	glfwGetCursorPos(m_window, &xpos, &ypos);
 
-	GameController::GetInstance().mouseInputHandling(xVec, yVec);
+	float xVec = (xpos - oldXPos > 10.f) ? .1f : -.1f;
+	float yVec = (ypos - oldYPos > 10.f) ? .1f : -.1f;
+
+	m_camera.cameraTurn(vec3(xVec, yVec * -1, 0.f) * 2.f);
 
 	oldXPos = xpos;
 	oldYPos = ypos;
@@ -59,6 +64,15 @@ void GameController::Initialize() {
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
 
 	srand(time(0));
+
+	//imgui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.WantCaptureMouse = true;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
 }
 
 void GameController::ShaderInit(ShaderMap& shaderMap) const {
@@ -117,9 +131,18 @@ void GameController::Run() {
 		}
 	}
 
+	// ImGuiLayers
+	auto stat = make_shared<Statistics>();
+	m_layers.push_back(stat);
+
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
+	double frameCount = 0.0;
 	do {
+		glfwPollEvents();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -128,15 +151,18 @@ void GameController::Run() {
 			mesh.Render(m_camera);
 		}
 		for (auto& mesh : m_meshes) {
-			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
+			mesh.SetRotation(stat->boxRotateAngle, stat->boxRotateAxis);
 			mesh.Render(m_camera);
 		}
+		for (auto& layer : m_layers) layer->OnRender();
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(m_window);
 
 		// Input
 		keyInputHandling();
-		glfwSetCursorPosCallback(m_window, cursor_position_callback);
-
+		mouseInputHandling();
+		
 		// Frame rate
 		float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;
 		if (sleepTime > 0) {
@@ -144,6 +170,13 @@ void GameController::Run() {
 		}
 		dt = (glfwGetTime() - timePreviousFrame);
 		timePreviousFrame = glfwGetTime();
+
+		// stat
+		stat->dt = dt;
+		stat->timeElapsed = timePreviousFrame;
+		stat->frameCount = ++frameCount;
+		stat->cameraPosition = m_camera.getWSCamera();
+		stat->cameraLookAt = m_camera.getLookAt();
 
 	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);
 
@@ -154,4 +187,8 @@ void GameController::Run() {
 	for (const auto& shader : shaders) {
 		shader.second->Cleanup();
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
