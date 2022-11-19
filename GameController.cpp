@@ -143,7 +143,7 @@ void GameController::Run() {
 			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);
 		}
-		f.RenderText("Testing text", 0.f, 500.f, .5f, { 1.f, 1.f, 0.f });
+		f.RenderText("Testing text", 10.f, 500.f, .5f, { 1.f, 1.f, 0.f });
 		glfwSwapBuffers(m_window);
 
 		// Input

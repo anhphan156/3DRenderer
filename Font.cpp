@@ -24,7 +24,7 @@ void Font::RenderText(std::string _text, float _x, float _y, float _scale, vec3 
 	_y = WindowController::GetInstance().GetResolution().m_height - _y;
 	glUseProgram(m_shader->GetProgramID());
 	m_shader->SetUniformVec3("u_textColor", _color);
-	glUniformMatrix4fv(glGetUniformLocation(m_shader->GetProgramID(), "u_projection"), 1, GL_FALSE, glm::value_ptr(m_orthoProj));
+	m_shader->SetUniformMat4("u_projection", m_orthoProj);
 
 	std::string::const_iterator c;
 	for (c = _text.begin(); c != _text.end(); c++) {
@@ -46,9 +46,10 @@ void Font::RenderText(std::string _text, float _x, float _y, float _scale, vec3 
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-		GLuint m_uniSamplerLoc = glGetUniformLocation(m_shader->GetProgramID(), "u_texture.sampler1");
-		glUniform1i(m_uniSamplerLoc, 0);
+		GLint uniSamplerLoc = glGetUniformLocation(m_shader->GetProgramID(), "u_texture.sampler1");
+		glUniform1i(uniSamplerLoc, 0);
 
+		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 		glEnableVertexAttribArray(m_shader->GetAttriVertices());
 		glVertexAttribPointer(m_shader->GetAttriVertices(), 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
@@ -101,8 +102,7 @@ void Font::CreateCharacters()
 		character.Size = glm::ivec2(m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows);
 		character.Bearing = glm::ivec2(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
 		character.Advance = (unsigned int)m_face->glyph->advance.x;
-		m_characters.insert(std::pair<char, Character>(c, character));
-		//m_characters[c] = character;
+		m_characters[c] = character;
 	}
 }
 
