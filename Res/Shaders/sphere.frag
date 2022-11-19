@@ -17,10 +17,11 @@ float smin( float a, float b, float k )
 }
 
 float sphereSDF(vec3 p){
-	float sphere1 = length(p - vec3(0.f, 0.3f, sin(u_time))) - .3f;
-	float sphere2 = length(p - vec3(0.8f, 0.f, sin(u_time + 3.14f / 2.f))) - .3f;
-	float sphere3 = length(p - vec3(0.8f, 0.f, sin(u_time + 3.14f))) - .3f;
-	float sphere4 = length(p - vec3(sin(u_time) + 0.f, 0.7f, 0.f)) - .3f;
+	float radius = .1f;
+	float sphere1 = length(p - vec3(0.f, 0.3f, sin(u_time))) - radius;
+	float sphere2 = length(p - vec3(0.3f, 0.f, sin(u_time + 3.14f / 2.f))) - radius;
+	float sphere3 = length(p - vec3(0.3f, 0.f, sin(u_time + 3.14f))) - radius;
+	float sphere4 = length(p - vec3(sin(u_time) + 0.f, 0.7f, 0.f)) - radius;
 
 	return smin(smin(smin(sphere1, sphere2, .5f), sphere3, .5f), sphere4, .7f);
 }
@@ -74,16 +75,6 @@ void main(){
 	//vec3 color = vec3(lightingMask(p, lightPos) * vec3(.8, .4, .6));
 
 	vec3 color = mix(vec3(1.f), normal(p), lightingMask(p, ro));
-	
-	// borders
-	vec2 uv = v2f_texCoords;
-
-	vec2 band = step(vec2(.05), uv);
-	vec2 band2 = step(vec2(.05), .975f - uv);
-
-	float border = band.x * band.y * band2.x * band2.y;
-
-	color = mix(vec3(0.f), color, border);
 
 	gl_FragColor = vec4(color, 1.f);
 }

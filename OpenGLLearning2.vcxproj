@@ -88,13 +88,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/glew/include;$(SolutionDir)/Dependencies/glm/include;$(SolutionDir)/Dependencies/stb/;$(SolutionDir)/Dependencies/glfw/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/glew/include;$(SolutionDir)/Dependencies/glm/include;$(SolutionDir)/Dependencies/stb/;$(SolutionDir)/Dependencies/obj_loader;$(SolutionDir)/Dependencies/glfw/include;$(SolutionDir)/Dependencies/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)/Dependencies/glew/lib;$(SolutionDir)/Dependencies/glfw/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)/Dependencies/glew/lib;$(SolutionDir)/Dependencies/glfw/lib;$(SolutionDir)/Dependencies/freetype/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -153,11 +154,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Resolution.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="Shape.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="StandardIncludes.h" />
     <ClInclude Include="Texture.h" />
@@ -167,6 +169,8 @@
     <None Include="Res\shaders.config" />
     <None Include="Res\Shaders\crate.frag" />
     <None Include="Res\Shaders\crate.vert" />
+    <None Include="Res\Shaders\font.frag" />
+    <None Include="Res\Shaders\font.vert" />
     <None Include="Res\Shaders\sphere.frag" />
     <None Include="Res\Shaders\sphere.vert" />
   </ItemGroup>

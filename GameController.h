@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <OBJ_Loader.h>
 
 using std::shared_ptr;
 using std::make_shared;
@@ -27,6 +28,7 @@ public:
 	void mouseInputHandling(float xVec, float yVec);
 
 	void ShaderInit(ShaderMap& shaderMap) const;
+	void ModelLoading(objl::Loader& loader, std::string file) const;
 
 private:
 	vector<Mesh> m_meshes;

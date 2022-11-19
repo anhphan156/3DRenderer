@@ -4,12 +4,11 @@
 #include "WindowController.h"
 #include "Camera.h"
 
-Mesh::Mesh(const Shape& shape) {
-	m_shape = shape;
-
+Mesh::Mesh() {
 	m_vao = 0;
 	m_vertexBuffer = 0;
-	m_ib = 0;
+	m_ibo = 0;
+	m_indiciesCount = 0;
 	m_shader = nullptr;
 
 	m_scale = vec3(1.f);
@@ -25,8 +24,24 @@ Mesh::Mesh(const Shape& shape) {
 Mesh::~Mesh() {
 }
 
-void Mesh::Create(Shader* _shader) {
+void Mesh::Create(Shader* _shader, const objl::Loader* _loader) {
 	m_shader = _shader;
+
+	for (unsigned int i = 0; i < _loader->LoadedMeshes.size(); i++) {
+		objl::Mesh mesh = _loader->LoadedMeshes[i];
+		for (unsigned int j = 0; j < mesh.Vertices.size(); j++) {
+			m_vertexData.push_back(mesh.Vertices[j].Position.X);
+			m_vertexData.push_back(mesh.Vertices[j].Position.Y);
+			m_vertexData.push_back(mesh.Vertices[j].Position.Z);
+			m_vertexData.push_back(mesh.Vertices[j].Normal.X);
+			m_vertexData.push_back(mesh.Vertices[j].Normal.Y);
+			m_vertexData.push_back(mesh.Vertices[j].Normal.Z);
+			m_vertexData.push_back(mesh.Vertices[j].TextureCoordinate.X);
+			m_vertexData.push_back(mesh.Vertices[j].TextureCoordinate.Y);
+		}
+	}
+
+	m_indiciesCount = _loader->LoadedIndices.size();
 
 	//vao
 	glGenVertexArrays(1, &m_vao);
@@ -35,12 +50,12 @@ void Mesh::Create(Shader* _shader) {
 	// Vertex array
 	glGenBuffers(1, &m_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, m_shape.m_vertexData.size() * sizeof(float), m_shape.m_vertexData.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_vertexData.size() * sizeof(float), m_vertexData.data(), GL_STATIC_DRAW);
 
 	// ibo
-	glGenBuffers(1, &m_ib);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ib);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_shape.m_indexData.size() * sizeof(GLuint), m_shape.m_indexData.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &m_ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, _loader->LoadedIndices.size() * sizeof(float), _loader->LoadedIndices.data(), GL_STATIC_DRAW);
 
 	// Attribute	
 	glEnableVertexAttribArray(m_shader->GetAttriVertices());
@@ -66,7 +81,7 @@ void Mesh::Create(Shader* _shader) {
 
 void Mesh::Cleanup() {
 	glDeleteBuffers(1, &m_vertexBuffer);
-	glDeleteBuffers(1, &m_ib);
+	glDeleteBuffers(1, &m_ibo);
 	glDeleteVertexArrays(1, &m_vao);
 	m_shader->ClearTexture();
 }
@@ -82,7 +97,7 @@ void Mesh::Render(const Camera& _camera)
 
 	// Binding buffers
 	glBindVertexArray(m_vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ib);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 	glUseProgram(m_shader->GetProgramID());
 
 	// Bind Textures
@@ -106,7 +121,7 @@ void Mesh::Render(const Camera& _camera)
 	}
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, m_shape.m_indexData.size(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, m_indiciesCount, GL_UNSIGNED_INT, nullptr);
 
 	// Unbind
 	glBindVertexArray(0);

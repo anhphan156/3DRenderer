@@ -2,18 +2,17 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <vector>
 #include "StandardIncludes.h"
 #include "Texture.h"
 #include "Camera.h"
-#include "Shape.h"
+#include <OBJ_Loader.h>
 
 class Mesh {
 public:
-	Mesh(const Shape&);
+	Mesh();
 	virtual ~Mesh();
 
-	void Create(class Shader* _shader);
+	void Create(class Shader* _shader, const objl::Loader* _loader);
 	void Cleanup();
 	void Render(const Camera&);
 
@@ -30,10 +29,11 @@ public:
 
 private:
 	GLuint m_vao;
-	GLuint m_ib;
 	GLuint m_vertexBuffer;
-
-	Shape m_shape;
+	GLuint m_ibo;
+	std::vector<float> m_iboData;
+	GLsizei m_indiciesCount;
+	std::vector<float> m_vertexData;
 
 	class Shader* m_shader;
 

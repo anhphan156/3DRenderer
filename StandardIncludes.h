@@ -10,6 +10,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/random.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -19,6 +23,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <fstream>
 #include <memory>
 #include <random>
