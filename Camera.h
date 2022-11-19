@@ -12,6 +12,7 @@ public:
 
 	mat4 getProjection() const { return m_projection; };
 	mat4 getView() const { return m_view; };
+	vec3 getLookAt() const { return m_lookAt; }
 	vec3 getForward() const { return m_forward; };
 	vec3 getRight() const { return m_right; };
 	vec3 getUp() const { return m_up; };

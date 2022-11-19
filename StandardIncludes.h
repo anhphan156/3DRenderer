@@ -35,4 +35,18 @@ const float MPF = 1000 / FPS;
 using glm::vec3;
 using glm::mat4;
 
+namespace Utils {
+	inline float lerp(float a, float b, float n) {
+		n = glm::clamp(n, 0.f, 1.f);
+		return (1 - n) * a + n * b;
+	}
+	inline float invLerp(float a, float b, float n) {
+		n = glm::clamp(n, a, b);
+		return (a - n) / (a - b);
+	}
+	inline float remap(float a, float b, float c, float d, float n) {
+		return lerp(c, d, invLerp(a, b, n));
+	}
+}
+
 #endif // !STANDARD_INCLUDES_H

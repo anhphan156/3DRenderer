@@ -17,7 +17,6 @@ GameController::~GameController(){}
 void GameController::keyInputHandling() {
 	glfwPollEvents();
 
-	vec3 cameraVelocity = vec3(0.f, 0.f, 0.f);
 	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_camera.getRight();
 	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_camera.getRight();
 	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity = m_camera.getForward();
@@ -44,10 +43,11 @@ void GameController::mouseInputHandling() {
 	double dY = ypos - old_ypos;
 
 	if (dX == 0.f || dY == 0.f) return;
-	if (abs(dY / dX) < 1.f) return;
 	
-	float yaw = (dX > 3.f) ? -.03f : .03f;
-	float pitch = (dY > 0.f) ? -.1f : .1f;
+	float yaw = (dX > 0.f) ? -1.f : 1.f;
+	float pitch = (dY > 0.f) ? -1.f : 1.f;
+	pitch *= Utils::remap(0.f, 40.f, .01f, .2f, abs(dY / dX));
+	yaw *= Utils::remap(0.f, 40.f, .05f, .08f, abs(dX / dY));
 
 	old_xpos = xpos; old_ypos = ypos;
 
