@@ -24,7 +24,7 @@ public:
 	void Run();
 
 	void keyInputHandling();
-	void mouseInputHandling(float xVec, float yVec);
+	void mouseInputHandling();
 
 	void ShaderInit(ShaderMap& shaderMap) const;
 

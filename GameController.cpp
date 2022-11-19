@@ -18,34 +18,40 @@ void GameController::keyInputHandling() {
 	glfwPollEvents();
 
 	vec3 cameraVelocity = vec3(0.f, 0.f, 0.f);
-	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity.x = -1.f;
-	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity.x = 1.f;
-	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity.z = -1.f;
-	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity.z = 1.f;
-	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity.y = -1.f;
-	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity.y = 1.f;
+	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_camera.getRight();
+	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_camera.getRight();
+	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity = m_camera.getForward();
+	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity = -m_camera.getForward();
+	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_camera.getUp();
+	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_camera.getUp();
 
 	m_camera.cameraDisplacement(cameraVelocity * dt);
 }
 
-void GameController::mouseInputHandling(float xVec, float yVec) {
-	m_camera.cameraTurn(vec3(xVec, yVec * -1, 0.f));
-}
+void GameController::mouseInputHandling() {
+	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
+		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		return;
+	}
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) return;
+	static double old_xpos, old_ypos;
 
-	static double oldXPos;
-	static double oldYPos;
+	double xpos, ypos;
+	glfwGetCursorPos(m_window, &xpos, &ypos);
 
-	float xVec = (xpos - oldXPos > 0.f) ? .1f : -.1f;
-	float yVec = (ypos - oldYPos > 0.f) ? .1f : -.1f;
+	double dX = xpos - old_xpos;
+	double dY = ypos - old_ypos;
 
-	GameController::GetInstance().mouseInputHandling(xVec, yVec);
+	if (dX == 0.f || dY == 0.f) return;
+	if (abs(dY / dX) < 1.f) return;
+	
+	float yaw = (dX > 3.f) ? -.03f : .03f;
+	float pitch = (dY > 0.f) ? -.1f : .1f;
 
-	oldXPos = xpos;
-	oldYPos = ypos;
+	old_xpos = xpos; old_ypos = ypos;
+
+	m_camera.cameraTurn(yaw, pitch);
 }
 
 void GameController::Initialize() {
@@ -135,7 +141,7 @@ void GameController::Run() {
 
 		// Input
 		keyInputHandling();
-		glfwSetCursorPosCallback(m_window, cursor_position_callback);
+		mouseInputHandling();
 
 		// Frame rate
 		float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;
