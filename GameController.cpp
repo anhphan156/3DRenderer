@@ -86,14 +86,6 @@ void GameController::ShaderInit(ShaderMap& shaderMap) const {
 	}
 }
 
-void GameController::ModelLoading(objl::Loader& loader, std::string file) const {
-	M_ASSERT(loader.LoadFile(file) == true, "Failed to load mesh");
-
-	std::string diffuseMap = loader.LoadedMaterials[0].map_Kd;
-	const size_t last_slash_idx = diffuseMap.find_last_of("\\");
-	if (std::string::npos != last_slash_idx) diffuseMap.erase(0, last_slash_idx + 1);
-}
-
 void GameController::Run() {
 	// Shader Init
 	ShaderMap shaders;
@@ -101,7 +93,7 @@ void GameController::Run() {
 
 	// Model Init
 	objl::Loader loader;
-	ModelLoading(loader, "Res/Models/teapot.obj");
+	M_ASSERT(loader.LoadFile("Res/Models/teapot.obj") == true, "Failed to load mesh");
 
 	// Font Iinit
 	Font f = Font();
