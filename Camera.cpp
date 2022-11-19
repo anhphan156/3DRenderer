@@ -51,8 +51,8 @@ void Camera::cameraDisplacement(vec3 velocity) {
 }
 
 void Camera::cameraTurn(float yaw, float pitch) {
-	m_forward = glm::rotate(mat4(1.f), yaw, m_up) * glm::vec4(m_forward, 0.f);
-	m_forward = glm::rotate(mat4(1.f), pitch, m_right) * glm::vec4(m_forward, 0.f);
+	m_forward = glm::rotate(mat4(1.f), pitch, m_right) * glm::rotate(mat4(1.f), yaw, m_up) * glm::vec4(m_forward, 0.f);
+	m_right = cross(m_forward, m_up);
 	m_lookAt = m_location + m_forward;
 	m_view = glm::lookAt(
 		m_location,

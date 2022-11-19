@@ -17,6 +17,7 @@ GameController::~GameController(){}
 void GameController::keyInputHandling() {
 	glfwPollEvents();
 
+	vec3 cameraVelocity = vec3(0.f);
 	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_camera.getRight();
 	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_camera.getRight();
 	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity = m_camera.getForward();
