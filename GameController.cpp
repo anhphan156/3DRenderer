@@ -15,8 +15,6 @@ GameController::GameController() {
 GameController::~GameController(){}
 
 void GameController::keyInputHandling() {
-	glfwPollEvents();
-
 	vec3 cameraVelocity = vec3(0.f);
 	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_camera.getRight();
 	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_camera.getRight();
@@ -24,6 +22,8 @@ void GameController::keyInputHandling() {
 	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity = -m_camera.getForward();
 	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_camera.getUp();
 	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_camera.getUp();
+
+	if (glfwGetKey(m_window, GLFW_KEY_R) != GLFW_RELEASE) normalmap = 1.f - normalmap;
 
 	m_camera.cameraDisplacement(cameraVelocity * 2.5f * dt);
 }
@@ -96,6 +96,33 @@ void GameController::Run() {
 	objl::Loader loader;
 	M_ASSERT(loader.LoadFile("Res/Models/teapot.obj") == true, "Failed to load mesh");
 
+	for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++) {
+		objl::Mesh mesh = loader.LoadedMeshes[i];
+
+		for (unsigned int i = 0; i < loader.LoadedIndices.size(); i += 3) {
+			unsigned int index = loader.LoadedIndices[i];
+			auto& p0 = loader.LoadedVertices[index];
+			auto& p1 = loader.LoadedVertices[index + 1];
+			auto& p2 = loader.LoadedVertices[index + 2];
+
+			objl::Vector3 e1 = p0.Position - p1.Position;
+			objl::Vector3 e2 = p0.Position - p2.Position;
+			objl::Vector2 duv1 = p0.TextureCoordinate - p1.TextureCoordinate;
+			objl::Vector2 duv2 = p0.TextureCoordinate - p2.TextureCoordinate;
+
+			float f = 1.f / (duv1.X * duv2.Y - duv2.X * duv1.Y);
+
+			objl::Vector3 tangent;
+			tangent.X = f * (duv2.Y * e1.X - duv1.Y * e2.X);
+			tangent.Y = f * (duv2.Y * e1.Y - duv1.Y * e2.Y);
+			tangent.Z = f * (duv2.Y * e1.Z - duv1.Y * e2.Z);
+
+			p0.Tangent = tangent;
+			p1.Tangent = tangent;
+			p2.Tangent = tangent;
+		}
+	}
+
 	// Font Iinit
 	Font f = Font();
 	f.Create(shaders["font"].get(), "Arial.ttf", 100);
@@ -103,11 +130,12 @@ void GameController::Run() {
 	// light mesh init
 	vec3 lightPos = vec3(3.5f, 0.f, -.5f);
 	vector<Mesh> lights;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 1; i++) {
 		auto mesh = Mesh();
 		mesh.Create(shaders["sphere"].get(), &loader);
 		mesh.SetPosition(lightPos + vec3(0.f, i / 1.5f - 1.f, 0.f));
-		mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
+		//mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
+		mesh.SetLightColor(vec3(1.f));
 		lights.push_back(mesh);
 	}
 
@@ -126,6 +154,13 @@ void GameController::Run() {
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
 	do {
+		// Input
+		glfwPollEvents();
+		keyInputHandling();
+		mouseInputHandling();
+
+		glUseProgram(shaders["crate"]->GetProgramID());
+		shaders["crate"]->SetUniformFloat("u_nm", normalmap);
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -136,12 +171,9 @@ void GameController::Run() {
 			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);
 		}
-		f.RenderText("Testing text", 10.f, 500.f, .5f, { 1.f, 1.f, 0.f });
+		f.RenderText(std::to_string(normalmap), 10.f, 500.f, .5f, { 1.f, 1.f, 0.f });
 		glfwSwapBuffers(m_window);
 
-		// Input
-		keyInputHandling();
-		mouseInputHandling();
 
 		// Frame rate
 		float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;

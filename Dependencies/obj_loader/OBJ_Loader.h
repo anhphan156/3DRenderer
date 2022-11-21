@@ -145,6 +145,8 @@ namespace objl
 
 		// Texture Coordinate Vector
 		Vector2 TextureCoordinate;
+
+		Vector3 Tangent;
 	};
 
 	struct Material

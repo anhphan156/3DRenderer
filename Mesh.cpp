@@ -36,6 +36,9 @@ void Mesh::Create(Shader* _shader, const objl::Loader* _loader) {
 			m_vertexData.push_back(mesh.Vertices[j].Normal.X);
 			m_vertexData.push_back(mesh.Vertices[j].Normal.Y);
 			m_vertexData.push_back(mesh.Vertices[j].Normal.Z);
+			m_vertexData.push_back(mesh.Vertices[j].Tangent.X);
+			m_vertexData.push_back(mesh.Vertices[j].Tangent.Y);
+			m_vertexData.push_back(mesh.Vertices[j].Tangent.Z);
 			m_vertexData.push_back(mesh.Vertices[j].TextureCoordinate.X);
 			m_vertexData.push_back(mesh.Vertices[j].TextureCoordinate.Y);
 		}
@@ -59,13 +62,16 @@ void Mesh::Create(Shader* _shader, const objl::Loader* _loader) {
 
 	// Attribute	
 	glEnableVertexAttribArray(m_shader->GetAttriVertices());
-	glVertexAttribPointer(m_shader->GetAttriVertices(), 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(m_shader->GetAttriVertices(), 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
 
 	glEnableVertexAttribArray(m_shader->GetAttrNormal());
-	glVertexAttribPointer(m_shader->GetAttrNormal(), 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(m_shader->GetAttrNormal(), 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	glEnableVertexAttribArray(m_shader->GetAttrTangent());
+	glVertexAttribPointer(m_shader->GetAttrTangent(), 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float)));
 
 	glEnableVertexAttribArray(m_shader->GetAttrTexCoords());
-	glVertexAttribPointer(m_shader->GetAttrTexCoords(), 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(m_shader->GetAttrTexCoords(), 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(9 * sizeof(float)));
 
 	// Uniform
 	glUseProgram(m_shader->GetProgramID());

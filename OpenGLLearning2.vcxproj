@@ -157,7 +157,6 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Resolution.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Singleton.h" />

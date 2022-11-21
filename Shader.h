@@ -14,6 +14,7 @@ public:
 
 	GLuint GetAttriVertices() { return m_attrVertices; };
 	GLuint GetAttrNormal() { return m_attrNormal; }
+	GLuint GetAttrTangent() { return m_attrTangent; }
 	GLuint GetAttrTexCoords() { return m_attrTexCoords; }
 
 	GLuint GetUniResolution() { return m_uniResolution; };
@@ -42,6 +43,7 @@ private:
 	
 	GLuint m_attrVertices;
 	GLuint m_attrNormal;
+	GLuint m_attrTangent;
 	GLuint m_attrTexCoords;
 
 	GLuint m_uniResolution;
