@@ -24,7 +24,7 @@ void main()
 	v2f_viewDir = normalize(u_cameraWorldPos - v2f_fragPos);
 
 	vec3 T = normalize(vec3(u_modelToWorld * vec4(tangent, 0.0)));
-	vec3 N = normalize(vec3(u_modelToWorld * vec4(normal, 0.0)));
+	vec3 N = v2f_wsNormal;
 	vec3 B = cross(N, T);
 
 	v2f_TBN = mat3(T, B, N);

@@ -85,13 +85,7 @@ void GameController::ShaderInit(ShaderMap& shaderMap) const {
 	}
 }
 
-void GameController::Run() {
-	// Shader Init
-	ShaderMap shaders;
-	ShaderInit(shaders);
-
-	// Model Init
-	objl::Loader loader;
+void GameController::ModelInit(objl::Loader& loader) const {
 	M_ASSERT(loader.LoadFile("Res/Models/teapot.obj") == true, "Failed to load mesh");
 
 	for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++) {
@@ -120,6 +114,17 @@ void GameController::Run() {
 			p2.Tangent = tangent;
 		}
 	}
+
+}
+
+void GameController::Run() {
+	// Shader Init
+	ShaderMap shaders;
+	ShaderInit(shaders);
+
+	// Model Init
+	objl::Loader loader;
+	ModelInit(loader);
 
 	// Font Iinit
 	Font f = Font();

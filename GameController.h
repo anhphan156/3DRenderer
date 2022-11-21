@@ -28,6 +28,7 @@ public:
 	void mouseInputHandling();
 
 	void ShaderInit(ShaderMap& shaderMap) const;
+	void ModelInit(objl::Loader& loader) const;
 
 private:
 	vector<Mesh> m_meshes;
