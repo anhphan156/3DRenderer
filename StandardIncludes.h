@@ -38,6 +38,7 @@ const float MPF = 1000 / FPS;
 #include "Resolution.h"
 
 using glm::vec3;
+using glm::vec2;
 using glm::mat4;
 
 namespace Utils {

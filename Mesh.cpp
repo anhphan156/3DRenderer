@@ -3,6 +3,7 @@
 #include "Resolution.h"
 #include "WindowController.h"
 #include "Camera.h"
+#include <assimp/scene.h>
 
 Mesh::Mesh() {
 	m_vao = 0;
@@ -24,24 +25,34 @@ Mesh::Mesh() {
 Mesh::~Mesh() {
 }
 
-void Mesh::Create(Shader* _shader, const objl::Loader* _loader) {
+void Mesh::Create(Shader* _shader, const aiScene* _scene) {
 	m_shader = _shader;
 
-	for (unsigned int i = 0; i < _loader->LoadedMeshes.size(); i++) {
-		objl::Mesh mesh = _loader->LoadedMeshes[i];
-		for (unsigned int j = 0; j < mesh.Vertices.size(); j++) {
-			m_vertexData.push_back(mesh.Vertices[j].Position.X);
-			m_vertexData.push_back(mesh.Vertices[j].Position.Y);
-			m_vertexData.push_back(mesh.Vertices[j].Position.Z);
-			m_vertexData.push_back(mesh.Vertices[j].Normal.X);
-			m_vertexData.push_back(mesh.Vertices[j].Normal.Y);
-			m_vertexData.push_back(mesh.Vertices[j].Normal.Z);
-			m_vertexData.push_back(mesh.Vertices[j].TextureCoordinate.X);
-			m_vertexData.push_back(mesh.Vertices[j].TextureCoordinate.Y);
+	for (unsigned int i = 0; i < _scene->mNumMeshes; i++) {
+		aiMesh* mesh = _scene->mMeshes[i];
+		for (unsigned int j = 0; j < mesh->mNumVertices; j++) {
+			m_vertexData.push_back(mesh->mVertices[j].x);
+			m_vertexData.push_back(mesh->mVertices[j].y);
+			m_vertexData.push_back(mesh->mVertices[j].z);
+			m_vertexData.push_back(mesh->mNormals[j].x);
+			m_vertexData.push_back(mesh->mNormals[j].y);
+			m_vertexData.push_back(mesh->mNormals[j].z);
+			m_vertexData.push_back(mesh->mTextureCoords[0][j].x);
+			m_vertexData.push_back(mesh->mTextureCoords[0][j].y);
+			m_vertexData.push_back(mesh->mTangents[j].x);
+			m_vertexData.push_back(mesh->mTangents[j].y);
+			m_vertexData.push_back(mesh->mTangents[j].z);
+			m_vertexData.push_back(mesh->mBitangents[j].x);
+			m_vertexData.push_back(mesh->mBitangents[j].y);
+			m_vertexData.push_back(mesh->mBitangents[j].z);
 		}
+		for(unsigned int i = 0; i < mesh->mNumFaces; i++)
+		{
+			aiFace face = mesh->mFaces[i];
+			for(unsigned int j = 0; j < face.mNumIndices; j++)
+				m_iboData.push_back((int)face.mIndices[j]);
+		}  
 	}
-
-	m_indiciesCount = _loader->LoadedIndices.size();
 
 	//vao
 	glGenVertexArrays(1, &m_vao);
@@ -55,17 +66,23 @@ void Mesh::Create(Shader* _shader, const objl::Loader* _loader) {
 	// ibo
 	glGenBuffers(1, &m_ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, _loader->LoadedIndices.size() * sizeof(float), _loader->LoadedIndices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_iboData.size() * sizeof(float), m_iboData.data(), GL_STATIC_DRAW);
 
 	// Attribute	
 	glEnableVertexAttribArray(m_shader->GetAttriVertices());
-	glVertexAttribPointer(m_shader->GetAttriVertices(), 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(m_shader->GetAttriVertices(), 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
 
 	glEnableVertexAttribArray(m_shader->GetAttrNormal());
-	glVertexAttribPointer(m_shader->GetAttrNormal(), 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(m_shader->GetAttrNormal(), 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
 
 	glEnableVertexAttribArray(m_shader->GetAttrTexCoords());
-	glVertexAttribPointer(m_shader->GetAttrTexCoords(), 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(m_shader->GetAttrTexCoords(), 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
+
+	glEnableVertexAttribArray(m_shader->GetAttrTangent());
+	glVertexAttribPointer(m_shader->GetAttrTangent(), 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
+
+	glEnableVertexAttribArray(m_shader->GetAttrBiTangent());
+	glVertexAttribPointer(m_shader->GetAttrBiTangent(), 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
 
 	// Uniform
 	glUseProgram(m_shader->GetProgramID());
@@ -121,7 +138,8 @@ void Mesh::Render(const Camera& _camera)
 	}
 
 	// Draw
-	glDrawElements(GL_TRIANGLES, m_indiciesCount, GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, m_iboData.size(), GL_UNSIGNED_INT, nullptr);
+	//glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size());
 
 	// Unbind
 	glBindVertexArray(0);

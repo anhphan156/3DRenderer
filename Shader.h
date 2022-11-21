@@ -15,6 +15,8 @@ public:
 	GLuint GetAttriVertices() { return m_attrVertices; };
 	GLuint GetAttrNormal() { return m_attrNormal; }
 	GLuint GetAttrTexCoords() { return m_attrTexCoords; }
+	GLuint GetAttrTangent() { return m_attrTangent; }
+	GLuint GetAttrBiTangent() { return m_attrBiTangent; }
 
 	GLuint GetUniResolution() { return m_uniResolution; };
 	GLuint GetUniWVP() { return m_uniWVP; };
@@ -43,6 +45,8 @@ private:
 	GLuint m_attrVertices;
 	GLuint m_attrNormal;
 	GLuint m_attrTexCoords;
+	GLuint m_attrTangent;
+	GLuint m_attrBiTangent;
 
 	GLuint m_uniResolution;
 	GLuint m_uniWVP;

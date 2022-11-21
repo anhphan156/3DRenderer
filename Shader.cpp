@@ -58,6 +58,8 @@ void Shader::SetUniformMat4(const char* _name, const mat4& _value) const {
 void Shader::LoadAttributes() {
 	m_attrVertices = glGetAttribLocation(m_programID, "vertices");
 	m_attrNormal = glGetAttribLocation(m_programID, "normal");
+	m_attrTangent = glGetAttribLocation(m_programID, "tangent");
+	m_attrBiTangent = glGetAttribLocation(m_programID, "bitangent");
 	m_attrTexCoords = glGetAttribLocation(m_programID, "texCoords");
 
 	m_uniResolution = glGetUniformLocation(m_programID, "u_resolution");

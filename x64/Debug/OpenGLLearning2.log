@@ -1,0 +1,14 @@
+﻿          1 file(s) copied.
+  GameController.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
+C:\Users\anhph\source\repos\OpenGLLearning2\Dependencies\glfw\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
+C:\Users\anhph\source\repos\OpenGLLearning2\Dependencies\assimp\include\assimp\scene.h(244,1): warning C4099: 'aiScene': type name first seen using 'class' now seen using 'struct'
+C:\Users\anhph\source\repos\OpenGLLearning2\Dependencies\assimp\include\assimp\scene.h(243): message : see declaration of 'aiScene'
+C:\Users\anhph\source\repos\OpenGLLearning2\GameController.cpp(54,27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\anhph\source\repos\OpenGLLearning2\GameController.cpp(54,22): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\anhph\source\repos\OpenGLLearning2\GameController.cpp(69,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\anhph\source\repos\OpenGLLearning2\GameController.cpp(141,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\anhph\source\repos\OpenGLLearning2\GameController.cpp(162,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\anhph\source\repos\OpenGLLearning2\GameController.cpp(166,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\anhph\source\repos\OpenGLLearning2\GameController.cpp(167,34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  OpenGLLearning2.vcxproj -> C:\Users\anhph\source\repos\OpenGLLearning2\x64\Debug\OpenGLLearning2.exe

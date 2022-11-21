@@ -12,7 +12,8 @@ public:
 	Mesh();
 	virtual ~Mesh();
 
-	void Create(class Shader* _shader, const objl::Loader* _loader);
+	//void Create(class Shader* _shader, const objl::Loader* _loader);
+	void Create(class Shader* _shader, const class aiScene* _scene);
 	void Cleanup();
 	void Render(const Camera&);
 
@@ -31,7 +32,7 @@ private:
 	GLuint m_vao;
 	GLuint m_vertexBuffer;
 	GLuint m_ibo;
-	std::vector<float> m_iboData;
+	std::vector<int> m_iboData;
 	GLsizei m_indiciesCount;
 	std::vector<float> m_vertexData;
 

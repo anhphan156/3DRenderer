@@ -7,6 +7,9 @@
 #include <thread>
 #include <iostream>
 #include <fstream>
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 
 GameController::GameController() {
 	m_camera = {};
@@ -24,6 +27,8 @@ void GameController::keyInputHandling() {
 	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity = -m_camera.getForward();
 	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_camera.getUp();
 	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_camera.getUp();
+
+	if (glfwGetKey(m_window, GLFW_KEY_R) != GLFW_RELEASE) normalmap = 1.f - normalmap;
 
 	m_camera.cameraDisplacement(cameraVelocity * 2.5f * dt);
 }
@@ -96,36 +101,48 @@ void GameController::Run() {
 	objl::Loader loader;
 	M_ASSERT(loader.LoadFile("Res/Models/teapot.obj") == true, "Failed to load mesh");
 
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile("Res/Models/teapot.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 	// Font Iinit
 	Font f = Font();
 	f.Create(shaders["font"].get(), "Arial.ttf", 100);
 
 	// light mesh init
-	vec3 lightPos = vec3(3.5f, 0.f, -.5f);
+	vec3 lightPos = vec3(0.f, 0.f, 2.f);
 	vector<Mesh> lights;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 1; i++) {
 		auto mesh = Mesh();
-		mesh.Create(shaders["sphere"].get(), &loader);
-		mesh.SetPosition(lightPos + vec3(0.f, i / 1.5f - 1.f, 0.f));
-		mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
+		mesh.Create(shaders["sphere"].get(), scene);
+		mesh.SetPosition(lightPos);
+		mesh.SetScale(vec3(.1f));
+		//mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
+		mesh.SetLightColor(vec3(1.f));
 		lights.push_back(mesh);
 	}
 
 	//// cube mesh init
-	for (int col = 0; col < 10; col++) {
-		for (int count = 0; count < 10; count++) {
-			auto mesh = Mesh();
-			mesh.Create(shaders["crate"].get(), &loader);
-			mesh.SetLightMesh(lights);
-			mesh.SetScale(vec3(.5f));
-			mesh.SetPosition(vec3(0.f, -.5f + count / 10.f, -.2f + col / 10.f) * 5.f);
-			m_meshes.push_back(mesh);
-		}
-	}
+	//for (int col = 0; col < 10; col++) {
+	//	for (int count = 0; count < 10; count++) {
+	//		auto mesh = Mesh();
+	//		mesh.Create(shaders["crate"].get(), &loader);
+	//		mesh.SetLightMesh(lights);
+	//		mesh.SetScale(vec3(.5f));
+	//		mesh.SetPosition(vec3(0.f, -.5f + count / 10.f, -.2f + col / 10.f) * 5.f);
+	//		m_meshes.push_back(mesh);
+	//	}
+	//}
+	auto mesh = Mesh();
+	mesh.Create(shaders["crate"].get(), scene);
+	mesh.SetLightMesh(lights);
+	mesh.SetPosition(vec3(0.f, -1.f, 0.f));
+	m_meshes.push_back(mesh);
 
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
 	do {
+		// Input
+		keyInputHandling();
+		mouseInputHandling();
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -133,15 +150,13 @@ void GameController::Run() {
 			mesh.Render(m_camera);
 		}
 		for (auto& mesh : m_meshes) {
-			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
+			//mesh.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
 			mesh.Render(m_camera);
 		}
-		f.RenderText("Testing text", 10.f, 500.f, .5f, { 1.f, 1.f, 0.f });
+		glUseProgram(shaders["crate"]->GetProgramID());
+		shaders["crate"]->SetUniformFloat("u_nm", normalmap);
+		f.RenderText((normalmap == 1.f ? "normal map"  : "vertex normal") + std::to_string(normalmap), 10.f, 500.f, .5f, vec3(.8f));
 		glfwSwapBuffers(m_window);
-
-		// Input
-		keyInputHandling();
-		mouseInputHandling();
 
 		// Frame rate
 		float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;

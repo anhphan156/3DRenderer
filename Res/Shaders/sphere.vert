@@ -3,6 +3,7 @@
 in vec3 vertices;
 in vec3 normal;
 in vec2 texCoords;
+in vec3 tangent;
 
 uniform mat4 u_wvp;
 uniform mat4 u_modelToWorld;
@@ -23,6 +24,8 @@ void main()
 
 	v2f_ro = vec3(inverse(u_modelToWorld) * vec4(u_cameraWorldPos, 1.f));
 	v2f_hitPos = vertices;
+
+	vec3 t = tangent;
 
 	gl_Position = u_wvp * vec4(vertices, 1.f);
 }
