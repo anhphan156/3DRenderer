@@ -84,16 +84,10 @@ void Mesh::Create(Shader* _shader, const aiScene* _scene) {
 	glEnableVertexAttribArray(m_shader->GetAttrBiTangent());
 	glVertexAttribPointer(m_shader->GetAttrBiTangent(), 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
 
-	// Uniform
-	glUseProgram(m_shader->GetProgramID());
-	Resolution res = WindowController::GetInstance().GetResolution();
-	glUniform2f(m_shader->GetUniResolution(), res.m_width, res.m_height);
-
 	// Unbind buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glUseProgram(0);
 }
 
 void Mesh::Cleanup() {
@@ -122,6 +116,8 @@ void Mesh::Render(const Camera& _camera)
 
 	// Uniform
 	glUniformMatrix4fv(m_shader->GetUniWVP(), 1, GL_FALSE, &wvp[0][0]);
+	Resolution res = WindowController::GetInstance().GetResolution();
+	glUniform2f(m_shader->GetUniResolution(), res.m_width, res.m_height);
 	m_shader->SetUniformFloat("u_time", glfwGetTime());
 	m_shader->SetUniformMat4("u_modelToWorld", m_world);
 	m_shader->SetUniformVec3("u_cameraWorldPos", _camera.getWSCamera());

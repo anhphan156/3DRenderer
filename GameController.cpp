@@ -18,8 +18,6 @@ GameController::GameController() {
 GameController::~GameController(){}
 
 void GameController::keyInputHandling() {
-	glfwPollEvents();
-
 	vec3 cameraVelocity = vec3(0.f);
 	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_camera.getRight();
 	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_camera.getRight();
@@ -116,17 +114,6 @@ void GameController::Run() {
 		lights.push_back(mesh);
 	}
 
-	//// cube mesh init
-	//for (int col = 0; col < 10; col++) {
-	//	for (int count = 0; count < 10; count++) {
-	//		auto mesh = Mesh();
-	//		mesh.Create(shaders["crate"].get(), &loader);
-	//		mesh.SetLightMesh(lights);
-	//		mesh.SetScale(vec3(.5f));
-	//		mesh.SetPosition(vec3(0.f, -.5f + count / 10.f, -.2f + col / 10.f) * 5.f);
-	//		m_meshes.push_back(mesh);
-	//	}
-	//}
 	auto mesh = Mesh();
 	mesh.Create(shaders["crate"].get(), scene);
 	mesh.SetLightMesh(lights);
@@ -137,6 +124,7 @@ void GameController::Run() {
 	float timePreviousFrame = glfwGetTime();
 	do {
 		// Input
+		glfwPollEvents();
 		keyInputHandling();
 		mouseInputHandling();
 
