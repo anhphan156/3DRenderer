@@ -23,8 +23,6 @@ void GameController::keyInputHandling() {
 	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_camera.getUp();
 	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_camera.getUp();
 
-	if (glfwGetKey(m_window, GLFW_KEY_R) != GLFW_RELEASE) normalmap = 1.f - normalmap;
-
 	m_camera.cameraDisplacement(cameraVelocity * 2.5f * dt);
 }
 
@@ -97,13 +95,13 @@ void GameController::Run() {
 	M_ASSERT(loader.LoadFile("Res/Models/teapot.obj") == true, "Failed to load mesh");
 
 	for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++) {
-		objl::Mesh mesh = loader.LoadedMeshes[i];
+		objl::Mesh& mesh = loader.LoadedMeshes[i];
 
 		for (unsigned int i = 0; i < loader.LoadedIndices.size(); i += 3) {
 			unsigned int index = loader.LoadedIndices[i];
-			auto& p0 = loader.LoadedVertices[index];
-			auto& p1 = loader.LoadedVertices[index + 1];
-			auto& p2 = loader.LoadedVertices[index + 2];
+			auto& p0 = mesh.Vertices[index];
+			auto& p1 = mesh.Vertices[index + 1];
+			auto& p2 = mesh.Vertices[index + 2];
 
 			objl::Vector3 e1 = p0.Position - p1.Position;
 			objl::Vector3 e2 = p0.Position - p2.Position;
@@ -130,12 +128,11 @@ void GameController::Run() {
 	// light mesh init
 	vec3 lightPos = vec3(3.5f, 0.f, -.5f);
 	vector<Mesh> lights;
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 4; i++) {
 		auto mesh = Mesh();
 		mesh.Create(shaders["sphere"].get(), &loader);
 		mesh.SetPosition(lightPos + vec3(0.f, i / 1.5f - 1.f, 0.f));
-		//mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
-		mesh.SetLightColor(vec3(1.f));
+		mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
 		lights.push_back(mesh);
 	}
 
@@ -159,19 +156,16 @@ void GameController::Run() {
 		keyInputHandling();
 		mouseInputHandling();
 
-		glUseProgram(shaders["crate"]->GetProgramID());
-		shaders["crate"]->SetUniformFloat("u_nm", normalmap);
-
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (auto& mesh : lights) {
 			mesh.Render(m_camera);
 		}
 		for (auto& mesh : m_meshes) {
-			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
+			mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);
 		}
-		f.RenderText(std::to_string(normalmap), 10.f, 500.f, .5f, { 1.f, 1.f, 0.f });
+		f.RenderText("testing", 10.f, 500.f, .5f, {1.f, 1.f, 0.f});
 		glfwSwapBuffers(m_window);
 
 

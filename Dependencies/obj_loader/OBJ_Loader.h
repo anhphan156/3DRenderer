@@ -147,6 +147,7 @@ namespace objl
 		Vector2 TextureCoordinate;
 
 		Vector3 Tangent;
+		Vector3 BiTangent;
 	};
 
 	struct Material

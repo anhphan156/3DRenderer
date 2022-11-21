@@ -35,8 +35,6 @@ private:
 	GLFWwindow* m_window;
 
 	float dt = 0.f;
-
-	float normalmap = 0.f;
 };
 
 #endif // !GAME_CONTROLLER_H

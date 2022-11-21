@@ -28,7 +28,7 @@ void Mesh::Create(Shader* _shader, const objl::Loader* _loader) {
 	m_shader = _shader;
 
 	for (unsigned int i = 0; i < _loader->LoadedMeshes.size(); i++) {
-		objl::Mesh mesh = _loader->LoadedMeshes[i];
+		const objl::Mesh& mesh = _loader->LoadedMeshes[i];
 		for (unsigned int j = 0; j < mesh.Vertices.size(); j++) {
 			m_vertexData.push_back(mesh.Vertices[j].Position.X);
 			m_vertexData.push_back(mesh.Vertices[j].Position.Y);

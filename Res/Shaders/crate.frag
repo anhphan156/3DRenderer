@@ -38,15 +38,13 @@ in vec3 v2f_fragPos;
 in vec3 v2f_viewDir;
 in mat3 v2f_TBN;
 
-uniform float u_nm;
-
 void main(){
 	vec3 albedo = texture(u_textures.sampler0, v2f_texCoords).xyz;	
-	vec3 normal = texture(u_textures.sampler1, v2f_texCoords).xyz;	
+	vec3 specular = texture(u_textures.sampler1, v2f_texCoords).xyz;	
+	vec3 normal = texture(u_textures.sampler2, v2f_texCoords).xyz;	
 
 	normal = normal * 2.f - 1.f;
 	normal = normalize(v2f_TBN * normal);
-	//normal = mix(v2f_wsNormal, normal, u_nm);
 
 	vec3 spotlights = vec3(0.f);
 
@@ -57,9 +55,9 @@ void main(){
 		float lum = 1.f / (u_light[i].attenuationFactor.x * pow(dist, 2.f) + u_light[i].attenuationFactor.y * dist + u_light[i].attenuationFactor.z);
 
 		// spot light angle
-		//float a = cos(u_light[i].spotlightAngle);
-		//float d = dot(normalize(u_light[i].spotlightDirection), -lightDir);
-		//lum *= 1.f - pow(clamp(a / d, 0.f, 1.f), u_light[i].spotlightFalloff);
+		float a = cos(u_light[i].spotlightAngle);
+		float d = dot(normalize(u_light[i].spotlightDirection), -lightDir);
+		lum *= 1.f - pow(clamp(a / d, 0.f, 1.f), u_light[i].spotlightFalloff);
 
 		// ambient
 		vec3 ambient = clamp(u_light[i].ambientColor * albedo * lum, vec3(0.f), vec3(1.f));
@@ -69,12 +67,11 @@ void main(){
 
 		// specular
 		vec3 reflection = reflect(-lightDir, normal);
-		vec3 specular = pow(max(0.f, dot(reflection, v2f_viewDir)), u_light[i].specularConcentration) * u_light[i].specularColor * albedo * lum;
-		specular = vec3(0.f);
+		vec3 specular = pow(max(0.f, dot(reflection, v2f_viewDir)), u_light[i].specularConcentration) * u_light[i].specularColor * specular * lum;
 
-		//spotlights += mix(clamp(lambertian + ambient + specular, 0.f, 1.f), ambient / NR_LIGHTS, step(0.f, a - d));
-		spotlights += clamp(lambertian + ambient + specular, 0.f, 1.f);
+		spotlights += mix(clamp(lambertian + ambient + specular, 0.f, 1.f), ambient / NR_LIGHTS, step(0.f, a - d));
+		//spotlights += clamp(lambertian + ambient + specular, 0.f, 1.f);
 	}
 
-	gl_FragColor = vec4(normal, 1.f);
+	gl_FragColor = vec4(spotlights, 1.f);
 }
