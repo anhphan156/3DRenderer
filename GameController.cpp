@@ -28,8 +28,6 @@ void GameController::keyInputHandling() {
 	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_camera.getUp();
 	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_camera.getUp();
 
-	if (glfwGetKey(m_window, GLFW_KEY_R) != GLFW_RELEASE) normalmap = 1.f - normalmap;
-
 	m_camera.cameraDisplacement(cameraVelocity * 2.5f * dt);
 }
 
@@ -98,11 +96,9 @@ void GameController::Run() {
 	ShaderInit(shaders);
 
 	// Model Init
-	objl::Loader loader;
-	M_ASSERT(loader.LoadFile("Res/Models/teapot.obj") == true, "Failed to load mesh");
-
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile("Res/Models/teapot.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = importer.ReadFile("Res/Models/sphere.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
 	// Font Iinit
 	Font f = Font();
 	f.Create(shaders["font"].get(), "Arial.ttf", 100);
@@ -150,12 +146,9 @@ void GameController::Run() {
 			mesh.Render(m_camera);
 		}
 		for (auto& mesh : m_meshes) {
-			//mesh.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
+			mesh.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
 			mesh.Render(m_camera);
 		}
-		glUseProgram(shaders["crate"]->GetProgramID());
-		shaders["crate"]->SetUniformFloat("u_nm", normalmap);
-		f.RenderText((normalmap == 1.f ? "normal map"  : "vertex normal") + std::to_string(normalmap), 10.f, 500.f, .5f, vec3(.8f));
 		glfwSwapBuffers(m_window);
 
 		// Frame rate

@@ -41,12 +41,17 @@ in mat3 v2f_TBN;
 
 void main(){
 	vec3 albedo = texture(u_textures.sampler0, v2f_texCoords).xyz;	
-	vec3 normal = texture(u_textures.sampler1, v2f_texCoords).xyz;	
-	normal = normalize(normal * 2. - 1.);
-	normal = normalize(v2f_TBN * normal);
-
-	vec3 n = mix(v2f_wsNormal, normal, u_nm);
+	vec3 normalMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
 	vec3 specular = texture(u_textures.sampler2, v2f_texCoords).xyz;	
+
+	vec3 normal = vec3(0.f);
+	if(normalMap == vec3(0.f)) {
+		normal = v2f_wsNormal;
+	}else{
+		normalMap = normalize(normalMap * 2. - 1.);
+		normalMap = normalize(v2f_TBN * normalMap);
+		normal = normalMap;
+	}
 
 	vec3 spotlights = vec3(0.f);
 
@@ -65,12 +70,11 @@ void main(){
 		vec3 ambient = clamp(u_light[i].ambientColor * albedo * lum, vec3(0.f), vec3(1.f));
 
 		// lambertian
-		vec3 lambertian = dot(n, lightDir) * u_light[i].lambertianColor * 2.f * albedo * lum;
+		vec3 lambertian = dot(normal, lightDir) * u_light[i].lambertianColor * 2.f * albedo * lum;
 
 		// specular
-		vec3 reflection = reflect(-lightDir, n);
+		vec3 reflection = reflect(-lightDir, normal);
 		vec3 specular = pow(max(0.f, dot(reflection, v2f_viewDir)), u_light[i].specularConcentration) * u_light[i].specularColor * specular * lum;
-		specular = vec3(0.f);
 
 		spotlights += clamp(lambertian + ambient + specular, 0.f, 1.f);
 	}

@@ -5,7 +5,6 @@
 #include "StandardIncludes.h"
 #include "Texture.h"
 #include "Camera.h"
-#include <OBJ_Loader.h>
 
 class Mesh {
 public:

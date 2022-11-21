@@ -8,7 +8,6 @@
 #include <string>
 #include <memory>
 #include <map>
-#include <OBJ_Loader.h>
 
 using std::shared_ptr;
 using std::make_shared;
@@ -35,8 +34,6 @@ private:
 	GLFWwindow* m_window;
 
 	float dt = 0.f;
-
-	float normalmap = 1.f;
 };
 
 #endif // !GAME_CONTROLLER_H

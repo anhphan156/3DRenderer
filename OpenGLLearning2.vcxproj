@@ -119,7 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/assimp/include;$(SolutionDir)/Dependencies/stb;$(SolutionDir)/Dependencies/freetype/include;$(SolutionDir)/Dependencies/obj_loader;$(SolutionDir)/Dependencies/glfw/include;$(SolutionDir)/Dependencies/glew/include;$(SolutionDir)/Dependencies/glm/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/assimp/include;$(SolutionDir)/Dependencies/stb;$(SolutionDir)/Dependencies/freetype/include;$(SolutionDir)/Dependencies/glfw/include;$(SolutionDir)/Dependencies/glew/include;$(SolutionDir)/Dependencies/glm/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -139,7 +139,6 @@ void Mesh::Render(const Camera& _camera)
 
 	// Draw
 	glDrawElements(GL_TRIANGLES, m_iboData.size(), GL_UNSIGNED_INT, nullptr);
-	//glDrawArrays(GL_TRIANGLES, 0, m_vertexData.size());
 
 	// Unbind
 	glBindVertexArray(0);
