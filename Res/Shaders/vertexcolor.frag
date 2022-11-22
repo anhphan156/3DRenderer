@@ -18,5 +18,6 @@ in vec2 v2f_texCoords;
 in vec3 v2f_fragPos;
 
 void main(){
-	gl_FragColor = vec4(vec3(1.f), 1.f);
+	vec3 albedo = texture(u_textures.sampler0, v2f_texCoords).xyz;
+	gl_FragColor = vec4(albedo * abs(v2f_fragPos), 1.f);
 }

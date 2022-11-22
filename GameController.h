@@ -27,18 +27,23 @@ public:
 
 	void Run();
 
+	void FrameRate();
+
 	void keyInputHandling();
 	void mouseInputHandling();
 
 	void SpawnCube();
 	void CubeMovement();
 
+	void MoveObject(Mesh& object);
+
 private:
 	Camera m_camera;
 	GLFWwindow* m_window;
 
 	Mesh m_sphere;
-	Mesh m_teapot;
+	Mesh m_litTeapot;
+	Mesh m_unlitTeapot;
 
 	vector<Mesh> m_cubes;
 	vector<Mesh> m_lights;
@@ -48,7 +53,12 @@ private:
 	objl::Loader m_sphereModel;
 	objl::Loader m_cubeModel;
 
-	float dt = 0.f;
+	double xpos, ypos;
+	Resolution res;
+
+	float dt = 1 / FPS; // second
+	float timePreviousFrame;
+	float framecount = 0;
 };
 
 #endif // !GAME_CONTROLLER_H

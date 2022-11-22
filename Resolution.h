@@ -7,6 +7,8 @@ struct Resolution
 	int m_width;
 	int m_height;
 
+	Resolution() = default;
+
 	Resolution(int _width, int _height) {
 		m_width = _width;
 		m_height = _height;

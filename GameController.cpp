@@ -30,6 +30,7 @@ void GameController::Initialize() {
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
 
 	srand(time(0));
+	res = WindowController::GetInstance().GetResolution();
 }
 
 void GameController::Run() {
@@ -46,28 +47,34 @@ void GameController::Run() {
 	f.Create(m_shaders["font"].get(), "Arial.ttf", 100);
 
 	// light mesh init
-	vec3 lightPos = vec3(0.f, 2.f, 3.f);
+	vec3 lightPos = vec3(0.f, 0.f, .1f);
 	for (int i = 0; i < 1; i++) {
 		auto mesh = Mesh();
 		mesh.Create(m_shaders["lightbulb"].get(), &m_sphereModel);
-		mesh.SetPosition(lightPos + vec3(2.f, i / 1.5f - 1.5f, -1.5f));
+		mesh.SetPosition(lightPos);
 		mesh.SetLightColor(vec3(1.f));
-		mesh.SetScale(vec3(.2f));
+		mesh.SetScale(vec3(.1f));
 		m_lights.push_back(mesh);
 	}
 
-	// part 1 + 2 center teapot
-	m_teapot = Mesh();
-	m_teapot.Create(m_shaders["teapot"].get(), &m_teapotModel);
-	m_teapot.SetLightMesh(m_lights);
-	m_teapot.SetScale(vec3(.5f));
-	m_teapot.SetPosition(vec3(0.f));
+	// part 1 center lit teapot
+	m_litTeapot = Mesh();
+	m_litTeapot.Create(m_shaders["teapotnonormal"].get(), &m_teapotModel);
+	m_litTeapot.SetLightMesh(m_lights);
+	m_litTeapot.SetScale(vec3(.5f));
+	m_litTeapot.SetPosition(vec3(0.f));
+
+	// part 2 center unlit teapot
+	m_unlitTeapot = Mesh();
+	m_unlitTeapot.Create(m_shaders["vertexcolor"].get(), &m_teapotModel);
+	m_unlitTeapot.SetScale(vec3(.5f));
+	m_unlitTeapot.SetPosition(vec3(0.f));
 
 	// part 3 center sphere
 	m_sphere = Mesh();
 	m_sphere.Create(m_shaders["teapot"].get(), &m_sphereModel);
 	m_sphere.SetLightMesh(m_lights);
-	m_sphere.SetScale(vec3(.7f));
+	m_sphere.SetScale(vec3(.3f));
 	m_sphere.SetPosition(vec3(0.f));
 
 	// Top most tool init
@@ -75,46 +82,87 @@ void GameController::Run() {
 	topMostTool->Show();
 
 	// Frame rate init
-	dt = 1 / FPS; // second
-	float timePreviousFrame = glfwGetTime();
-	float framecount = 0;
 	do {
-		// top most tool
-		System::Windows::Forms::Application::DoEvents();
-
 		// Input
 		glfwPollEvents();
-		SpawnCube();
-		CubeMovement();
+		glfwGetCursorPos(m_window, &xpos, &ypos);
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		m_sphere.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
-		m_sphere.Render(m_camera);
-		for (auto& mesh : m_lights) {
-			mesh.Render(m_camera);
+
+		// top most tool
+		System::Windows::Forms::Application::DoEvents();
+		if (topMostTool->gameMode == 0) { 
+			// Move Light
+			m_lights[0].SetSpecularColor(vec3(topMostTool->R, topMostTool->G, topMostTool->B));
+			m_lights[0].SetSpecularStrength(topMostTool->S);
+			MoveObject(m_lights[0]);
+			if (topMostTool->resetLightPosition == 1) {
+				m_lights[0].SetPosition(vec3(0.f, 0.f, .1f));
+				topMostTool->resetLightPosition = 0;
+			}
+			m_litTeapot.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
+			m_litTeapot.SetLightMesh(m_lights);
+			m_litTeapot.Render(m_camera);
+			for (auto& mesh : m_lights) mesh.Render(m_camera);
+		} else if(topMostTool->gameMode == 1){ 
+			// Color by Position
+			MoveObject(m_unlitTeapot);
+			if (topMostTool->resetTeapotPosition == 1) {
+				m_unlitTeapot.SetPosition(vec3(0.f));
+				topMostTool->resetTeapotPosition = 0;
+			}
+			m_unlitTeapot.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
+			m_unlitTeapot.Render(m_camera);
+		}else{ 
+			// Move cubes to sphere
+			SpawnCube();
+			CubeMovement();
+
+			m_sphere.SetLightMesh(m_lights);
+			m_sphere.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
+			m_sphere.Render(m_camera);
+
+			for (auto& mesh : m_cubes) {
+				mesh.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
+				mesh.Render(m_camera);
+			}
+			f.RenderText("Cube count: " + std::to_string(m_cubes.size()), 10.f, 230.f, .25f, vec3(1.f));
+
+			m_lights[0].SetPosition(vec3(.5f, .5f, .5f));
+			for (auto& mesh : m_lights) mesh.Render(m_camera);
 		}
-		for (auto& mesh : m_cubes) {
-			mesh.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
-			mesh.Render(m_camera);
-		}
-		f.RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 200.f, .25f, {1.f, 1.f, 1.f});
-		f.RenderText("Cube count: " + std::to_string(m_cubes.size()), 10.f, 230.f, .25f, vec3(1.f));
+
+		f.RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 200.f, .25f, vec3(1.f));
+		f.RenderText("Mouse pos: " + std::to_string(xpos) + " " + std::to_string(ypos), 10.f, 260.f, .25f, vec3(1.f));
 		glfwSwapBuffers(m_window);
 
 		// Frame rate
-		float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;
-		if (sleepTime > 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds((long)sleepTime));
-		}
-		dt = (glfwGetTime() - timePreviousFrame);
-		timePreviousFrame = glfwGetTime();
-		framecount++;
+		FrameRate();
 	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);
 
 	for (auto& mesh : m_cubes)	mesh.Cleanup();
 	for (auto& light : m_lights) light.Cleanup();
 	for (const auto& shader : m_shaders) shader.second->Cleanup();
+}
+
+void GameController::MoveObject(Mesh& object) {
+	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT)) {
+
+		xpos -= res.m_width / 2.f;
+		ypos -= res.m_height / 2.f;
+		vec3 velocity = vec3(xpos, ypos * -1.f, 0.f) / 150.f;
+
+		object.SetPosition(object.GetPosition() + velocity * dt);
+	}
+
+	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_MIDDLE)) {
+
+		ypos -= res.m_height / 2.f;
+		vec3 velocity = vec3(0.f, 0.f, ypos) / 150.f;
+
+		object.SetPosition(object.GetPosition() + velocity * dt);
+	}
 }
 
 void GameController::CubeMovement() {
@@ -143,7 +191,7 @@ void GameController::SpawnCube() {
 		mesh.SetLightMesh(m_lights);
 		mesh.SetLightColor(vec3(1.f));
 		mesh.SetPosition(vec3(glm::linearRand(-3.f, 3.f), glm::linearRand(-3.f, 3.f), glm::linearRand(-3.f, 3.f)));
-		mesh.SetScale(vec3(.2f));
+		mesh.SetScale(vec3(.07f));
 		m_cubes.push_back(mesh);
 	}
 	old_state = new_state;
@@ -236,4 +284,14 @@ void GameController::ModelInit(objl::Loader& loader, const char* filename) const
 			p2.Tangent = tangent;
 		}
 	}
+}
+
+void GameController::FrameRate() {
+	float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;
+	if (sleepTime > 0) {
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)sleepTime));
+	}
+	dt = (glfwGetTime() - timePreviousFrame);
+	timePreviousFrame = glfwGetTime();
+	framecount++;
 }

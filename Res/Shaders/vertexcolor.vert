@@ -1,9 +1,6 @@
 #version 330
 
 in vec3 vertices;
-in vec3 normal;
-in vec3 tangent;
-in vec3 bitangent;
 in vec2 texCoords;
 
 uniform mat4 u_wvp;

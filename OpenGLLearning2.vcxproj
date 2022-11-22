@@ -90,7 +90,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>Default</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/glew/include;$(SolutionDir)/Dependencies/glm/include;$(SolutionDir)/Dependencies/stb/;$(SolutionDir)/Dependencies/obj_loader;$(SolutionDir)/Dependencies/glfw/include;$(SolutionDir)/Dependencies/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -121,7 +121,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)GLEW_STATIC;GLEW_STATIC</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>Default</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/stb;$(SolutionDir)/Dependencies/obj_loader;$(SolutionDir)/Dependencies/glm/include;$(SolutionDir)/Dependencies/freetype/include;$(SolutionDir)/Dependencies/glfw/include;$(SolutionDir)/Dependencies/glew/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>

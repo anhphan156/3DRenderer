@@ -19,6 +19,8 @@ Mesh::Mesh() {
 
 	m_lights.clear();
 	m_lightColor = vec3(1.f);
+	m_specularColor = vec3(3.f);
+	m_specularStrength = 8.f;
 }
 
 Mesh::~Mesh() {
@@ -117,8 +119,8 @@ void Mesh::Render(const Camera& _camera)
 		m_shader->SetUniformVec3(concat("u_light[", i, "].position").c_str(), m_lights[i].GetPosition());
 		m_shader->SetUniformVec3(concat("u_light[", i, "].ambientColor").c_str(), {.1f, .1f, .1f});
 		m_shader->SetUniformVec3(concat("u_light[", i, "].lambertianColor").c_str(), m_lights[i].m_lightColor);
-		m_shader->SetUniformVec3(concat("u_light[", i, "].specularColor").c_str(), vec3(3.f));
-		m_shader->SetUniformFloat(concat("u_light[", i, "].specularConcentration").c_str(), 8.f);
+		m_shader->SetUniformVec3(concat("u_light[", i, "].specularColor").c_str(), m_lights[i].m_specularColor);
+		m_shader->SetUniformFloat(concat("u_light[", i, "].specularConcentration").c_str(), m_lights[i].m_specularStrength);
 		m_shader->SetUniformVec3(concat("u_light[", i, "].attenuationFactor").c_str(), vec3(.032f, .09f, 1.f));
 		m_shader->SetUniformVec3(concat("u_light[", i, "].spotlightDirection").c_str(), vec3(0.f, cos(glfwGetTime() * 2.f + i), sin(glfwGetTime() * 2.f + i) * 2.f + 1.5f) - m_lights[i].GetPosition());
 		m_shader->SetUniformFloat(concat("u_light[", i, "].spotlightAngle").c_str(), 3.14f / 12.f);

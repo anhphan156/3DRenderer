@@ -43,8 +43,11 @@ void main(){
 	vec3 specularMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
 	vec3 normalMap = texture(u_textures.sampler2, v2f_texCoords).xyz;	
 
-	normalMap = normalMap * 2.f - 1.f;
-	vec3 normal = normalize(v2f_TBN * normalMap);
+	vec3 normal = v2f_wsNormal;
+	if(normalMap != albedoMap) { // if there is a normal map, use it
+		normalMap = normalMap * 2.f - 1.f;
+		normal = normalize(v2f_TBN * normalMap);
+	}
 
 	vec3 all_lights = vec3(0.f);
 

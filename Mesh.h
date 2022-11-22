@@ -16,12 +16,16 @@ public:
 	void Cleanup();
 	void Render(const Camera&);
 
-	void SetLightColor(const vec3 color) { m_lightColor = color; }
+	void SetLightColor(const vec3& color) { m_lightColor = color; }
 	void SetLightMesh(const vector<Mesh>& lights) { m_lights = lights; }
+	void SetSpecularColor(const vec3& color) { m_specularColor = color; }
+	void SetSpecularStrength(const float strength) { m_specularStrength = strength; }
 
 	void SetPosition(const vec3& position) { m_position = position; }
 	void SetRotation(float angle, const vec3& rotationAxis) { m_angle = angle; m_rotationAxis = rotationAxis; }
 	void SetScale(const vec3& scale) { m_scale = scale; }
+
+	void SetShader(class Shader* shader) { m_shader = shader; }
 
 	vec3 GetPosition() const { return m_position; }
 
@@ -39,6 +43,8 @@ private:
 
 	vector<Mesh> m_lights;
 	vec3 m_lightColor;
+	vec3 m_specularColor;
+	float m_specularStrength;
 
 	// Transform
 	vec3 m_position;
