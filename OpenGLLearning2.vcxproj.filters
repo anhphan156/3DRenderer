@@ -79,16 +79,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Res\Shaders\crate.frag">
+    <None Include="Res\Shaders\light.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\crate.vert">
+    <None Include="Res\Shaders\light.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\sphere.frag">
+    <None Include="Res\Shaders\metaball.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\sphere.vert">
+    <None Include="Res\Shaders\metaball.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Res\shaders.config">

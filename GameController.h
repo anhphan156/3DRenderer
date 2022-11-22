@@ -22,18 +22,30 @@ public:
 	virtual ~GameController();
 
 	void Initialize();
+	void ShaderInit(ShaderMap& shaderMap) const;
+	void ModelInit(objl::Loader& loader, const char* filename) const;
+
 	void Run();
 
 	void keyInputHandling();
 	void mouseInputHandling();
 
-	void ShaderInit(ShaderMap& shaderMap) const;
-	void ModelInit(objl::Loader& loader) const;
+	void SpawnCube();
+	void CubeMovement();
 
 private:
-	vector<Mesh> m_meshes;
 	Camera m_camera;
 	GLFWwindow* m_window;
+
+	Mesh m_sphere;
+
+	vector<Mesh> m_cubes;
+	vector<Mesh> m_lights;
+	ShaderMap m_shaders;
+
+	objl::Loader m_teapotModel; 
+	objl::Loader m_sphereModel;
+	objl::Loader m_cubeModel;
 
 	float dt = 0.f;
 };

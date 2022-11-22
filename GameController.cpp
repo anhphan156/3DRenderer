@@ -10,9 +10,127 @@
 
 GameController::GameController() {
 	m_camera = {};
-	m_meshes.clear();
+	m_cubes.clear();
 }
 GameController::~GameController(){}
+
+void GameController::Initialize() {
+	m_window = WindowController::GetInstance().GetWindow(); // glfwInit()
+	M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW");
+	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
+	glClearColor(.1f, .1f, .1f, 1.f);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	m_camera = Camera(WindowController::GetInstance().GetResolution());
+
+	srand(time(0));
+}
+
+void GameController::Run() {
+	// Shader Init
+	ShaderInit(m_shaders);
+
+	// Model Init
+	ModelInit(m_teapotModel, "Res/Models/teapot.obj");
+	ModelInit(m_sphereModel, "Res/Models/sphere.obj");
+	ModelInit(m_cubeModel, "Res/Models/cube.obj");
+
+	// Font Init
+	Font f = Font();
+	f.Create(m_shaders["font"].get(), "Arial.ttf", 100);
+
+	// light mesh init
+	vec3 lightPos = vec3(0.f, 2.f, 3.f);
+	for (int i = 0; i < 1; i++) {
+		auto mesh = Mesh();
+		mesh.Create(m_shaders["lightbulb"].get(), &m_sphereModel);
+		mesh.SetPosition(lightPos + vec3(2.f, i / 1.5f - 1.5f, -1.5f));
+		mesh.SetLightColor(vec3(1.f));
+		mesh.SetScale(vec3(.2f));
+		m_lights.push_back(mesh);
+	}
+
+	// part 3 center sphere
+	m_sphere = Mesh();
+	m_sphere.Create(m_shaders["teapot"].get(), &m_sphereModel);
+	m_sphere.SetLightMesh(m_lights);
+	m_sphere.SetScale(vec3(.5f));
+	m_sphere.SetPosition(vec3(0.f));
+
+	dt = 1 / FPS; // second
+	float timePreviousFrame = glfwGetTime();
+	float framecount = 0;
+	do {
+		// Input
+		glfwPollEvents();
+		SpawnCube();
+		CubeMovement();
+
+		// Render
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		m_sphere.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
+		m_sphere.Render(m_camera);
+		for (auto& mesh : m_lights) {
+			mesh.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
+			mesh.Render(m_camera);
+		}
+		for (auto& mesh : m_cubes) {
+			mesh.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
+			mesh.Render(m_camera);
+		}
+		f.RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 200.f, .25f, {1.f, 1.f, 1.f});
+		f.RenderText("Cube count: " + std::to_string(m_cubes.size()), 10.f, 230.f, .25f, vec3(1.f));
+		glfwSwapBuffers(m_window);
+
+		// Frame rate
+		float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;
+		if (sleepTime > 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds((long)sleepTime));
+		}
+		dt = (glfwGetTime() - timePreviousFrame);
+		timePreviousFrame = glfwGetTime();
+		framecount++;
+	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);
+
+	for (auto& mesh : m_cubes)	mesh.Cleanup();
+	for (auto& light : m_lights) light.Cleanup();
+	for (const auto& shader : m_shaders) shader.second->Cleanup();
+}
+
+void GameController::CubeMovement() {
+	for (auto it = m_cubes.begin(); it != m_cubes.end();) {
+		auto& cube = *it;
+		vec3 cubePos = cube.GetPosition();
+		vec3 cubeToSphere = m_sphere.GetPosition() - cubePos;
+		if (dot(cubeToSphere, cubeToSphere) < .1f) {
+			cube.Cleanup();
+			it = m_cubes.erase(it);
+		}
+		else {
+			vec3 velocity = glm::normalize(cubeToSphere) * .5f;
+			cube.SetPosition(cubePos + velocity * dt);
+			++it;
+		}
+	}
+}
+
+void GameController::SpawnCube() {
+	static int old_state = GLFW_RELEASE;
+	int new_state = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT);
+	if (new_state == GLFW_RELEASE && old_state == GLFW_PRESS) {
+		auto mesh = Mesh();
+		mesh.Create(m_shaders["box"].get(), &m_cubeModel);
+		mesh.SetLightMesh(m_lights);
+		mesh.SetLightColor(vec3(1.f));
+		mesh.SetPosition(vec3(glm::linearRand(-3.f, 3.f), glm::linearRand(-3.f, 3.f), glm::linearRand(-3.f, 3.f)));
+		mesh.SetScale(vec3(.2f));
+		m_cubes.push_back(mesh);
+	}
+	old_state = new_state;
+}
 
 void GameController::keyInputHandling() {
 	vec3 cameraVelocity = vec3(0.f);
@@ -47,33 +165,19 @@ void GameController::mouseInputHandling() {
 	m_camera.cameraTurn(-dX, -dY);
 }
 
-void GameController::Initialize() {
-	m_window = WindowController::GetInstance().GetWindow(); // glfwInit()
-	M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW");
-	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
-	glClearColor(.1f, .1f, .1f, 1.f);
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	m_camera = Camera(WindowController::GetInstance().GetResolution());
-
-	srand(time(0));
-}
-
 void GameController::ShaderInit(ShaderMap& shaderMap) const {
 	std::ifstream shaderConfig("Res/shaders.config");
 
 	std::string shaderName;
+	std::string shaderFileName;
 	int textureCount;
 	std::string textureName;
 
 	while (shaderConfig) {
-		shaderConfig >> shaderName >> textureCount;
+		shaderConfig >> shaderName >> shaderFileName >> textureCount;
 
 		shaderMap[shaderName] = make_shared<Shader>();
-		shaderMap[shaderName]->LoadShaders(("Res/Shaders/" + shaderName + ".vert").c_str(), ("Res/Shaders/" + shaderName + ".frag").c_str());
+		shaderMap[shaderName]->LoadShaders(("Res/Shaders/" + shaderFileName + ".vert").c_str(), ("Res/Shaders/" + shaderFileName + ".frag").c_str());
 
 		for (int i = 0; i < textureCount; i++) {
 			shaderConfig >> textureName;
@@ -85,9 +189,10 @@ void GameController::ShaderInit(ShaderMap& shaderMap) const {
 	}
 }
 
-void GameController::ModelInit(objl::Loader& loader) const {
-	M_ASSERT(loader.LoadFile("Res/Models/teapot.obj") == true, "Failed to load mesh");
+void GameController::ModelInit(objl::Loader& loader, const char* filename) const {
+	M_ASSERT(loader.LoadFile(filename) == true, "Failed to load mesh");
 
+	// Calculating tangent space for normal map
 	for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++) {
 		objl::Mesh& mesh = loader.LoadedMeshes[i];
 
@@ -113,82 +218,5 @@ void GameController::ModelInit(objl::Loader& loader) const {
 			p1.Tangent = tangent;
 			p2.Tangent = tangent;
 		}
-	}
-
-}
-
-void GameController::Run() {
-	// Shader Init
-	ShaderMap shaders;
-	ShaderInit(shaders);
-
-	// Model Init
-	objl::Loader loader;
-	ModelInit(loader);
-
-	// Font Iinit
-	Font f = Font();
-	f.Create(shaders["font"].get(), "Arial.ttf", 100);
-
-	// light mesh init
-	vec3 lightPos = vec3(3.5f, 0.f, -.5f);
-	vector<Mesh> lights;
-	for (int i = 0; i < 4; i++) {
-		auto mesh = Mesh();
-		mesh.Create(shaders["sphere"].get(), &loader);
-		mesh.SetPosition(lightPos + vec3(0.f, i / 1.5f - 1.f, 0.f));
-		mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
-		lights.push_back(mesh);
-	}
-
-	//// cube mesh init
-	for (int col = 0; col < 10; col++) {
-		for (int count = 0; count < 10; count++) {
-			auto mesh = Mesh();
-			mesh.Create(shaders["crate"].get(), &loader);
-			mesh.SetLightMesh(lights);
-			mesh.SetScale(vec3(.5f));
-			mesh.SetPosition(vec3(0.f, -.5f + count / 10.f, -.2f + col / 10.f) * 5.f);
-			m_meshes.push_back(mesh);
-		}
-	}
-
-	dt = 1 / FPS; // second
-	float timePreviousFrame = glfwGetTime();
-	do {
-		// Input
-		glfwPollEvents();
-		keyInputHandling();
-		mouseInputHandling();
-
-		// Render
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for (auto& mesh : lights) {
-			mesh.Render(m_camera);
-		}
-		for (auto& mesh : m_meshes) {
-			mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
-			mesh.Render(m_camera);
-		}
-		f.RenderText("testing", 10.f, 500.f, .5f, {1.f, 1.f, 0.f});
-		glfwSwapBuffers(m_window);
-
-
-		// Frame rate
-		float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;
-		if (sleepTime > 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds((long)sleepTime));
-		}
-		dt = (glfwGetTime() - timePreviousFrame);
-		timePreviousFrame = glfwGetTime();
-
-	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);
-
-	for (auto& mesh : m_meshes) {
-		mesh.Cleanup();
-	}
-
-	for (const auto& shader : shaders) {
-		shader.second->Cleanup();
 	}
 }

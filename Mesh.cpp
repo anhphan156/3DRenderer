@@ -89,7 +89,6 @@ void Mesh::Cleanup() {
 	glDeleteBuffers(1, &m_vertexBuffer);
 	glDeleteBuffers(1, &m_ibo);
 	glDeleteVertexArrays(1, &m_vao);
-	m_shader->ClearTexture();
 }
 
 void Mesh::Render(const Camera& _camera) 

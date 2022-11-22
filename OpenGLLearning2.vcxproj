@@ -166,12 +166,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\shaders.config" />
-    <None Include="Res\Shaders\crate.frag" />
-    <None Include="Res\Shaders\crate.vert" />
+    <None Include="Res\Shaders\light.frag" />
+    <None Include="Res\Shaders\light.vert" />
     <None Include="Res\Shaders\font.frag" />
     <None Include="Res\Shaders\font.vert" />
-    <None Include="Res\Shaders\sphere.frag" />
-    <None Include="Res\Shaders\sphere.vert" />
+    <None Include="Res\Shaders\metaball.frag" />
+    <None Include="Res\Shaders\metaball.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

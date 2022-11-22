@@ -17,7 +17,7 @@ float smin( float a, float b, float k )
 }
 
 float sphereSDF(vec3 p){
-	float radius = .1f;
+	float radius = .3f;
 	float sphere1 = length(p - vec3(0.f, 0.3f, sin(u_time))) - radius;
 	float sphere2 = length(p - vec3(0.3f, 0.f, sin(u_time + 3.14f / 2.f))) - radius;
 	float sphere3 = length(p - vec3(0.3f, 0.f, sin(u_time + 3.14f))) - radius;
