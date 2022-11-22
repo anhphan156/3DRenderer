@@ -94,10 +94,10 @@
     <None Include="Res\Shaders\light.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\metaball.frag">
+    <None Include="Res\Shaders\white.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\metaball.vert">
+    <None Include="Res\Shaders\white.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Res\shaders.config">

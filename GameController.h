@@ -29,9 +29,6 @@ public:
 
 	void FrameRate();
 
-	void keyInputHandling();
-	void mouseInputHandling();
-
 	void SpawnCube();
 	void CubeMovement();
 

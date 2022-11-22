@@ -197,39 +197,6 @@ void GameController::SpawnCube() {
 	old_state = new_state;
 }
 
-void GameController::keyInputHandling() {
-	vec3 cameraVelocity = vec3(0.f);
-	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_camera.getRight();
-	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_camera.getRight();
-	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity = m_camera.getForward();
-	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity = -m_camera.getForward();
-	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_camera.getUp();
-	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_camera.getUp();
-
-	m_camera.cameraDisplacement(cameraVelocity * 2.5f * dt);
-}
-
-void GameController::mouseInputHandling() {
-	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
-		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		return;
-	}
-	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	static double old_xpos, old_ypos;
-
-	double xpos, ypos;
-	glfwGetCursorPos(m_window, &xpos, &ypos);
-
-	double dX = (xpos - old_xpos) * .0002f;
-	double dY = (ypos - old_ypos) * .0002f;
-	old_xpos = xpos; old_ypos = ypos;
-
-	if (dX == 0.f || dY == 0.f) return;
-
-	m_camera.cameraTurn(-dX, -dY);
-}
-
 void GameController::ShaderInit(ShaderMap& shaderMap) const {
 	std::ifstream shaderConfig("Res/shaders.config");
 

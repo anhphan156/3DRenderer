@@ -187,8 +187,8 @@
     <None Include="Res\Shaders\light.vert" />
     <None Include="Res\Shaders\font.frag" />
     <None Include="Res\Shaders\font.vert" />
-    <None Include="Res\Shaders\metaball.frag" />
-    <None Include="Res\Shaders\metaball.vert" />
+    <None Include="Res\Shaders\white.frag" />
+    <None Include="Res\Shaders\white.vert" />
     <None Include="Res\Shaders\vertexcolor.frag" />
     <None Include="Res\Shaders\vertexcolor.vert" />
   </ItemGroup>
