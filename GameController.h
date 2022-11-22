@@ -38,6 +38,7 @@ private:
 	GLFWwindow* m_window;
 
 	Mesh m_sphere;
+	Mesh m_teapot;
 
 	vector<Mesh> m_cubes;
 	vector<Mesh> m_lights;

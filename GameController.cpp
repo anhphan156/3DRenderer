@@ -7,6 +7,9 @@
 #include <thread>
 #include <iostream>
 #include <fstream>
+#include "TopMostTool.h"
+
+using OpenGLLearning2::TopMostTool;
 
 GameController::GameController() {
 	m_camera = {};
@@ -53,17 +56,32 @@ void GameController::Run() {
 		m_lights.push_back(mesh);
 	}
 
+	// part 1 + 2 center teapot
+	m_teapot = Mesh();
+	m_teapot.Create(m_shaders["teapot"].get(), &m_teapotModel);
+	m_teapot.SetLightMesh(m_lights);
+	m_teapot.SetScale(vec3(.5f));
+	m_teapot.SetPosition(vec3(0.f));
+
 	// part 3 center sphere
 	m_sphere = Mesh();
 	m_sphere.Create(m_shaders["teapot"].get(), &m_sphereModel);
 	m_sphere.SetLightMesh(m_lights);
-	m_sphere.SetScale(vec3(.5f));
+	m_sphere.SetScale(vec3(.7f));
 	m_sphere.SetPosition(vec3(0.f));
 
+	// Top most tool init
+	TopMostTool^ topMostTool = gcnew TopMostTool();
+	topMostTool->Show();
+
+	// Frame rate init
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
 	float framecount = 0;
 	do {
+		// top most tool
+		System::Windows::Forms::Application::DoEvents();
+
 		// Input
 		glfwPollEvents();
 		SpawnCube();
@@ -74,7 +92,6 @@ void GameController::Run() {
 		m_sphere.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
 		m_sphere.Render(m_camera);
 		for (auto& mesh : m_lights) {
-			mesh.SetRotation((float)glfwGetTime(), vec3(1.f, 0.f, 0.f));
 			mesh.Render(m_camera);
 		}
 		for (auto& mesh : m_cubes) {

@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{e4c64b96-8123-47ea-9245-65a989f5c8b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ToolWindows">
+      <UniqueIdentifier>{92b3111e-0c39-4555-9cb9-f7773bc0f978}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowController.cpp">
@@ -44,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="Font.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TopMostTool.cpp">
+      <Filter>ToolWindows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +83,9 @@
     <ClInclude Include="Font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TopMostTool.h">
+      <Filter>ToolWindows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\Shaders\light.frag">
@@ -98,6 +107,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Res\Shaders\font.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\vertexcolor.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\vertexcolor.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

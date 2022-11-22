@@ -74,7 +74,7 @@ void main(){
 	//vec3 lightPos = vec3(0.f, 0.f, 3.f);
 	//vec3 color = vec3(lightingMask(p, lightPos) * vec3(.8, .4, .6));
 
-	vec3 color = mix(vec3(1.f), normal(p), lightingMask(p, ro));
+	vec3 color = mix(vec3(1.f), normal(p) * .5 + .5, lightingMask(p, ro));
 
 	gl_FragColor = vec4(color, 1.f);
 }
