@@ -1,2 +1,5 @@
-light l point 2.5 3.0 2.5 1.0 1.0 1.0
-floor o 0.0 0.0 0.0 10.0 1.0 10.0
+l light sphere.obj bulb point 3.0 2.5 12.0 2.5 .5 .5 .5 0.0 0.0 0.0 0.0
+o floor cube.obj floor 0.0 0.0 0.0 15.0 1.0 20.0 0.0 0.0 0.0 0.0
+o wall cube.obj wall 15.0 5.0 0.0 1.0 10.0 20.0 0.0 0.0 0.0 0.0
+o wall cube.obj wall -15.0 5.0 0.0 1.0 10.0 20.0 0.0 0.0 0.0 0.0
+o wall cube.obj wall 0.0 5.0 20.0 1.0 1.0 10.0 0.0 0.0 0.0 0.0

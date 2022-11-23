@@ -82,16 +82,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Res\Shaders\crate.frag">
+    <None Include="Res\Shaders\lit.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\crate.vert">
+    <None Include="Res\Shaders\lit.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\sphere.frag">
+    <None Include="Res\Shaders\metaball.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\sphere.vert">
+    <None Include="Res\Shaders\metaball.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Res\shaders.config">
@@ -103,5 +103,10 @@
     <None Include="Res\Shaders\font.vert">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Res\Scenes\Scene.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@ using std::make_shared;
 
 typedef std::map<std::string, shared_ptr<class Shader>> ShaderMap;
 typedef std::map<std::string, shared_ptr<class Texture>> TextureMap;
+typedef std::map<std::string, objl::Loader> ModelMap;
 
 class GameController : public Singleton<GameController> {
 public:
@@ -29,13 +30,15 @@ public:
 	void mouseInputHandling();
 
 	void ShaderInit(ShaderMap& shaderMap) const;
-	void ModelInit(objl::Loader& loader) const;
+	void ModelInit(std::string fileName);
 	void SceneInit();
 
 private:
 	vector<Mesh> m_meshes;
 	Camera m_camera;
 	GLFWwindow* m_window;
+	ShaderMap m_shaders;
+	ModelMap m_models;
 	Scene m_scene;
 
 	float dt = 0.f;

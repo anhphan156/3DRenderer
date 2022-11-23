@@ -116,6 +116,7 @@ void Mesh::Render(const Camera& _camera)
 	m_shader->SetUniformVec3("u_cameraWorldPos", _camera.getWSCamera());
 	for (int i = 0; i < m_lights.size(); i++) {
 		m_shader->SetUniformVec3(concat("u_light[", i, "].position").c_str(), m_lights[i].GetPosition());
+		m_shader->SetUniformFloat(concat("u_light[", i, "].strength").c_str(), m_lights[i].GetLightStrength());
 		m_shader->SetUniformVec3(concat("u_light[", i, "].ambientColor").c_str(), {.1f, .1f, .1f});
 		m_shader->SetUniformVec3(concat("u_light[", i, "].lambertianColor").c_str(), m_lights[i].m_lightColor);
 		m_shader->SetUniformVec3(concat("u_light[", i, "].specularColor").c_str(), vec3(3.f));

@@ -23,7 +23,7 @@ void GameController::keyInputHandling() {
 	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_camera.getUp();
 	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_camera.getUp();
 
-	m_camera.cameraDisplacement(cameraVelocity * 2.5f * dt);
+	m_camera.cameraDisplacement(cameraVelocity * 10.f * dt);
 }
 
 void GameController::mouseInputHandling() {
@@ -65,15 +65,14 @@ void GameController::Initialize() {
 void GameController::ShaderInit(ShaderMap& shaderMap) const {
 	std::ifstream shaderConfig("Res/shaders.config");
 
-	std::string shaderName;
+	std::string shaderName, shaderFileName, textureName;
 	int textureCount;
-	std::string textureName;
 
 	while (shaderConfig) {
-		shaderConfig >> shaderName >> textureCount;
+		shaderConfig >> shaderName >> shaderFileName >> textureCount;
 
 		shaderMap[shaderName] = make_shared<Shader>();
-		shaderMap[shaderName]->LoadShaders(("Res/Shaders/" + shaderName + ".vert").c_str(), ("Res/Shaders/" + shaderName + ".frag").c_str());
+		shaderMap[shaderName]->LoadShaders(("Res/Shaders/" + shaderFileName + ".vert").c_str(), ("Res/Shaders/" + shaderFileName + ".frag").c_str());
 
 		for (int i = 0; i < textureCount; i++) {
 			shaderConfig >> textureName;
@@ -85,8 +84,10 @@ void GameController::ShaderInit(ShaderMap& shaderMap) const {
 	}
 }
 
-void GameController::ModelInit(objl::Loader& loader) const {
-	M_ASSERT(loader.LoadFile("Res/Models/teapot.obj") == true, "Failed to load mesh");
+void GameController::ModelInit(std::string fileName) {
+	objl::Loader loader;
+	M_ASSERT(loader.LoadFile("Res/Models/" + fileName) == true, "Failed to load mesh");
+	m_models[fileName] = loader;
 
 	for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++) {
 		objl::Mesh& mesh = loader.LoadedMeshes[i];
@@ -119,39 +120,19 @@ void GameController::ModelInit(objl::Loader& loader) const {
 
 void GameController::Run() {
 	// Shader Init
-	ShaderMap shaders;
-	ShaderInit(shaders);
+	ShaderInit(m_shaders);
 
-	// Model Init
-	objl::Loader loader;
-	ModelInit(loader);
+	ModelInit("sphere.obj");
+	ModelInit("cube.obj");
 
 	// Font Iinit
 	Font f = Font();
-	f.Create(shaders["font"].get(), "Arial.ttf", 100);
+	f.Create(m_shaders["font"].get(), "Arial.ttf", 100);
+
+	// Scene Init
+	SceneInit();
 
 	// light mesh init
-	vec3 lightPos = vec3(3.5f, 0.f, -.5f);
-	vector<Mesh> lights;
-	for (int i = 0; i < 4; i++) {
-		auto mesh = Mesh();
-		mesh.Create(shaders["sphere"].get(), &loader);
-		mesh.SetPosition(lightPos + vec3(0.f, i / 1.5f - 1.f, 0.f));
-		mesh.SetLightColor(vec3(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f)));
-		lights.push_back(mesh);
-	}
-
-	//// cube mesh init
-	for (int col = 0; col < 10; col++) {
-		for (int count = 0; count < 10; count++) {
-			auto mesh = Mesh();
-			mesh.Create(shaders["crate"].get(), &loader);
-			mesh.SetLightMesh(lights);
-			mesh.SetScale(vec3(.5f));
-			mesh.SetPosition(vec3(0.f, -.5f + count / 10.f, -.2f + col / 10.f) * 5.f);
-			m_meshes.push_back(mesh);
-		}
-	}
 
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
@@ -163,11 +144,11 @@ void GameController::Run() {
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for (auto& mesh : lights) {
+		for (auto& mesh : m_scene.m_lights) {
 			mesh.Render(m_camera);
 		}
-		for (auto& mesh : m_meshes) {
-			mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
+		for (auto& mesh : m_scene.m_objects) {
+			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);
 		}
 		f.RenderText("testing", 10.f, 500.f, .5f, {1.f, 1.f, 0.f});
@@ -188,11 +169,42 @@ void GameController::Run() {
 		mesh.Cleanup();
 	}
 
-	for (const auto& shader : shaders) {
+	for (const auto& shader : m_shaders) {
 		shader.second->Cleanup();
 	}
 }
 
 void GameController::SceneInit() {
+	std::ifstream sceneFile("Res/Scenes/Scene.txt");
 
+	std::string type, name, model, shader, lightType;
+	float lightStrength;
+	vec3 position, scale;
+	glm::vec4 rotation;
+
+	while (sceneFile) {
+		sceneFile >> type;
+
+		if (type == "l") {
+			sceneFile >> name >> model >> shader >> lightType >> lightStrength >> position.x >> position.y >> position.z >> scale.x >> scale.y >> scale.z >> rotation.x >> rotation.y >> rotation.z, rotation.w;
+
+			Mesh mesh;
+			mesh.Create(m_shaders[shader].get(), &m_models[model]);
+			mesh.SetPosition(position);
+			mesh.SetScale(scale);
+			mesh.SetLightStrength(lightStrength);
+			m_scene.m_lights.push_back(mesh);
+		}
+
+		if (type == "o") {
+			sceneFile >> name >> model >> shader >> position.x >> position.y >> position.z >> scale.x >> scale.y >> scale.z >> rotation.x >> rotation.y >> rotation.z >> rotation.w;
+
+			Mesh mesh;
+			mesh.Create(m_shaders[shader].get(), &m_models[model]);
+			mesh.SetPosition(position);
+			mesh.SetScale(scale);
+			mesh.SetLightMesh(m_scene.m_lights);
+			m_scene.m_objects.push_back(mesh);
+		}
+	}
 }
