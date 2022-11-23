@@ -9,7 +9,7 @@
 #include <fstream>
 #include "TopMostTool.h"
 
-using OpenGLLearning2::TopMostTool;
+using MultiRenders::TopMostTool;
 
 GameController::GameController() {
 	m_camera = {};

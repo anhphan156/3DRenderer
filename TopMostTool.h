@@ -1,6 +1,6 @@
 #pragma once
 
-namespace OpenGLLearning2 {
+namespace MultiRenders {
 
 	using namespace System;
 	using namespace System::ComponentModel;
