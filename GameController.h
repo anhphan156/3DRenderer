@@ -5,6 +5,7 @@
 #include "Singleton.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "Scene.h"
 #include <string>
 #include <memory>
 #include <map>
@@ -29,11 +30,13 @@ public:
 
 	void ShaderInit(ShaderMap& shaderMap) const;
 	void ModelInit(objl::Loader& loader) const;
+	void SceneInit();
 
 private:
 	vector<Mesh> m_meshes;
 	Camera m_camera;
 	GLFWwindow* m_window;
+	Scene m_scene;
 
 	float dt = 0.f;
 };

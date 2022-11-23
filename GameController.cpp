@@ -192,3 +192,7 @@ void GameController::Run() {
 		shader.second->Cleanup();
 	}
 }
+
+void GameController::SceneInit() {
+
+}

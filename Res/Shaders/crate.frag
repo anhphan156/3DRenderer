@@ -55,9 +55,9 @@ void main(){
 		float lum = 1.f / (u_light[i].attenuationFactor.x * pow(dist, 2.f) + u_light[i].attenuationFactor.y * dist + u_light[i].attenuationFactor.z);
 
 		// spot light angle
-		float a = cos(u_light[i].spotlightAngle);
-		float d = dot(normalize(u_light[i].spotlightDirection), -lightDir);
-		lum *= 1.f - pow(clamp(a / d, 0.f, 1.f), u_light[i].spotlightFalloff);
+		//float a = cos(u_light[i].spotlightAngle);
+		//float d = dot(normalize(u_light[i].spotlightDirection), -lightDir);
+		//lum *= 1.f - pow(clamp(a / d, 0.f, 1.f), u_light[i].spotlightFalloff);
 
 		// ambient
 		vec3 ambient = clamp(u_light[i].ambientColor * albedoMap * lum, vec3(0.f), vec3(1.f));
@@ -69,8 +69,8 @@ void main(){
 		vec3 reflection = reflect(-lightDir, normal);
 		vec3 specular = pow(max(0.f, dot(reflection, v2f_viewDir)), u_light[i].specularConcentration) * u_light[i].specularColor * specularMap * lum;
 
-		spotlights += mix(clamp(lambertian + ambient + specular, 0.f, 1.f), ambient / NR_LIGHTS, step(0.f, a - d));
-		//spotlights += clamp(lambertian + ambient + specular, 0.f, 1.f);
+		//spotlights += mix(clamp(lambertian + ambient + specular, 0.f, 1.f), ambient / NR_LIGHTS, step(0.f, a - d));
+		spotlights += clamp(lambertian + ambient + specular, 0.f, 1.f);
 	}
 
 	gl_FragColor = vec4(spotlights, 1.f);
