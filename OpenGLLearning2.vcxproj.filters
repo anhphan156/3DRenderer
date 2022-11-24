@@ -45,6 +45,9 @@
     <ClCompile Include="Font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StandardIncludes.h">
@@ -80,6 +83,9 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\Shaders\lit.frag">
@@ -101,6 +107,18 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Res\Shaders\font.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\color.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\color.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\skybox.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\skybox.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

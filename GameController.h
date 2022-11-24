@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "Skybox.h"
 #include <string>
 #include <memory>
 #include <map>
@@ -40,6 +41,7 @@ private:
 	ShaderMap m_shaders;
 	ModelMap m_models;
 	Scene m_scene;
+	Skybox m_skybox;
 
 	float dt = 0.f;
 };

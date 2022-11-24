@@ -148,6 +148,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="WindowController.cpp" />
@@ -161,18 +162,23 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="StandardIncludes.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="WindowController.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\shaders.config" />
+    <None Include="Res\Shaders\color.frag" />
+    <None Include="Res\Shaders\color.vert" />
     <None Include="Res\Shaders\lit.frag" />
     <None Include="Res\Shaders\lit.vert" />
     <None Include="Res\Shaders\font.frag" />
     <None Include="Res\Shaders\font.vert" />
     <None Include="Res\Shaders\metaball.frag" />
     <None Include="Res\Shaders\metaball.vert" />
+    <None Include="Res\Shaders\skybox.frag" />
+    <None Include="Res\Shaders\skybox.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Res\Scenes\Scene.txt" />

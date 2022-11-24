@@ -17,11 +17,11 @@ float smin( float a, float b, float k )
 }
 
 float sphereSDF(vec3 p){
-	float radius = .1f;
-	float sphere1 = length(p - vec3(0.f, 0.3f, sin(u_time))) - radius;
-	float sphere2 = length(p - vec3(0.3f, 0.f, sin(u_time + 3.14f / 2.f))) - radius;
-	float sphere3 = length(p - vec3(0.3f, 0.f, sin(u_time + 3.14f))) - radius;
-	float sphere4 = length(p - vec3(sin(u_time) + 0.f, 0.7f, 0.f)) - radius;
+	float radius = .2f;
+	float sphere1 = length(p - vec3(0.f, 0.3f, sin(u_time * 2.) * .5 )) - radius;
+	float sphere2 = length(p - vec3(0.3f, 0.f, sin(u_time * 2. + 3.14f / 2.f) * .5)) - radius;
+	float sphere3 = length(p - vec3(0.3f, 0.f, sin(u_time * 2. + 3.14f) * .5)) - radius;
+	float sphere4 = length(p - vec3(sin(u_time) * .5 + 0.f, 0.7f, 0.f)) - radius;
 
 	return smin(smin(smin(sphere1, sphere2, .5f), sphere3, .5f), sphere4, .7f);
 }
@@ -74,7 +74,9 @@ void main(){
 	//vec3 lightPos = vec3(0.f, 0.f, 3.f);
 	//vec3 color = vec3(lightingMask(p, lightPos) * vec3(.8, .4, .6));
 
-	vec3 color = mix(vec3(1.f), normal(p), lightingMask(p, ro));
+	vec3 color = mix(vec3(1.f), normal(p) * .5 + .5, lightingMask(p, ro));
+
+	if(color.rgb == vec3(1.f)) discard;
 
 	gl_FragColor = vec4(color, 1.f);
 }

@@ -51,7 +51,7 @@ void Shader::SetUniformVec3(const char* _name, const vec3& _value) const {
 void Shader::SetUniformMat4(const char* _name, const mat4& _value) const {
 	GLint loc = glGetUniformLocation(m_programID, _name);
 	if (loc != -1) {
-		glUniformMatrix4fv(loc, 1, GL_FALSE, &_value[0][0]);
+		GLCALL(glUniformMatrix4fv(loc, 1, GL_FALSE, &_value[0][0]));
 	}
 }
 

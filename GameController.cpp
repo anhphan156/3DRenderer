@@ -56,6 +56,9 @@ void GameController::Initialize() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 
 	m_camera = Camera(WindowController::GetInstance().GetResolution());
 
@@ -90,10 +93,10 @@ void GameController::ModelInit(std::string fileName) {
 	m_models[fileName] = loader;
 
 	for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++) {
-		objl::Mesh& mesh = loader.LoadedMeshes[i];
+		objl::Mesh& mesh = m_models[fileName].LoadedMeshes[i];
 
-		for (unsigned int i = 0; i < loader.LoadedIndices.size(); i += 3) {
-			unsigned int index = loader.LoadedIndices[i];
+		for (unsigned int i = 0; i < m_models[fileName].LoadedIndices.size(); i += 3) {
+			unsigned int index = m_models[fileName].LoadedIndices[i];
 			auto& p0 = mesh.Vertices[index];
 			auto& p1 = mesh.Vertices[index + 1];
 			auto& p2 = mesh.Vertices[index + 2];
@@ -122,17 +125,27 @@ void GameController::Run() {
 	// Shader Init
 	ShaderInit(m_shaders);
 
+	// Model Init
 	ModelInit("sphere.obj");
 	ModelInit("cube.obj");
+	ModelInit("skybox.obj");
 
 	// Font Iinit
 	Font f = Font();
 	f.Create(m_shaders["font"].get(), "Arial.ttf", 100);
 
-	// Scene Init
+	 //Scene Init
 	SceneInit();
 
-	// light mesh init
+	Skybox skybox;
+	skybox.Create(m_shaders["skybox"].get(), &m_models["skybox.obj"], {
+		"Res/Textures/cm1/right.jpg",
+		"Res/Textures/cm1/left.jpg",
+		"Res/Textures/cm1/top.jpg",
+		"Res/Textures/cm1/bottom.jpg",
+		"Res/Textures/cm1/front.jpg",
+		"Res/Textures/cm1/back.jpg",
+	});
 
 	dt = 1 / FPS; // second
 	float timePreviousFrame = glfwGetTime();
@@ -151,7 +164,9 @@ void GameController::Run() {
 			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);
 		}
-		f.RenderText("testing", 10.f, 500.f, .5f, {1.f, 1.f, 0.f});
+		mat4 v = mat4(glm::mat3(m_camera.getView()));
+		skybox.Render(m_camera.getProjection() * v);
+		f.RenderText(glm::to_string(m_camera.getWSCamera()), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
 		glfwSwapBuffers(m_window);
 
 
@@ -172,6 +187,7 @@ void GameController::Run() {
 	for (const auto& shader : m_shaders) {
 		shader.second->Cleanup();
 	}
+	skybox.Cleanup();
 }
 
 void GameController::SceneInit() {
@@ -186,7 +202,10 @@ void GameController::SceneInit() {
 		sceneFile >> type;
 
 		if (type == "l") {
-			sceneFile >> name >> model >> shader >> lightType >> lightStrength >> position.x >> position.y >> position.z >> scale.x >> scale.y >> scale.z >> rotation.x >> rotation.y >> rotation.z, rotation.w;
+			sceneFile >> name >> model >> shader >> lightType >> lightStrength >>
+			position.x >> position.y >> position.z >>
+			scale.x >> scale.y >> scale.z >>
+			rotation.x >> rotation.y >> rotation.z, rotation.w;
 
 			Mesh mesh;
 			mesh.Create(m_shaders[shader].get(), &m_models[model]);
@@ -197,7 +216,10 @@ void GameController::SceneInit() {
 		}
 
 		if (type == "o") {
-			sceneFile >> name >> model >> shader >> position.x >> position.y >> position.z >> scale.x >> scale.y >> scale.z >> rotation.x >> rotation.y >> rotation.z >> rotation.w;
+			sceneFile >> name >> model >> shader >> 
+			position.x >> position.y >> position.z >> 
+			scale.x >> scale.y >> scale.z >>
+			rotation.x >> rotation.y >> rotation.z >> rotation.w;
 
 			Mesh mesh;
 			mesh.Create(m_shaders[shader].get(), &m_models[model]);

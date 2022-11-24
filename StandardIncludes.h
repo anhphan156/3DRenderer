@@ -27,6 +27,7 @@
 #include <fstream>
 #include <memory>
 #include <random>
+#include <iostream>
 
 using std::shared_ptr;
 using std::make_shared;
@@ -53,5 +54,22 @@ namespace Utils {
 		return lerp(c, d, invLerp(a, b, n));
 	}
 }
+
+static void GLClearError() {
+	while (glGetError() != GL_NO_ERROR);
+}
+
+static bool GLLogCall() {
+	while (GLenum error = glGetError()) {
+		std::cout << "[OpenGL_ERROR] (" << error << ")" << std::endl;
+		return false;
+	}
+
+	return true;
+}
+#define DEBUGBREAK(x) if (!(x)) __debugbreak();
+#define GLCALL(x) GLClearError();\
+	x;\
+	DEBUGBREAK(GLLogCall())
 
 #endif // !STANDARD_INCLUDES_H
