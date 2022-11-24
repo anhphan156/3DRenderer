@@ -157,6 +157,8 @@ void GameController::Run() {
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		mat4 v = mat4(glm::mat3(m_camera.getView()));
+		skybox.Render(m_camera.getProjection() * v);
 		for (auto& mesh : m_scene.m_lights) {
 			mesh.Render(m_camera);
 		}
@@ -164,8 +166,6 @@ void GameController::Run() {
 			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);
 		}
-		mat4 v = mat4(glm::mat3(m_camera.getView()));
-		skybox.Render(m_camera.getProjection() * v);
 		f.RenderText(glm::to_string(m_camera.getWSCamera()), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
 		glfwSwapBuffers(m_window);
 
