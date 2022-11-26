@@ -40,12 +40,17 @@ in vec3 v2f_viewDir;
 in mat3 v2f_TBN;
 
 void main(){
-	vec3 albedoMap = texture(u_textures.sampler0, v2f_texCoords).xyz;	
+	vec4 albedoSampler = texture(u_textures.sampler0, v2f_texCoords).xyzw;	
+	vec3 albedoMap = albedoSampler.xyz;
+	float albedoAlpha = albedoSampler.w;
 	//vec3 specularMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
 	vec3 normalMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
 
-	normalMap = normalMap * 2.f - 1.f;
-	vec3 normal = normalize(v2f_TBN * normalMap);
+	vec3 normal = v2f_wsNormal;
+	if(normalMap != albedoMap){
+		normalMap = normalMap * 2.f - 1.f;
+		normal = normalize(v2f_TBN * normalMap);
+	}
 
 	vec3 spotlights = vec3(0.f);
 
@@ -75,5 +80,5 @@ void main(){
 		spotlights += clamp(lambertian + ambient + specular, 0.f, 1.f) * u_light[i].strength;
 	}
 
-	gl_FragColor = vec4(spotlights, 1.f);
+	gl_FragColor = vec4(spotlights, albedoAlpha);
 }

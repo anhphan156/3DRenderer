@@ -35,13 +35,13 @@ public:
 	void SceneInit();
 
 private:
-	vector<Mesh> m_meshes;
 	Camera m_camera;
 	GLFWwindow* m_window;
 	ShaderMap m_shaders;
 	ModelMap m_models;
 	Scene m_scene;
 	Skybox m_skybox;
+	std::map<float, Mesh*> sorted;
 
 	float dt = 0.f;
 };

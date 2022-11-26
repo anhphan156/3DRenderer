@@ -10,7 +10,6 @@
 
 GameController::GameController() {
 	m_camera = {};
-	m_meshes.clear();
 }
 GameController::~GameController(){}
 
@@ -45,24 +44,6 @@ void GameController::mouseInputHandling() {
 	if (dX == 0.f || dY == 0.f) return;
 
 	m_camera.cameraTurn(-dX, -dY);
-}
-
-void GameController::Initialize() {
-	m_window = WindowController::GetInstance().GetWindow(); // glfwInit()
-	M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW");
-	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
-	glClearColor(.1f, .1f, .1f, 1.f);
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
-
-	m_camera = Camera(WindowController::GetInstance().GetResolution());
-
-	srand(time(0));
 }
 
 void GameController::ShaderInit(ShaderMap& shaderMap) const {
@@ -121,6 +102,24 @@ void GameController::ModelInit(std::string fileName) {
 
 }
 
+void GameController::Initialize() {
+	m_window = WindowController::GetInstance().GetWindow(); // glfwInit()
+	M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW");
+	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
+	glClearColor(.1f, .1f, .1f, 1.f);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+
+	m_camera = Camera(WindowController::GetInstance().GetResolution());
+
+	srand(time(0));
+}
+
 void GameController::Run() {
 	// Shader Init
 	ShaderInit(m_shaders);
@@ -129,6 +128,7 @@ void GameController::Run() {
 	ModelInit("sphere.obj");
 	ModelInit("cube.obj");
 	ModelInit("skybox.obj");
+	ModelInit("window.obj");
 
 	// Font Iinit
 	Font f = Font();
@@ -166,6 +166,8 @@ void GameController::Run() {
 			//mesh.SetRotation((float)glfwGetTime(), vec3(0.f, 1.f, 0.f));
 			mesh.Render(m_camera);
 		}
+		for (auto& mesh : m_scene.m_transluscentObjects) mesh.Render(m_camera);
+
 		f.RenderText(glm::to_string(m_camera.getWSCamera()), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
 		glfwSwapBuffers(m_window);
 
@@ -180,13 +182,11 @@ void GameController::Run() {
 
 	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);
 
-	for (auto& mesh : m_meshes) {
-		mesh.Cleanup();
-	}
+	for (auto& m : m_scene.m_lights) m.Cleanup();
+	for (auto& m : m_scene.m_objects) m.Cleanup();
+	for (auto& m : m_scene.m_transluscentObjects) m.Cleanup();
+	for (const auto& shader : m_shaders) shader.second->Cleanup();
 
-	for (const auto& shader : m_shaders) {
-		shader.second->Cleanup();
-	}
 	skybox.Cleanup();
 }
 
@@ -198,7 +198,7 @@ void GameController::SceneInit() {
 	vec3 position, scale;
 	glm::vec4 rotation;
 
-	while (sceneFile) {
+	while (sceneFile) { // fix to read til the end
 		sceneFile >> type;
 
 		if (type == "l") {
@@ -215,18 +215,25 @@ void GameController::SceneInit() {
 			m_scene.m_lights.push_back(mesh);
 		}
 
-		if (type == "o") {
+		if (type == "o" || type == "to") {
 			sceneFile >> name >> model >> shader >> 
 			position.x >> position.y >> position.z >> 
 			scale.x >> scale.y >> scale.z >>
 			rotation.x >> rotation.y >> rotation.z >> rotation.w;
 
 			Mesh mesh;
+			mesh.SetName(name);
 			mesh.Create(m_shaders[shader].get(), &m_models[model]);
 			mesh.SetPosition(position);
 			mesh.SetScale(scale);
 			mesh.SetLightMesh(m_scene.m_lights);
-			m_scene.m_objects.push_back(mesh);
+
+			if (type == "o") {
+				m_scene.m_objects.push_back(mesh);
+			}
+			else if (type == "to") {
+				m_scene.m_transluscentObjects.push_back(mesh);
+			}
 		}
 	}
 }

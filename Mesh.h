@@ -16,6 +16,8 @@ public:
 	void Cleanup();
 	void Render(const Camera&);
 
+	void SetName(const std::string& name) { m_name = name; }
+
 	void SetLightColor(const vec3 color) { m_lightColor = color; }
 	void SetLightMesh(const vector<Mesh>& lights) { m_lights = lights; }
 	void SetLightStrength(float s) { m_lightStrength = s; }
@@ -30,6 +32,7 @@ public:
 	std::string concat(std::string s1, int i, std::string s2);
 
 private:
+	std::string m_name;
 	GLuint m_vao;
 	GLuint m_vertexBuffer;
 	GLuint m_ibo;
