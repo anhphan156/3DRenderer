@@ -64,10 +64,10 @@ void Skybox::SetShaderVariables(glm::mat4 _pv)
 {
 	glUseProgram(m_shader->GetProgramID());
 	m_shader->SetUniformMat4("u_pv", _pv);
-	//GLCALL(glActiveTexture(GL_TEXTURE_CUBE_MAP));
-	//GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture.GetCubemapTexture()));
-	//GLint textureLoc = glGetUniformLocation(m_shader->GetProgramID(), "u_texture");
-	//if (textureLoc != -1) GLCALL(glUniform1i(textureLoc, 0));
+	GLCALL(glActiveTexture(GL_TEXTURE_CUBE_MAP));
+	GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture.GetCubemapTexture()));
+	GLint textureLoc = glGetUniformLocation(m_shader->GetProgramID(), "u_texture");
+	if (textureLoc != -1) GLCALL(glUniform1i(textureLoc, 0));
 }
 
 void Skybox::BindAttributes()
