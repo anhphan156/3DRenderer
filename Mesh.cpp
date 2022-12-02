@@ -7,9 +7,14 @@
 Mesh::Mesh() {
 	m_vao = 0;
 	m_vertexBuffer = 0;
+	m_instanceBuffer = 0;
 	m_ibo = 0;
 	m_indiciesCount = 0;
 	m_shader = nullptr;
+	m_elementSize = 0;
+	m_enableInstancing = false;
+
+	m_instanceCount = 1;
 
 	m_scale = vec3(1.f);
 	m_position = vec3(1.f);
@@ -24,8 +29,27 @@ Mesh::Mesh() {
 Mesh::~Mesh() {
 }
 
-void Mesh::Create(Shader* _shader, const objl::Loader* _loader) {
+void Mesh::Create(Shader* _shader, const objl::Loader* _loader, int _instanceCount) {
 	m_shader = _shader;
+	m_instanceCount = _instanceCount;
+	m_enableInstancing = m_instanceCount > 1;
+
+	if (m_enableInstancing) {
+		glGenBuffers(1, &m_instanceBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
+
+		srand(glfwGetTime());
+		for (unsigned int i = 0; i < m_instanceCount; ++i) {
+			mat4 model = glm::translate(mat4(1.f), vec3(-20 + rand() % 40, 20 + rand() % 20, -10 + rand() % 20));
+
+			for (int x = 0; x < 4; ++x)
+				for (int y = 0; y < 4; y++)
+					m_instanceData.push_back(model[x][y]);
+		}
+			 
+		glBufferData(GL_ARRAY_BUFFER, m_instanceCount * sizeof(mat4), m_instanceData.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 
 	for (unsigned int i = 0; i < _loader->LoadedMeshes.size(); i++) {
 		const objl::Mesh& mesh = _loader->LoadedMeshes[i];
@@ -73,6 +97,18 @@ void Mesh::Create(Shader* _shader, const objl::Loader* _loader) {
 	glEnableVertexAttribArray(m_shader->GetAttrTexCoords());
 	glVertexAttribPointer(m_shader->GetAttrTexCoords(), 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(9 * sizeof(float)));
 
+	// Instancing Attribute
+	if (m_enableInstancing) {
+		glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
+
+		for (unsigned int i = 0; i < 4; ++i) {
+			glEnableVertexAttribArray(m_shader->GetAttrInstanceMatrix() + i);
+			glVertexAttribPointer(m_shader->GetAttrInstanceMatrix() + i, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(i * sizeof(glm::vec4)));
+			
+			glVertexAttribDivisor(m_shader->GetAttrInstanceMatrix() + i, 1);
+		}
+	}
+
 	// Uniform
 	glUseProgram(m_shader->GetProgramID());
 	Resolution res = WindowController::GetInstance().GetResolution();
@@ -111,6 +147,8 @@ void Mesh::Render(const Camera& _camera)
 
 	// Uniform
 	glUniformMatrix4fv(m_shader->GetUniWVP(), 1, GL_FALSE, &wvp[0][0]);
+	m_shader->SetUniformFloat("u_normalEnabled", m_shader->GetNormalEnabled());
+	m_shader->SetUniformInt("u_instanceEnabled", m_enableInstancing);
 	m_shader->SetUniformFloat("u_time", glfwGetTime());
 	m_shader->SetUniformMat4("u_modelToWorld", m_world);
 	m_shader->SetUniformVec3("u_cameraWorldPos", _camera.getWSCamera());
@@ -128,7 +166,11 @@ void Mesh::Render(const Camera& _camera)
 	}
 
 	// Draw
-	GLCALL(glDrawElements(GL_TRIANGLES, m_indiciesCount, GL_UNSIGNED_INT, nullptr));
+	if (m_enableInstancing) {
+		GLCALL(glDrawElementsInstanced(GL_TRIANGLES, m_indiciesCount, GL_UNSIGNED_INT, nullptr, m_instanceCount));
+	} else {
+		GLCALL(glDrawElements(GL_TRIANGLES, m_indiciesCount, GL_UNSIGNED_INT, nullptr));
+	}
 
 	// Unbind
 	glBindVertexArray(0);

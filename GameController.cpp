@@ -51,12 +51,14 @@ void GameController::ShaderInit(ShaderMap& shaderMap) const {
 
 	std::string shaderName, shaderFileName, textureName;
 	int textureCount;
+	float normalEnabled;
 
 	while (shaderConfig) {
-		shaderConfig >> shaderName >> shaderFileName >> textureCount;
+		shaderConfig >> shaderName >> shaderFileName >> textureCount >> normalEnabled;
 
 		shaderMap[shaderName] = make_shared<Shader>();
 		shaderMap[shaderName]->LoadShaders(("Res/Shaders/" + shaderFileName + ".vert").c_str(), ("Res/Shaders/" + shaderFileName + ".frag").c_str());
+		shaderMap[shaderName]->SetNormalEnabled(normalEnabled);
 
 		for (int i = 0; i < textureCount; i++) {
 			shaderConfig >> textureName;
@@ -137,6 +139,12 @@ void GameController::Run() {
 	 //Scene Init
 	SceneInit();
 
+	// instancing test
+	auto cube = Mesh();
+	cube.Create(m_shaders["floor"].get(), &m_models["cube.obj"], 1000);
+	cube.SetLightMesh(m_scene.m_lights);
+	m_scene.m_objects.push_back(cube);
+
 	Skybox skybox;
 	skybox.Create(m_shaders["skybox"].get(), &m_models["skybox.obj"], {
 		"Res/Textures/cm1/right.jpg",
@@ -148,6 +156,7 @@ void GameController::Run() {
 	});
 
 	dt = 1 / FPS; // second
+	float framecount = 0;
 	float timePreviousFrame = glfwGetTime();
 	do {
 		// Input
@@ -168,17 +177,18 @@ void GameController::Run() {
 		}
 		for (auto& mesh : m_scene.m_transluscentObjects) mesh.Render(m_camera);
 
-		f.RenderText(glm::to_string(m_camera.getWSCamera()), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
+		f.RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
+		f.RenderText("dt: " + std::to_string(dt), 10.f, 550.f, .2f, {1.f, 1.f, 0.f});
 		glfwSwapBuffers(m_window);
-
 
 		// Frame rate
 		float sleepTime = MPF - (glfwGetTime() - timePreviousFrame) * 1000;
 		if (sleepTime > 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds((long)sleepTime));
+			//std::this_thread::sleep_for(std::chrono::milliseconds((long)sleepTime));
 		}
 		dt = (glfwGetTime() - timePreviousFrame);
 		timePreviousFrame = glfwGetTime();
+		framecount++;
 
 	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);
 

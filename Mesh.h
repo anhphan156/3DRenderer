@@ -12,7 +12,7 @@ public:
 	Mesh();
 	virtual ~Mesh();
 
-	void Create(class Shader* _shader, const objl::Loader* _loader);
+	void Create(class Shader* _shader, const objl::Loader* _loader, int _instanceCount = 1);
 	void Cleanup();
 	void Render(const Camera&);
 
@@ -36,9 +36,16 @@ private:
 	GLuint m_vao;
 	GLuint m_vertexBuffer;
 	GLuint m_ibo;
-	std::vector<float> m_iboData;
+	GLuint m_instanceBuffer;
 	GLsizei m_indiciesCount;
+
+	std::vector<float> m_iboData;
 	std::vector<float> m_vertexData;
+	std::vector<float> m_instanceData;
+
+	int m_instanceCount;
+	bool m_enableInstancing;
+	int m_elementSize;
 
 	class Shader* m_shader;
 

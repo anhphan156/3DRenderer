@@ -16,6 +16,7 @@ public:
 	GLuint GetAttrNormal() { return m_attrNormal; }
 	GLuint GetAttrTangent() { return m_attrTangent; }
 	GLuint GetAttrTexCoords() { return m_attrTexCoords; }
+	GLuint GetAttrInstanceMatrix() { return m_attrInstanceMatrix; }
 
 	GLuint GetUniResolution() { return m_uniResolution; };
 	GLuint GetUniWVP() { return m_uniWVP; };
@@ -24,8 +25,12 @@ public:
 	void Cleanup();
 
 	void SetUniformFloat(const char* _name, float _value) const;
+	void SetUniformInt(const char* _name, int _value) const;
 	void SetUniformVec3(const char* _name, const vec3& _value) const;
 	void SetUniformMat4(const char* _name, const mat4& _value) const;
+
+	void SetNormalEnabled(float normalEnabled) { m_normalEnabled = normalEnabled; }
+	float GetNormalEnabled() { return m_normalEnabled; }
 
 	void AddTexture(const shared_ptr<class Texture>);
 	void ClearTexture();
@@ -45,9 +50,12 @@ private:
 	GLuint m_attrNormal;
 	GLuint m_attrTangent;
 	GLuint m_attrTexCoords;
+	GLuint m_attrInstanceMatrix;
 
 	GLuint m_uniResolution;
 	GLuint m_uniWVP;
+
+	float m_normalEnabled;
 
 	vector<shared_ptr<class Texture>> m_textures;
 };

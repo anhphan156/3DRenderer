@@ -6,6 +6,7 @@ Shader::Shader() {
 	m_attrVertices = 0;
 	m_attrNormal = 0;
 	m_attrTexCoords = 0;
+	m_attrInstanceMatrix = 0;
 
 	m_result = GL_FALSE;
 	m_infoLogLength = 0;
@@ -41,6 +42,12 @@ void Shader::SetUniformFloat(const char* _name, float _value) const {
 	if (loc != -1) glUniform1f(loc, _value);
 }
 
+void Shader::SetUniformInt(const char* _name, int _value) const
+{
+	GLuint loc = glGetUniformLocation(m_programID, _name);
+	if (loc != -1) glUniform1i(loc, _value);
+}
+
 void Shader::SetUniformVec3(const char* _name, const vec3& _value) const {
 	GLint loc = glGetUniformLocation(m_programID, _name);
 	if (loc != -1) {
@@ -60,6 +67,7 @@ void Shader::LoadAttributes() {
 	m_attrNormal = glGetAttribLocation(m_programID, "normal");
 	m_attrTangent = glGetAttribLocation(m_programID, "tangent");
 	m_attrTexCoords = glGetAttribLocation(m_programID, "texCoords");
+	m_attrInstanceMatrix = glGetAttribLocation(m_programID, "instanceMatrix");
 
 	m_uniResolution = glGetUniformLocation(m_programID, "u_resolution");
 	m_uniWVP = glGetUniformLocation(m_programID, "u_wvp");

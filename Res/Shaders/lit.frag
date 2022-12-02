@@ -29,6 +29,7 @@ struct Light {
 
 uniform vec2 u_resolution;
 uniform float u_time;
+uniform float u_normalEnabled = 0.0;
 
 uniform Textures u_textures;
 uniform Light u_light[NR_LIGHTS];
@@ -47,7 +48,7 @@ void main(){
 	vec3 normalMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
 
 	vec3 normal = v2f_wsNormal;
-	if(normalMap != albedoMap){
+	if(u_normalEnabled == 1.0){
 		normalMap = normalMap * 2.f - 1.f;
 		normal = normalize(v2f_TBN * normalMap);
 	}
