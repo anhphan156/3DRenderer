@@ -29,6 +29,13 @@ void Shader::ClearTexture()
 	}
 }
 
+void Shader::SetTextureSampler(const std::string& uniform, GLenum texture, int value, GLuint texture_id) const {
+	glActiveTexture(texture);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	GLuint m_uniSamplerLoc = glGetUniformLocation(m_programID, uniform.c_str());
+	glUniform1i(m_uniSamplerLoc, value);
+}
+
 void Shader::BindTextures() const {
 	for (int i = 0; i < m_textures.size() && i < 32; i++) {
 		glActiveTexture(GL_TEXTURE0 + i);

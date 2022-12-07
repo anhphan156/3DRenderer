@@ -17,6 +17,7 @@ public:
 
 	void Create(class Shader* _shader, std::string _name, FT_UInt _size);
 	void RenderText(std::string _text, float _x, float _y, float _scale, vec3 _color);
+	void Cleanup();
 
 private:
 	class Shader* m_shader;

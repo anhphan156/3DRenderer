@@ -48,6 +48,9 @@
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PostProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StandardIncludes.h">
@@ -86,6 +89,9 @@
     <ClInclude Include="Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\Shaders\lit.frag">
@@ -119,6 +125,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Res\Shaders\skybox.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\postprocessor.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\postprocessor.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

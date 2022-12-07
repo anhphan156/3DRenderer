@@ -35,6 +35,7 @@ public:
 	void AddTexture(const shared_ptr<class Texture>);
 	void ClearTexture();
 	void BindTextures() const;
+	void SetTextureSampler(const std::string& uniform, GLenum texture, int value, GLuint texture_id) const;
 
 private:
 	void CreateShaderProgram(const char* _vertexFilePath, const char* _fragmentFilePath);

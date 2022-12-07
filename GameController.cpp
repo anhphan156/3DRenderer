@@ -108,7 +108,7 @@ void GameController::Initialize() {
 	m_window = WindowController::GetInstance().GetWindow(); // glfwInit()
 	M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW");
 	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
-	glClearColor(.1f, .1f, .1f, 1.f);
+	glClearColor(0,0,0,1);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -117,7 +117,9 @@ void GameController::Initialize() {
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 
-	m_camera = Camera(WindowController::GetInstance().GetResolution());
+	auto r = WindowController::GetInstance().GetResolution();
+	glViewport(0, 0, r.m_width, r.m_height);
+	m_camera = Camera(r);
 
 	srand(time(0));
 }
@@ -131,6 +133,7 @@ void GameController::Run() {
 	ModelInit("cube.obj");
 	ModelInit("skybox.obj");
 	ModelInit("window.obj");
+	ModelInit("teapot.obj");
 
 	// Font Iinit
 	Font f = Font();
@@ -139,11 +142,15 @@ void GameController::Run() {
 	 //Scene Init
 	SceneInit();
 
+	// Postprocessing
+	m_postProcessor = PostProcessor();
+	m_postProcessor.Create(m_shaders["postprocessor"].get());
+
 	// instancing test
-	auto cube = Mesh();
-	cube.Create(m_shaders["floor"].get(), &m_models["cube.obj"], 1000);
-	cube.SetLightMesh(m_scene.m_lights);
-	m_scene.m_objects.push_back(cube);
+	//auto cube = Mesh();
+	//cube.Create(m_shaders["brickwall"].get(), &m_models["cube.obj"], 1000);
+	//cube.SetLightMesh(m_scene.m_lights);
+	//m_scene.m_objects.push_back(cube);
 
 	Skybox skybox;
 	skybox.Create(m_shaders["skybox"].get(), &m_models["skybox.obj"], {
@@ -166,6 +173,7 @@ void GameController::Run() {
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		m_postProcessor.Start();
 		mat4 v = mat4(glm::mat3(m_camera.getView()));
 		skybox.Render(m_camera.getProjection() * v);
 		for (auto& mesh : m_scene.m_lights) {
@@ -176,6 +184,8 @@ void GameController::Run() {
 			mesh.Render(m_camera);
 		}
 		for (auto& mesh : m_scene.m_transluscentObjects) mesh.Render(m_camera);
+
+		m_postProcessor.End();
 
 		f.RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
 		f.RenderText("dt: " + std::to_string(dt), 10.f, 550.f, .2f, {1.f, 1.f, 0.f});
@@ -196,7 +206,8 @@ void GameController::Run() {
 	for (auto& m : m_scene.m_objects) m.Cleanup();
 	for (auto& m : m_scene.m_transluscentObjects) m.Cleanup();
 	for (const auto& shader : m_shaders) shader.second->Cleanup();
-
+	m_postProcessor.Cleanup();
+	f.Cleanup();
 	skybox.Cleanup();
 }
 

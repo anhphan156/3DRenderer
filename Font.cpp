@@ -19,6 +19,11 @@ void Font::Create(Shader* _shader, std::string _name, FT_UInt _size)
 	Initialize(_name, _size);
 }
 
+void Font::Cleanup() {
+	glDeleteBuffers(1, &m_vertexBuffer);
+	//for (auto it = m_characters.begin(); it != m_characters.end(), ++it) glDeleteTextures(1, &it->second.TextureID);
+}
+
 void Font::RenderText(std::string _text, float _x, float _y, float _scale, vec3 _color)
 {
 	_y = WindowController::GetInstance().GetResolution().m_height - _y;

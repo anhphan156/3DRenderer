@@ -166,6 +166,8 @@ void Mesh::Render(const Camera& _camera)
 	}
 
 	// Draw
+	//unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	//GLCALL(glDrawBuffers(2, attachments));
 	if (m_enableInstancing) {
 		GLCALL(glDrawElementsInstanced(GL_TRIANGLES, m_indiciesCount, GL_UNSIGNED_INT, nullptr, m_instanceCount));
 	} else {

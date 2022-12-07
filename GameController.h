@@ -11,6 +11,7 @@
 #include <memory>
 #include <map>
 #include <OBJ_Loader.h>
+#include "PostProcessor.h"
 
 using std::shared_ptr;
 using std::make_shared;
@@ -41,6 +42,7 @@ private:
 	ModelMap m_models;
 	Scene m_scene;
 	Skybox m_skybox;
+	PostProcessor m_postProcessor;
 	std::map<float, Mesh*> sorted;
 
 	float dt = 0.f;
