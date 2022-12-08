@@ -10,8 +10,10 @@ Camera::Camera() {
 }
 
 Camera::Camera(Resolution _resolution) {
-	m_location = glm::vec3(-12.f, 13.f, 18.f);
-	m_lookAt = glm::vec3(0.f, 5.f, 0.f);
+	//m_location = glm::vec3(-12.f, 13.f, 18.f);
+	//m_lookAt = glm::vec3(0.f, 5.f, 0.f);
+	m_location = glm::vec3(-1.17f, 5.89f, .54f);
+	m_lookAt = glm::vec3(-2.13f, 5.71f, .34f);
 	m_up = vec3(0.f, 1.f, 0.f);
 	m_forward = glm::normalize(m_lookAt - m_location);
 	m_right = glm::cross(m_forward, m_up);

@@ -16,10 +16,12 @@ uniform Textures u_textures;
 
 in vec2 v2f_texCoords;
 
-const float offset = 1.0 / 300.0;
+const float offset = 1.0 / 150.0;
 
 void main(){
 	vec3 col = vec3(0.0);
+	vec3 sceneColor = texture(u_textures.sampler0, v2f_texCoords).xyz;
+	vec3 sceneNormal = texture(u_textures.sampler1, v2f_texCoords).xyz;
 
 	vec2 offsets[9] = vec2[](
 		vec2(-offset, offset), // top left
@@ -43,7 +45,8 @@ void main(){
 	for(int i = 0; i < 9; i++) sampleTex[i] = texture(u_textures.sampler0, v2f_texCoords + offsets[i]).xyz;
 	for(int i = 0; i < 9; i++) col += sampleTex[i] * kernel[i];
 
-	col = mix(texture(u_textures.sampler0, v2f_texCoords).xyz, vec3(.3, .4, .8), col);
+	vec3 lineColor = mix(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0), sceneNormal);
+	col = mix(sceneColor, lineColor, col);
 
 	gl_FragColor = vec4(col, 1.0);
 }

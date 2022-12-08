@@ -45,6 +45,7 @@ void PostProcessor::End()
 
 	glUseProgram(m_postShader->GetProgramID());
 	m_postShader->SetTextureSampler("u_textures.sampler0", GL_TEXTURE0, 0, m_textureColorbuffer);
+	m_postShader->SetTextureSampler("u_textures.sampler1", GL_TEXTURE1, 1, m_textureNormalbuffer);
 
 	BindVertices();
 	glDrawArrays(GL_TRIANGLES, 0, 6);

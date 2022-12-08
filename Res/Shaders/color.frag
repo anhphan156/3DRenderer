@@ -1,5 +1,8 @@
 #version 330
 
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 FragNormal;
+
 #define NR_LIGHTS 4
 
 struct Textures {
@@ -40,5 +43,6 @@ in vec3 v2f_viewDir;
 in mat3 v2f_TBN;
 
 void main(){
-	gl_FragColor = vec4(vec3(.8, .6, .6), .5f);
+	FragColor = vec4(vec3(.8, .6, .6), .5f);
+	FragNormal = vec4(v2f_wsNormal, 1.0);
 }

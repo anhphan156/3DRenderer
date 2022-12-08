@@ -189,6 +189,8 @@ void GameController::Run() {
 
 		f.RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
 		f.RenderText("dt: " + std::to_string(dt), 10.f, 550.f, .2f, {1.f, 1.f, 0.f});
+		f.RenderText("pos: " + glm::to_string(m_camera.getWSCamera()), 10.f, 600.f, .2f, {1.f, 1.f, 0.f});
+		f.RenderText("look at: " + glm::to_string(m_camera.getLookAt()), 10.f, 650.f, .2f, {1.f, 1.f, 0.f});
 		glfwSwapBuffers(m_window);
 
 		// Frame rate

@@ -1,5 +1,8 @@
 #version 330
 
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 FragNormal;
+
 #define NR_LIGHTS 4
 
 struct Textures {
@@ -81,5 +84,7 @@ void main(){
 		spotlights += clamp(lambertian + ambient + specular, 0.f, 1.f) * u_light[i].strength;
 	}
 
-	gl_FragColor = vec4(spotlights, albedoAlpha);
+	//gl_FragColor = vec4(spotlights, albedoAlpha);
+	FragColor = vec4(spotlights, albedoAlpha);
+	FragNormal = vec4(normal, 1.0);
 }
