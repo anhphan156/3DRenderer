@@ -148,6 +148,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
+    <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameController.h" />
+    <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="Resolution.h" />

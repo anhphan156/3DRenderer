@@ -5,20 +5,10 @@
 #include "Singleton.h"
 #include "Mesh.h"
 #include "Camera.h"
-#include "Scene.h"
-#include "Skybox.h"
 #include <string>
 #include <memory>
-#include <map>
-#include <OBJ_Loader.h>
 #include "PostProcessor.h"
-
-using std::shared_ptr;
-using std::make_shared;
-
-typedef std::map<std::string, shared_ptr<class Shader>> ShaderMap;
-typedef std::map<std::string, shared_ptr<class Texture>> TextureMap;
-typedef std::map<std::string, objl::Loader> ModelMap;
+#include "ResourceLoader.h"
 
 class GameController : public Singleton<GameController> {
 public:
@@ -31,21 +21,24 @@ public:
 	void keyInputHandling();
 	void mouseInputHandling();
 
-	void ShaderInit(ShaderMap& shaderMap) const;
-	void ModelInit(std::string fileName);
-	void SceneInit();
+	void Framerate();
+	void Render();
+	void Cleanup();
 
 private:
 	Camera m_camera;
 	GLFWwindow* m_window;
-	ShaderMap m_shaders;
-	ModelMap m_models;
-	Scene m_scene;
-	Skybox m_skybox;
+	ResourceLoader m_resourceLoader;
+	ShaderMap& m_shaders = ResourceLoader::GetInstance().GetShaderMap();
+	Scene& m_scene = ResourceLoader::GetInstance().GetScene();
+	Font& m_f = ResourceLoader::GetInstance().GetFont();
+	Skybox& m_skybox = ResourceLoader::GetInstance().GetSkybox();
 	PostProcessor m_postProcessor;
 	std::map<float, Mesh*> sorted;
 
-	float dt = 0.f;
+	float dt = 1 / FPS;
+	float framecount = 0.f;
+	float timePreviousFrame = 0.f;
 };
 
 #endif // !GAME_CONTROLLER_H

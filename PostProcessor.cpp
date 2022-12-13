@@ -44,6 +44,7 @@ void PostProcessor::End()
 	glDisable(GL_DEPTH_TEST);
 
 	glUseProgram(m_postShader->GetProgramID());
+	m_postShader->SetUniformFloat("u_time", glfwGetTime());
 	m_postShader->SetTextureSampler("u_textures.sampler0", GL_TEXTURE0, 0, m_textureColorbuffer);
 	m_postShader->SetTextureSampler("u_textures.sampler1", GL_TEXTURE1, 1, m_textureNormalbuffer);
 
