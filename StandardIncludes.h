@@ -12,8 +12,10 @@
 #include <glm/gtc/random.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#define generic lol
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#undef generic
 
 #ifdef _WIN32
 #include <Windows.h>

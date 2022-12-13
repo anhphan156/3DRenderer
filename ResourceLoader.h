@@ -28,7 +28,7 @@ public:
 private:
 	void ShaderInit(ShaderMap& shaderMap) const;
 	void ModelInit(std::string fileName);
-	void SceneInit();
+	void SceneInit(Scene& scene);
 
 	ShaderMap m_shaders;
 	ModelMap m_models;

@@ -23,7 +23,7 @@ void ResourceLoader::Load() {
 		"Res/Textures/cm1/back.jpg",
 	});
 
-	SceneInit();
+	SceneInit(m_scene);
 }
 
 void ResourceLoader::ShaderInit(ShaderMap& shaderMap) const {
@@ -84,7 +84,7 @@ void ResourceLoader::ModelInit(std::string fileName) {
 
 }
 
-void ResourceLoader::SceneInit() {
+void ResourceLoader::SceneInit(Scene& scene) {
 	std::ifstream sceneFile("Res/Scenes/Scene.txt");
 
 	std::string type, name, model, shader, lightType;
@@ -92,7 +92,7 @@ void ResourceLoader::SceneInit() {
 	vec3 position, scale;
 	glm::vec4 rotation;
 
-	while (sceneFile) { // fix to read til the end
+	while (sceneFile) { // bug to fix: last line is read twice
 		sceneFile >> type;
 
 		if (type == "l") {
@@ -106,7 +106,7 @@ void ResourceLoader::SceneInit() {
 			mesh.SetPosition(position);
 			mesh.SetScale(scale);
 			mesh.SetLightStrength(lightStrength);
-			m_scene.m_lights.push_back(mesh);
+			scene.m_lights.push_back(mesh);
 		}
 
 		if (type == "o" || type == "to") {
@@ -123,10 +123,10 @@ void ResourceLoader::SceneInit() {
 			mesh.SetLightMesh(m_scene.m_lights);
 
 			if (type == "o") {
-				m_scene.m_objects.push_back(mesh);
+				scene.m_objects.push_back(mesh);
 			}
 			else if (type == "to") {
-				m_scene.m_transluscentObjects.push_back(mesh);
+				scene.m_transluscentObjects.push_back(mesh);
 			}
 		}
 	}
