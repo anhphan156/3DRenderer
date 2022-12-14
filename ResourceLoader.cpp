@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "WindowController.h"
 
 ResourceLoader::ResourceLoader() {
 	m_shaders = make_shared<ShaderMap>();
@@ -41,9 +42,7 @@ void ResourceLoader::Load() {
 	SceneInit(m_scenes[0], "Res/Scenes/Scene1.txt");
 	SceneInit(m_scenes[1], "Res/Scenes/Scene2.txt");
 	SceneInit(m_scenes[2], "Res/Scenes/Scene3.txt");
-	//SceneInit(m_scenes[3], "Res/Scenes/Scene4.txt");
-
-	//m_scenes[3]->m_skybox = m_skybox; // automate this later
+	SceneInit(m_scenes[3], "Res/Scenes/Scene4.txt");
 }
 
 void ResourceLoader::ShaderInit(shared_ptr<ShaderMap> shaderMap) const {
@@ -111,14 +110,13 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene, char* filename) {
 	int instance;
 	std::string type, name, model, shader, lightType, postprocessingName;
 	float lightStrength;
-	vec3 position, scale;
+	vec3 position, scale, cameraPos, cameraDir;
 	glm::vec4 rotation;
 
 	while (sceneFile) { 
 		sceneFile >> type;
 
 		if (type == "end") continue;
-		scene->m_postProcessor = m_postProcessors["normal"];
 
 		if (type == "l") {
 			sceneFile >> instance >> name >> model >> shader >> lightType >> lightStrength >>
@@ -159,6 +157,15 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene, char* filename) {
 			sceneFile >> postprocessingName;
 			scene->m_postProcessor = m_postProcessors[postprocessingName];
 		}
+
+		if (type == "camera") {
+			sceneFile >> cameraPos.x >> cameraPos.y >> cameraPos.z >> cameraDir.x >> cameraDir.y >> cameraDir.z;
+			scene->m_camera = Camera(WindowController::GetInstance().GetResolution());
+			scene->m_camera.SetCameraPosition(cameraPos);
+			scene->m_camera.SetCameraDirection(cameraDir);
+		}
+
+		if (type == "skybox") scene->m_skybox = m_skybox; 
 	}
 
 	sceneFile.close();

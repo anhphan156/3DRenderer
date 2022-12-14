@@ -27,7 +27,6 @@ public:
 	vec3 MouseMovement() const;
 
 private:
-	Camera m_camera;
 	GLFWwindow* m_window;
 	ResourceLoader m_resourceLoader;
 	shared_ptr<ShaderMap> m_shaders;

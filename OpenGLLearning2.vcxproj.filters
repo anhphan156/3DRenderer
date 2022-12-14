@@ -162,10 +162,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Res\Scenes\Scene.txt">
+    <Text Include="Res\Scenes\Scene1.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="Res\Scenes\Scene1.txt">
+    <Text Include="Res\Scenes\Scene2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Res\Scenes\Scene3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Res\Scenes\Scene4.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

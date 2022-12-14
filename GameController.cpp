@@ -11,21 +11,19 @@
 
 using OpenGLTechniques::ToolWindow;
 
-GameController::GameController() {
-	m_camera = {};
-}
+GameController::GameController() {}
 GameController::~GameController(){}
 
 void GameController::keyInputHandling() {
 	vec3 cameraVelocity = vec3(0.f);
-	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_camera.getRight();
-	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_camera.getRight();
-	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity = m_camera.getForward();
-	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity = -m_camera.getForward();
-	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_camera.getUp();
-	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_camera.getUp();
+	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_activeScene->m_camera.getRight();
+	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_activeScene->m_camera.getRight();
+	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity = m_activeScene->m_camera.getForward();
+	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity = -m_activeScene->m_camera.getForward();
+	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_activeScene->m_camera.getUp();
+	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_activeScene->m_camera.getUp();
 
-	m_camera.cameraDisplacement(cameraVelocity * 10.f * dt);
+	m_activeScene->m_camera.cameraDisplacement(cameraVelocity * 10.f * dt);
 }
 
 void GameController::mouseInputHandling() {
@@ -46,7 +44,7 @@ void GameController::mouseInputHandling() {
 
 	if (dX == 0.f || dY == 0.f) return;
 
-	m_camera.cameraTurn(-dX, -dY);
+	m_activeScene->m_camera.cameraTurn(-dX, -dY);
 }
 
 
@@ -63,9 +61,8 @@ void GameController::Initialize() {
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 
-	auto r = WindowController::GetInstance().GetResolution();
-	glViewport(0, 0, r.m_width, r.m_height);
-	m_camera = Camera(r);
+	auto resolution = WindowController::GetInstance().GetResolution();
+	glViewport(0, 0, resolution.m_width, resolution.m_height);
 
 	srand(time(0));
 }
@@ -84,15 +81,15 @@ void GameController::Run() {
 	Scripting::GetInstance().Start();
 	
 	do {
+		// Set active scene
+		m_activeScene = ResourceLoader::GetInstance().GetScene(toolWindow->gameMode);
+
 		// Input
 		glfwPollEvents();
 		glfwGetCursorPos(m_window, &xpos, &ypos);
 		keyInputHandling();
 		mouseInputHandling();
 		System::Windows::Forms::Application::DoEvents();
-
-		// Set active scene
-		m_activeScene = ResourceLoader::GetInstance().GetScene(toolWindow->gameMode);
 
 		Scripting::GetInstance().S1SetSpecularValues(vec3(toolWindow->specularR, toolWindow->specularG, toolWindow->specularB), toolWindow->specularStrength);
 		Scripting::GetInstance().SetMouseVelocity(MouseMovement());
@@ -126,22 +123,22 @@ void GameController::Framerate() {
 void GameController::Render() {
 	if (m_activeScene->m_postProcessor) m_activeScene->m_postProcessor->Start();
 	
-	if(m_activeScene->m_skybox) m_activeScene->m_skybox->Render(m_camera.getProjection() * mat4(glm::mat3(m_camera.getView())));
+	if(m_activeScene->m_skybox) m_activeScene->m_skybox->Render(m_activeScene->m_camera.getProjection() * mat4(glm::mat3(m_activeScene->m_camera.getView())));
 
 	for (auto& light : m_activeScene->m_lights) {
 		light.OnUpdate(dt);
-		light.Render(m_camera);
+		light.Render(m_activeScene->m_camera);
 	}
 	for (auto& mesh : m_activeScene->m_objects) {
 		mesh.OnUpdate(dt);
-		mesh.Render(m_camera);
+		mesh.Render(m_activeScene->m_camera);
 	}
-	for (auto& mesh : m_activeScene->m_transluscentObjects) mesh.Render(m_camera);
+	for (auto& mesh : m_activeScene->m_transluscentObjects) mesh.Render(m_activeScene->m_camera);
 
 	m_f->RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
 	m_f->RenderText("dt: " + std::to_string(dt), 10.f, 550.f, .2f, {1.f, 1.f, 0.f});
-	m_f->RenderText("pos: " + glm::to_string(m_camera.getWSCamera()), 10.f, 600.f, .2f, {1.f, 1.f, 0.f});
-	m_f->RenderText("look at: " + glm::to_string(m_camera.getLookAt()), 10.f, 650.f, .2f, {1.f, 1.f, 0.f});
+	m_f->RenderText("pos: " + glm::to_string(m_activeScene->m_camera.getWSCamera()), 10.f, 600.f, .2f, {1.f, 1.f, 0.f});
+	m_f->RenderText("look at: " + glm::to_string(m_activeScene->m_camera.getLookAt()), 10.f, 650.f, .2f, {1.f, 1.f, 0.f});
 
 	if (m_activeScene->m_postProcessor) m_activeScene->m_postProcessor->End();
 }

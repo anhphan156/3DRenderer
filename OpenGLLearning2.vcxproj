@@ -198,8 +198,10 @@
     <None Include="Res\Shaders\waterPostprocessor.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Res\Scenes\Scene.txt" />
     <Text Include="Res\Scenes\Scene1.txt" />
+    <Text Include="Res\Scenes\Scene2.txt" />
+    <Text Include="Res\Scenes\Scene3.txt" />
+    <Text Include="Res\Scenes\Scene4.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
