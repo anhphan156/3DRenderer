@@ -91,6 +91,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/glew/include;$(SolutionDir)/Dependencies/glm/include;$(SolutionDir)/Dependencies/stb/;$(SolutionDir)/Dependencies/obj_loader;$(SolutionDir)/Dependencies/glfw/include;$(SolutionDir)/Dependencies/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,6 +152,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="ResourceLoader.cpp" />
+    <ClCompile Include="Scripting.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.cpp" />
@@ -167,6 +169,7 @@
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="Resolution.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Scripting.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Skybox.h" />
@@ -194,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Res\Scenes\Scene.txt" />
+    <Text Include="Res\Scenes\Scene1.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

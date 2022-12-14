@@ -328,7 +328,7 @@ namespace OpenGLTechniques {
 		}
 #pragma endregion
 	private: System::Void ToolWindow_Load(System::Object^ sender, System::EventArgs^ e) {
-		specularStrength = SpecularStrengthTrackBar->Value / specularStrength.MaxValue;
+		specularStrength = SpecularStrengthTrackBar->Value;
 		label6->Text = specularStrength.ToString();
 
 		specularR = (float)trackBar1->Value / 100.f;

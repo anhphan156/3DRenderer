@@ -2,6 +2,7 @@
 #include "GameController.h"
 #include "Shader.h"
 #include "Font.h"
+#include "Scripting.h"
 #include <chrono>
 #include <thread>
 #include <iostream>
@@ -73,7 +74,7 @@ void GameController::Run() {
 	// Resource Loading
 	ResourceLoader::GetInstance().Load();
 	m_shaders = ResourceLoader::GetInstance().GetShaderMap();
-	m_scene = ResourceLoader::GetInstance().GetScene();
+	m_activeScene = ResourceLoader::GetInstance().GetScene(1);
 	m_f = ResourceLoader::GetInstance().GetFont();
 	m_skybox = ResourceLoader::GetInstance().GetSkybox();
 
@@ -86,6 +87,9 @@ void GameController::Run() {
 	toolWindow->Show();
 	toolWindow->OnResetLight = []() -> void {};
 
+	// scripts
+	Scripting::GetInstance().Start();
+	
 	do {
 		// Input
 		glfwPollEvents();
@@ -93,6 +97,7 @@ void GameController::Run() {
 		mouseInputHandling();
 
 		System::Windows::Forms::Application::DoEvents();
+		Scripting::GetInstance().S1SetSpecularValues(vec3(toolWindow->specularR, toolWindow->specularG, toolWindow->specularB), toolWindow->specularStrength);
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -122,13 +127,15 @@ void GameController::Framerate() {
 void GameController::Render() {
 	m_skybox->Render(m_camera.getProjection() * mat4(glm::mat3(m_camera.getView())));
 
-	for (auto& mesh : m_scene->m_lights) {
+	for (auto& light : m_activeScene->m_lights) {
+		light.OnUpdate(dt);
+		light.Render(m_camera);
+	}
+	for (auto& mesh : m_activeScene->m_objects) {
+		mesh.OnUpdate(dt);
 		mesh.Render(m_camera);
 	}
-	for (auto& mesh : m_scene->m_objects) {
-		mesh.Render(m_camera);
-	}
-	for (auto& mesh : m_scene->m_transluscentObjects) mesh.Render(m_camera);
+	for (auto& mesh : m_activeScene->m_transluscentObjects) mesh.Render(m_camera);
 
 	m_f->RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
 	m_f->RenderText("dt: " + std::to_string(dt), 10.f, 550.f, .2f, {1.f, 1.f, 0.f});
@@ -137,9 +144,9 @@ void GameController::Render() {
 }
 
 void GameController::Cleanup() {
-	for (auto& m : m_scene->m_lights) m.Cleanup();
-	for (auto& m : m_scene->m_objects) m.Cleanup();
-	for (auto& m : m_scene->m_transluscentObjects) m.Cleanup();
+	for (auto& m : m_activeScene->m_lights) m.Cleanup();
+	for (auto& m : m_activeScene->m_objects) m.Cleanup();
+	for (auto& m : m_activeScene->m_transluscentObjects) m.Cleanup();
 	for (const auto& shader : *m_shaders) shader.second->Cleanup();
 	m_postProcessor.Cleanup();
 	m_f->Cleanup();

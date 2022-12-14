@@ -6,19 +6,18 @@
 ResourceLoader::ResourceLoader() {
 	m_shaders = make_shared<ShaderMap>();
 	m_models = make_shared<ModelMap>();
-	m_scene = make_shared<Scene>();
 	m_skybox = make_shared<Skybox>();
 	m_font = make_shared<Font>();
+
+	for (int i = 0; i < 4; ++i) m_scenes[i] = make_shared<Scene>();
 }
 
 void ResourceLoader::Load() {
 	ShaderInit(m_shaders);
 
 	ModelInit("sphere.obj");
-	ModelInit("cube.obj");
 	ModelInit("skybox.obj");
-	ModelInit("window.obj");
-	ModelInit("teapot.obj");
+	ModelInit("fighter.obj");
 
 	m_font->Create((*m_shaders)["font"].get(), "Arial.ttf", 100);
 
@@ -31,7 +30,7 @@ void ResourceLoader::Load() {
 		"Res/Textures/cm1/back.jpg",
 	});
 
-	SceneInit(m_scene);
+	SceneInit(m_scenes[1], "Res/Scenes/Scene1.txt");
 }
 
 void ResourceLoader::ShaderInit(shared_ptr<ShaderMap> shaderMap) const {
@@ -56,6 +55,8 @@ void ResourceLoader::ShaderInit(shared_ptr<ShaderMap> shaderMap) const {
 			(*shaderMap)[shaderName]->AddTexture(texture);
 		}
 	}
+
+	shaderConfig.close();
 }
 
 void ResourceLoader::ModelInit(std::string fileName) {
@@ -63,9 +64,8 @@ void ResourceLoader::ModelInit(std::string fileName) {
 	M_ASSERT(loader.LoadFile("Res/Models/" + fileName) == true, "Failed to load mesh");
 	(*m_models)[fileName] = loader;
 
-	for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++) {
-		objl::Mesh& mesh = (*m_models)[fileName].LoadedMeshes[i];
-
+	for (unsigned int j = 0; j < loader.LoadedMeshes.size(); j++) {
+		objl::Mesh& mesh = (*m_models)[fileName].LoadedMeshes[j];
 		for (unsigned int i = 0; i < (*m_models)[fileName].LoadedIndices.size(); i += 3) {
 			unsigned int index = (*m_models)[fileName].LoadedIndices[i];
 			auto& p0 = mesh.Vertices[index];
@@ -92,8 +92,8 @@ void ResourceLoader::ModelInit(std::string fileName) {
 
 }
 
-void ResourceLoader::SceneInit(shared_ptr<Scene> scene) {
-	std::ifstream sceneFile("Res/Scenes/Scene.txt");
+void ResourceLoader::SceneInit(shared_ptr<Scene> scene, char* filename) {
+	std::ifstream sceneFile(filename);
 
 	int instance;
 	std::string type, name, model, shader, lightType;
@@ -101,14 +101,14 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene) {
 	vec3 position, scale;
 	glm::vec4 rotation;
 
-	while (sceneFile) { // bug to fix: last line is read twice
+	while (sceneFile) { 
 		sceneFile >> type;
 
 		if (type == "l") {
 			sceneFile >> instance >> name >> model >> shader >> lightType >> lightStrength >>
 			position.x >> position.y >> position.z >>
 			scale.x >> scale.y >> scale.z >>
-			rotation.x >> rotation.y >> rotation.z, rotation.w;
+			rotation.x >> rotation.y >> rotation.z >> rotation.w;
 
 			Mesh mesh;
 			mesh.Create((*m_shaders)[shader].get(), &(*m_models)[model], instance);
@@ -129,7 +129,7 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene) {
 			mesh.Create((*m_shaders)[shader].get(), &(*m_models)[model], instance);
 			mesh.SetPosition(position);
 			mesh.SetScale(scale);
-			mesh.SetLightMesh(m_scene->m_lights);
+			mesh.SetLightMesh(&(scene->m_lights));
 
 			if (type == "o") {
 				scene->m_objects.push_back(mesh);
@@ -139,4 +139,6 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene) {
 			}
 		}
 	}
+
+	sceneFile.close();
 }

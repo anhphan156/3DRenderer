@@ -47,8 +47,8 @@ void main(){
 	vec4 albedoSampler = texture(u_textures.sampler0, v2f_texCoords).xyzw;	
 	vec3 albedoMap = albedoSampler.xyz;
 	float albedoAlpha = albedoSampler.w;
-	//vec3 specularMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
 	vec3 normalMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
+	vec3 specularMap = texture(u_textures.sampler2, v2f_texCoords).xyz;	
 
 	vec3 normal = v2f_wsNormal;
 	if(u_normalEnabled == 1.0){
@@ -76,15 +76,13 @@ void main(){
 		vec3 lambertian = dot(normal, lightDir) * u_light[i].lambertianColor * 2.f * albedoMap * lum;
 
 		// specular
-		//vec3 reflection = reflect(-lightDir, normal);
-		//vec3 specular = pow(max(0.f, dot(reflection, v2f_viewDir)), u_light[i].specularConcentration) * u_light[i].specularColor * specularMap * lum;
-		vec3 specular = vec3(0.0);
+		vec3 reflection = reflect(-lightDir, normal);
+		vec3 specular = pow(max(0.f, dot(reflection, v2f_viewDir)), u_light[i].specularConcentration) * u_light[i].specularColor * specularMap * lum;
 
 		//spotlights += mix(clamp(lambertian + ambient + specular, 0.f, 1.f), ambient / NR_LIGHTS, step(0.f, a - d));
 		spotlights += clamp(lambertian + ambient + specular, 0.f, 1.f) * u_light[i].strength;
 	}
 
-	//gl_FragColor = vec4(spotlights, albedoAlpha);
 	FragColor = vec4(spotlights, albedoAlpha);
 	FragNormal = vec4(normal, 1.0);
 }

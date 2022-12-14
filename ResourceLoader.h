@@ -21,20 +21,20 @@ public:
 	void Load();
 
 	shared_ptr<ShaderMap> GetShaderMap() { return m_shaders; }
-	shared_ptr<Scene> GetScene() { return m_scene; }
+	shared_ptr<Scene> GetScene(int index) { return m_scenes[index]; }
 	shared_ptr<Font> GetFont() { return m_font; }
 	shared_ptr<Skybox> GetSkybox() { return m_skybox; }
 
 private:
 	void ShaderInit(shared_ptr<ShaderMap> shaderMap) const;
 	void ModelInit(std::string fileName);
-	void SceneInit(shared_ptr<Scene> scene);
+	void SceneInit(shared_ptr<Scene> scene, char*);
 
 	shared_ptr<ShaderMap> m_shaders;
 	shared_ptr<ModelMap> m_models;
-	shared_ptr<Scene> m_scene;
 	shared_ptr<Skybox> m_skybox;
 	shared_ptr<Font> m_font;
+	shared_ptr<Scene> m_scenes[4];
 };
 
 #endif // !RESOURCE_LOADER_H

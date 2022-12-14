@@ -30,7 +30,7 @@ private:
 	GLFWwindow* m_window;
 	ResourceLoader m_resourceLoader;
 	shared_ptr<ShaderMap> m_shaders;
-	shared_ptr<Scene> m_scene;
+	shared_ptr<Scene> m_activeScene;
 	shared_ptr<Font> m_f;
 	shared_ptr<Skybox> m_skybox;
 	PostProcessor m_postProcessor;

@@ -21,8 +21,8 @@ const float offset = 1.0 / 700.0;
 void main(){
 	vec3 col = vec3(0.0);
 	vec2 uv = v2f_texCoords;
-	uv.y = v2f_texCoords.y + sin(v2f_texCoords.x * 5.0 + u_time) * 1.0/30.0;
-	uv *= .95;
+	//uv.y = v2f_texCoords.y + sin(v2f_texCoords.x * 5.0 + u_time) * 1.0/30.0;
+	//uv *= .95;
 
 	vec3 sceneColor = texture(u_textures.sampler0, uv).xyz;
 	vec3 sceneNormal = texture(u_textures.sampler1, uv).xyz;
@@ -65,6 +65,6 @@ void main(){
 	vec3 lineColor = mix(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0), sceneNormal) * 5.0;
 	col = mix(sceneColor, lineColor, col);
 
-	gl_FragColor = vec4(col, 1.0);
+	gl_FragColor = vec4(sceneColor, 1.0);
 
 }
