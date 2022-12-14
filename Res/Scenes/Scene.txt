@@ -1,8 +1,8 @@
-l light cube.obj bulb point 3.0 2.5 16.0 2.5 2.0 2.0 2.0 0.0 0.0 0.0 0.0
-o floor cube.obj floor 0.0 0.0 0.0 15.0 1.0 20.0 0.0 0.0 0.0 0.0
-o wall cube.obj wall 15.0 5.0 0.0 1.0 10.0 20.0 0.0 0.0 0.0 0.0
-o wall cube.obj wall -15.0 5.0 0.0 1.0 10.0 20.0 0.0 0.0 0.0 0.0
-o wall cube.obj wall 0.0 5.0 -20.0 15.0 10.0 1.0 0.0 0.0 0.0 0.0
-o teapot teapot.obj floor -5.0 5.0 0.0 2.0 2.0 2.0 0.0 0.0 0.0 0.0
-to colorcube skybox.obj color 0.0 5.0 0.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0
-to window window.obj window 5.0 5.0 0.0 .5 .5 .5 0.0 0.0 0.0 0.0
+l 1 light cube.obj bulb point 3.0 2.5 16.0 2.5 2.0 2.0 2.0 0.0 0.0 0.0 0.0
+o 1 floor cube.obj floor 0.0 0.0 0.0 15.0 1.0 20.0 0.0 0.0 0.0 0.0
+o 1 wall cube.obj wall 15.0 5.0 0.0 1.0 10.0 20.0 0.0 0.0 0.0 0.0
+o 1 wall cube.obj wall -15.0 5.0 0.0 1.0 10.0 20.0 0.0 0.0 0.0 0.0
+o 1 wall cube.obj wall 0.0 5.0 -20.0 15.0 10.0 1.0 0.0 0.0 0.0 0.0
+o 1 teapot teapot.obj floor -5.0 5.0 0.0 2.0 2.0 2.0 0.0 0.0 0.0 0.0
+to 1 colorcube skybox.obj color 0.0 5.0 0.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0
+to 1 window window.obj window 5.0 5.0 0.0 .5 .5 .5 0.0 0.0 0.0 0.0

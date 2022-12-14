@@ -6,6 +6,9 @@
 #include <thread>
 #include <iostream>
 #include <fstream>
+#include "ToolWindow.h"
+
+using OpenGLTechniques::ToolWindow;
 
 GameController::GameController() {
 	m_camera = {};
@@ -76,13 +79,20 @@ void GameController::Run() {
 
 	// Postprocessing
 	m_postProcessor = PostProcessor();
-	m_postProcessor.Create(m_shaders["postprocessor"].get());
+	m_postProcessor.Create((*m_shaders)["postprocessor"].get());
+
+	// Tool window
+	ToolWindow^ toolWindow = gcnew ToolWindow();
+	toolWindow->Show();
+	toolWindow->OnResetLight = []() -> void {};
 
 	do {
 		// Input
 		glfwPollEvents();
 		keyInputHandling();
 		mouseInputHandling();
+
+		System::Windows::Forms::Application::DoEvents();
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -110,28 +120,28 @@ void GameController::Framerate() {
 }
 
 void GameController::Render() {
-	m_skybox.Render(m_camera.getProjection() * mat4(glm::mat3(m_camera.getView())));
+	m_skybox->Render(m_camera.getProjection() * mat4(glm::mat3(m_camera.getView())));
 
-	for (auto& mesh : m_scene.m_lights) {
+	for (auto& mesh : m_scene->m_lights) {
 		mesh.Render(m_camera);
 	}
-	for (auto& mesh : m_scene.m_objects) {
+	for (auto& mesh : m_scene->m_objects) {
 		mesh.Render(m_camera);
 	}
-	for (auto& mesh : m_scene.m_transluscentObjects) mesh.Render(m_camera);
+	for (auto& mesh : m_scene->m_transluscentObjects) mesh.Render(m_camera);
 
-	m_f.RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
-	m_f.RenderText("dt: " + std::to_string(dt), 10.f, 550.f, .2f, {1.f, 1.f, 0.f});
-	m_f.RenderText("pos: " + glm::to_string(m_camera.getWSCamera()), 10.f, 600.f, .2f, {1.f, 1.f, 0.f});
-	m_f.RenderText("look at: " + glm::to_string(m_camera.getLookAt()), 10.f, 650.f, .2f, {1.f, 1.f, 0.f});
+	m_f->RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
+	m_f->RenderText("dt: " + std::to_string(dt), 10.f, 550.f, .2f, {1.f, 1.f, 0.f});
+	m_f->RenderText("pos: " + glm::to_string(m_camera.getWSCamera()), 10.f, 600.f, .2f, {1.f, 1.f, 0.f});
+	m_f->RenderText("look at: " + glm::to_string(m_camera.getLookAt()), 10.f, 650.f, .2f, {1.f, 1.f, 0.f});
 }
 
 void GameController::Cleanup() {
-	for (auto& m : m_scene.m_lights) m.Cleanup();
-	for (auto& m : m_scene.m_objects) m.Cleanup();
-	for (auto& m : m_scene.m_transluscentObjects) m.Cleanup();
-	for (const auto& shader : m_shaders) shader.second->Cleanup();
+	for (auto& m : m_scene->m_lights) m.Cleanup();
+	for (auto& m : m_scene->m_objects) m.Cleanup();
+	for (auto& m : m_scene->m_transluscentObjects) m.Cleanup();
+	for (const auto& shader : *m_shaders) shader.second->Cleanup();
 	m_postProcessor.Cleanup();
-	m_f.Cleanup();
-	m_skybox.Cleanup();
+	m_f->Cleanup();
+	m_skybox->Cleanup();
 }

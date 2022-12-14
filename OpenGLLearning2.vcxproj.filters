@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{e4c64b96-8123-47ea-9245-65a989f5c8b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tool Windows">
+      <UniqueIdentifier>{9dff23e5-936c-4fa6-8a65-52f1dab2b517}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowController.cpp">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="ResourceLoader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolWindow.cpp">
+      <Filter>Tool Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="ResourceLoader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolWindow.h">
+      <Filter>Tool Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

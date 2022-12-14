@@ -15,26 +15,26 @@ typedef std::map<std::string, objl::Loader> ModelMap;
 
 class ResourceLoader : public Singleton<ResourceLoader>{
 public:
-	ResourceLoader() = default;
+	ResourceLoader();
 	virtual ~ResourceLoader() = default;
 
 	void Load();
 
-	ShaderMap& GetShaderMap() { return m_shaders; }
-	Scene& GetScene() { return m_scene; }
-	Font& GetFont() { return m_font; }
-	Skybox& GetSkybox() { return m_skybox; }
+	shared_ptr<ShaderMap> GetShaderMap() { return m_shaders; }
+	shared_ptr<Scene> GetScene() { return m_scene; }
+	shared_ptr<Font> GetFont() { return m_font; }
+	shared_ptr<Skybox> GetSkybox() { return m_skybox; }
 
 private:
-	void ShaderInit(ShaderMap& shaderMap) const;
+	void ShaderInit(shared_ptr<ShaderMap> shaderMap) const;
 	void ModelInit(std::string fileName);
-	void SceneInit(Scene& scene);
+	void SceneInit(shared_ptr<Scene> scene);
 
-	ShaderMap m_shaders;
-	ModelMap m_models;
-	Scene m_scene;
-	Skybox m_skybox;
-	Font m_font;
+	shared_ptr<ShaderMap> m_shaders;
+	shared_ptr<ModelMap> m_models;
+	shared_ptr<Scene> m_scene;
+	shared_ptr<Skybox> m_skybox;
+	shared_ptr<Font> m_font;
 };
 
 #endif // !RESOURCE_LOADER_H

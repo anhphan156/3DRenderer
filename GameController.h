@@ -29,10 +29,10 @@ private:
 	Camera m_camera;
 	GLFWwindow* m_window;
 	ResourceLoader m_resourceLoader;
-	ShaderMap& m_shaders = ResourceLoader::GetInstance().GetShaderMap();
-	Scene& m_scene = ResourceLoader::GetInstance().GetScene();
-	Font& m_f = ResourceLoader::GetInstance().GetFont();
-	Skybox& m_skybox = ResourceLoader::GetInstance().GetSkybox();
+	shared_ptr<ShaderMap> m_shaders;
+	shared_ptr<Scene> m_scene;
+	shared_ptr<Font> m_f;
+	shared_ptr<Skybox> m_skybox;
 	PostProcessor m_postProcessor;
 	std::map<float, Mesh*> sorted;
 

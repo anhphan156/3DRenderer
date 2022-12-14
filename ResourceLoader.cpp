@@ -3,6 +3,14 @@
 #include "Mesh.h"
 #include "Texture.h"
 
+ResourceLoader::ResourceLoader() {
+	m_shaders = make_shared<ShaderMap>();
+	m_models = make_shared<ModelMap>();
+	m_scene = make_shared<Scene>();
+	m_skybox = make_shared<Skybox>();
+	m_font = make_shared<Font>();
+}
+
 void ResourceLoader::Load() {
 	ShaderInit(m_shaders);
 
@@ -12,9 +20,9 @@ void ResourceLoader::Load() {
 	ModelInit("window.obj");
 	ModelInit("teapot.obj");
 
-	m_font.Create(m_shaders["font"].get(), "Arial.ttf", 100);
+	m_font->Create((*m_shaders)["font"].get(), "Arial.ttf", 100);
 
-	m_skybox.Create(m_shaders["skybox"].get(), &m_models["skybox.obj"], {
+	m_skybox->Create((*m_shaders)["skybox"].get(), &(*m_models)["skybox.obj"], {
 		"Res/Textures/cm1/right.jpg",
 		"Res/Textures/cm1/left.jpg",
 		"Res/Textures/cm1/top.jpg",
@@ -26,7 +34,7 @@ void ResourceLoader::Load() {
 	SceneInit(m_scene);
 }
 
-void ResourceLoader::ShaderInit(ShaderMap& shaderMap) const {
+void ResourceLoader::ShaderInit(shared_ptr<ShaderMap> shaderMap) const {
 	std::ifstream shaderConfig("Res/shaders.config");
 
 	std::string shaderName, shaderFileName, textureName;
@@ -36,16 +44,16 @@ void ResourceLoader::ShaderInit(ShaderMap& shaderMap) const {
 	while (shaderConfig) {
 		shaderConfig >> shaderName >> shaderFileName >> textureCount >> normalEnabled;
 
-		shaderMap[shaderName] = make_shared<Shader>();
-		shaderMap[shaderName]->LoadShaders(("Res/Shaders/" + shaderFileName + ".vert").c_str(), ("Res/Shaders/" + shaderFileName + ".frag").c_str());
-		shaderMap[shaderName]->SetNormalEnabled(normalEnabled);
+		(*shaderMap)[shaderName] = make_shared<Shader>();
+		(*shaderMap)[shaderName]->LoadShaders(("Res/Shaders/" + shaderFileName + ".vert").c_str(), ("Res/Shaders/" + shaderFileName + ".frag").c_str());
+		(*shaderMap)[shaderName]->SetNormalEnabled(normalEnabled);
 
 		for (int i = 0; i < textureCount; i++) {
 			shaderConfig >> textureName;
 			auto texture = make_shared<Texture>();
 			texture->LoadTexture("Res/Textures/" + textureName);
 
-			shaderMap[shaderName]->AddTexture(texture);
+			(*shaderMap)[shaderName]->AddTexture(texture);
 		}
 	}
 }
@@ -53,13 +61,13 @@ void ResourceLoader::ShaderInit(ShaderMap& shaderMap) const {
 void ResourceLoader::ModelInit(std::string fileName) {
 	objl::Loader loader;
 	M_ASSERT(loader.LoadFile("Res/Models/" + fileName) == true, "Failed to load mesh");
-	m_models[fileName] = loader;
+	(*m_models)[fileName] = loader;
 
 	for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++) {
-		objl::Mesh& mesh = m_models[fileName].LoadedMeshes[i];
+		objl::Mesh& mesh = (*m_models)[fileName].LoadedMeshes[i];
 
-		for (unsigned int i = 0; i < m_models[fileName].LoadedIndices.size(); i += 3) {
-			unsigned int index = m_models[fileName].LoadedIndices[i];
+		for (unsigned int i = 0; i < (*m_models)[fileName].LoadedIndices.size(); i += 3) {
+			unsigned int index = (*m_models)[fileName].LoadedIndices[i];
 			auto& p0 = mesh.Vertices[index];
 			auto& p1 = mesh.Vertices[index + 1];
 			auto& p2 = mesh.Vertices[index + 2];
@@ -84,9 +92,10 @@ void ResourceLoader::ModelInit(std::string fileName) {
 
 }
 
-void ResourceLoader::SceneInit(Scene& scene) {
+void ResourceLoader::SceneInit(shared_ptr<Scene> scene) {
 	std::ifstream sceneFile("Res/Scenes/Scene.txt");
 
+	int instance;
 	std::string type, name, model, shader, lightType;
 	float lightStrength;
 	vec3 position, scale;
@@ -96,37 +105,37 @@ void ResourceLoader::SceneInit(Scene& scene) {
 		sceneFile >> type;
 
 		if (type == "l") {
-			sceneFile >> name >> model >> shader >> lightType >> lightStrength >>
+			sceneFile >> instance >> name >> model >> shader >> lightType >> lightStrength >>
 			position.x >> position.y >> position.z >>
 			scale.x >> scale.y >> scale.z >>
 			rotation.x >> rotation.y >> rotation.z, rotation.w;
 
 			Mesh mesh;
-			mesh.Create(m_shaders[shader].get(), &m_models[model]);
+			mesh.Create((*m_shaders)[shader].get(), &(*m_models)[model], instance);
 			mesh.SetPosition(position);
 			mesh.SetScale(scale);
 			mesh.SetLightStrength(lightStrength);
-			scene.m_lights.push_back(mesh);
+			scene->m_lights.push_back(mesh);
 		}
 
 		if (type == "o" || type == "to") {
-			sceneFile >> name >> model >> shader >> 
+			sceneFile >> instance >> name >> model >> shader >> 
 			position.x >> position.y >> position.z >> 
 			scale.x >> scale.y >> scale.z >>
 			rotation.x >> rotation.y >> rotation.z >> rotation.w;
 
 			Mesh mesh;
 			mesh.SetName(name);
-			mesh.Create(m_shaders[shader].get(), &m_models[model]);
+			mesh.Create((*m_shaders)[shader].get(), &(*m_models)[model], instance);
 			mesh.SetPosition(position);
 			mesh.SetScale(scale);
-			mesh.SetLightMesh(m_scene.m_lights);
+			mesh.SetLightMesh(m_scene->m_lights);
 
 			if (type == "o") {
-				scene.m_objects.push_back(mesh);
+				scene->m_objects.push_back(mesh);
 			}
 			else if (type == "to") {
-				scene.m_transluscentObjects.push_back(mesh);
+				scene->m_transluscentObjects.push_back(mesh);
 			}
 		}
 	}
