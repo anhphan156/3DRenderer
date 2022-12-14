@@ -35,6 +35,9 @@ public:
 	vec3 GetPosition() const { return m_position; }
 	float GetRotationAngle() const { return m_angle; }
 	vec3 GetRotationAxis() const { return m_rotationAxis; }
+	vec3 GetRotation() const { return m_rotationAxis * m_angle; }
+	vec3 GetScale() const { return m_scale; }
+	std::string GetName() const { return m_name; }
 
 	std::function<void(float)> OnUpdate;
 

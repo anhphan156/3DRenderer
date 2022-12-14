@@ -22,6 +22,9 @@ namespace OpenGLTechniques {
 		static float specularR;
 		static float specularG;
 	    static float specularB;
+		static bool rotate = false;
+		static bool scale = false;
+		static bool translate = false;
 	    static float frequency;
 		static float amplitude;
 		static bool tintblue;
@@ -200,6 +203,7 @@ namespace OpenGLTechniques {
 			this->ResetTransformBtn->TabIndex = 5;
 			this->ResetTransformBtn->Text = L"Reset Transform";
 			this->ResetTransformBtn->UseVisualStyleBackColor = true;
+			this->ResetTransformBtn->Click += gcnew System::EventHandler(this, &ToolWindow::ResetTransformBtn_Click);
 			// 
 			// label1
 			// 
@@ -328,30 +332,33 @@ namespace OpenGLTechniques {
 			this->checkBox1->AutoSize = true;
 			this->checkBox1->Location = System::Drawing::Point(47, 331);
 			this->checkBox1->Name = L"checkBox1";
-			this->checkBox1->Size = System::Drawing::Size(80, 17);
+			this->checkBox1->Size = System::Drawing::Size(70, 17);
 			this->checkBox1->TabIndex = 19;
-			this->checkBox1->Text = L"checkBox1";
+			this->checkBox1->Text = L"Translate";
 			this->checkBox1->UseVisualStyleBackColor = true;
+			this->checkBox1->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow::checkBox1_CheckedChanged);
 			// 
 			// checkBox2
 			// 
 			this->checkBox2->AutoSize = true;
 			this->checkBox2->Location = System::Drawing::Point(47, 367);
 			this->checkBox2->Name = L"checkBox2";
-			this->checkBox2->Size = System::Drawing::Size(80, 17);
+			this->checkBox2->Size = System::Drawing::Size(58, 17);
 			this->checkBox2->TabIndex = 20;
-			this->checkBox2->Text = L"checkBox2";
+			this->checkBox2->Text = L"Rotate";
 			this->checkBox2->UseVisualStyleBackColor = true;
+			this->checkBox2->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow::checkBox2_CheckedChanged);
 			// 
 			// checkBox3
 			// 
 			this->checkBox3->AutoSize = true;
 			this->checkBox3->Location = System::Drawing::Point(47, 400);
 			this->checkBox3->Name = L"checkBox3";
-			this->checkBox3->Size = System::Drawing::Size(80, 17);
+			this->checkBox3->Size = System::Drawing::Size(53, 17);
 			this->checkBox3->TabIndex = 21;
-			this->checkBox3->Text = L"checkBox3";
+			this->checkBox3->Text = L"Scale";
 			this->checkBox3->UseVisualStyleBackColor = true;
+			this->checkBox3->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow::checkBox3_CheckedChanged);
 			// 
 			// trackBar4
 			// 
@@ -409,7 +416,7 @@ namespace OpenGLTechniques {
 			this->trackBar5->Name = L"trackBar5";
 			this->trackBar5->Size = System::Drawing::Size(260, 45);
 			this->trackBar5->TabIndex = 27;
-			this->trackBar5->Value = 1;
+			this->trackBar5->Value = 4;
 			this->trackBar5->Scroll += gcnew System::EventHandler(this, &ToolWindow::trackBar5_Scroll);
 			// 
 			// label13
@@ -547,6 +554,18 @@ namespace OpenGLTechniques {
 	}
 	private: System::Void checkBox5_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 		tintblue = checkBox5->Checked;
+	}
+	private: System::Void checkBox1_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		translate = checkBox1->Checked;
+	}
+	private: System::Void checkBox2_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		rotate = checkBox2->Checked;
+	}
+	private: System::Void checkBox3_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		scale = checkBox3->Checked;
+	}
+	private: System::Void ResetTransformBtn_Click(System::Object^ sender, System::EventArgs^ e) {
+		Scripting::GetInstance().OnResetTransform();
 	}
 };
 }

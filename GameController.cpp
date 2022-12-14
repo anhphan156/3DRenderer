@@ -70,15 +70,13 @@ void GameController::Initialize() {
 void GameController::Run() {
 	// Resource Loading
 	ResourceLoader::GetInstance().Load();
-	m_shaders = ResourceLoader::GetInstance().GetShaderMap();
-	m_f = ResourceLoader::GetInstance().GetFont();
 
 	// Tool window
 	ToolWindow^ toolWindow = gcnew ToolWindow();
 	toolWindow->Show();
 
 	// scripts
-	Scripting::GetInstance().Start();
+	Scripting::GetInstance().AttachScripts();
 	
 	do {
 		// Set active scene
@@ -96,6 +94,7 @@ void GameController::Run() {
 		Scripting::GetInstance().SetFrequency(toolWindow->frequency);
 		Scripting::GetInstance().SetAmplitude(toolWindow->amplitude);
 		Scripting::GetInstance().SetTint(toolWindow->tintblue);
+		Scripting::GetInstance().SetTransform(toolWindow->translate, toolWindow->rotate, toolWindow->scale);
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -107,7 +106,7 @@ void GameController::Run() {
 
 	} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(m_window) == 0);
 
-	Cleanup();
+	ResourceLoader::GetInstance().Cleanup();
 }
 
 void GameController::Framerate() {
@@ -123,6 +122,8 @@ void GameController::Framerate() {
 void GameController::Render() {
 	if (m_activeScene->m_postProcessor) m_activeScene->m_postProcessor->Start();
 	
+	m_activeScene->m_camera.OnUpdate(dt);
+
 	if(m_activeScene->m_skybox) m_activeScene->m_skybox->Render(m_activeScene->m_camera.getProjection() * mat4(glm::mat3(m_activeScene->m_camera.getView())));
 
 	for (auto& light : m_activeScene->m_lights) {
@@ -135,36 +136,38 @@ void GameController::Render() {
 	}
 	for (auto& mesh : m_activeScene->m_transluscentObjects) mesh.Render(m_activeScene->m_camera);
 
-	m_f->RenderText("fps: " + std::to_string(framecount / timePreviousFrame), 10.f, 500.f, .2f, {1.f, 1.f, 0.f});
-	m_f->RenderText("dt: " + std::to_string(dt), 10.f, 550.f, .2f, {1.f, 1.f, 0.f});
-	m_f->RenderText("pos: " + glm::to_string(m_activeScene->m_camera.getWSCamera()), 10.f, 600.f, .2f, {1.f, 1.f, 0.f});
-	m_f->RenderText("look at: " + glm::to_string(m_activeScene->m_camera.getLookAt()), 10.f, 650.f, .2f, {1.f, 1.f, 0.f});
+	auto font = ResourceLoader::GetInstance().GetFont();
+	font->RenderText("FPS: " + std::to_string(framecount / timePreviousFrame), 10.f, 50.f, .2f, {1.f, 1.f, 0.f});
+	font->RenderText("Mouse Pos: " + std::to_string(xpos) + " " + std::to_string(ypos), 10.f, 100.f, .2f, {1.f, 1.f, 0.f});
+	font->RenderText("Left Button: " + leftBtn, 10.f, 150.f, .2f, {1.f, 1.f, 0.f});
+	font->RenderText("Middle Button: " + middleBtn, 10.f, 200.f, .2f, {1.f, 1.f, 0.f});
+
+	const auto& object = m_activeScene->m_objects[0];
+	font->RenderText(object.GetName() + " Position: " + glm::to_string(object.GetPosition()), 10.f, 250.f, .2f, {1.f, 1.f, 0.f});
+	font->RenderText(object.GetName() + " Scale: " + glm::to_string(object.GetScale()), 10.f, 300.f, .2f, {1.f, 1.f, 0.f});
+	font->RenderText(object.GetName() + " Rotation: " + glm::to_string(object.GetRotation()), 10.f, 350.f, .2f, {1.f, 1.f, 0.f});
 
 	if (m_activeScene->m_postProcessor) m_activeScene->m_postProcessor->End();
 }
 
-void GameController::Cleanup() {
-	for (auto& m : m_activeScene->m_lights) m.Cleanup();
-	for (auto& m : m_activeScene->m_objects) m.Cleanup();
-	for (auto& m : m_activeScene->m_transluscentObjects) m.Cleanup();
-	for (const auto& shader : *m_shaders) shader.second->Cleanup();
-	m_activeScene->m_postProcessor->Cleanup();
-	m_f->Cleanup();
-	if(m_activeScene->m_skybox) m_activeScene->m_skybox->Cleanup();
-}
-
-vec3 GameController::MouseMovement() const
+vec3 GameController::MouseMovement() 
 {
 	auto res = WindowController::GetInstance().GetResolution();
 	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT)) {
+		leftBtn = "Down";
 		double xvec = xpos - res.m_width / 2.f; 
 		double yvec = ypos - res.m_height / 2.f;
 		return vec3(xvec, yvec * -1, 0.f) / 150.f;
 	}
-	else if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_MIDDLE)) {
+
+	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_MIDDLE)) {
+		middleBtn = "Down";
 		double yvec = ypos - res.m_height / 2.f;
 		return vec3(0.f, 0.f, yvec) / 20.f;
 	}
+
+	leftBtn = "Up";
+	middleBtn = "Up";
 
 	return vec3(0.f);
 }

@@ -23,7 +23,8 @@ public:
 	shared_ptr<ShaderMap> GetShaderMap() { return m_shaders; }
 	shared_ptr<Scene> GetScene(int index) { return m_scenes[index]; }
 	shared_ptr<Font> GetFont() { return m_font; }
-	//shared_ptr<Skybox> GetSkybox() { return m_skybox; }
+
+	void Cleanup();
 
 private:
 	void ShaderInit(shared_ptr<ShaderMap> shaderMap) const;

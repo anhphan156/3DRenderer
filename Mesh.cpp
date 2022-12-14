@@ -43,11 +43,20 @@ void Mesh::Create(Shader* _shader, const objl::Loader* _loader, int _instanceCou
 
 		srand(glfwGetTime());
 		for (unsigned int i = 0; i < m_instanceCount; ++i) {
-			mat4 model = glm::translate(mat4(1.f), vec3(-20 + rand() % 40, 20 + rand() % 20, -10 + rand() % 20));
+			mat4 scale = glm::scale(mat4(1.f), vec3(glm::linearRand(1.f, 1.5f)));
+			mat4 rotation = glm::rotate(mat4(1.f), (float)(rand() % 7), vec3(1.f));
+
+			vec3 randomTranslation = (vec3(rand() % 350, rand() % 250, rand() % 350) + vec3(40.f));
+			randomTranslation.x *= (rand() % 2 == 0 ? -1.f : 1.f);
+			randomTranslation.y *= (rand() % 2 == 0 ? -1.f : 1.f);
+			randomTranslation.z *= (rand() % 2 == 0 ? -1.f : 1.f);
+			mat4 translation = glm::translate(mat4(1.f), randomTranslation);
+
+			mat4 modelToWorld = translation * rotation * scale;
 
 			for (int x = 0; x < 4; ++x)
 				for (int y = 0; y < 4; y++)
-					m_instanceData.push_back(model[x][y]);
+					m_instanceData.push_back(modelToWorld[x][y]);
 		}
 			 
 		glBufferData(GL_ARRAY_BUFFER, m_instanceCount * sizeof(mat4), m_instanceData.data(), GL_STATIC_DRAW);
@@ -151,6 +160,7 @@ void Mesh::Render(const Camera& _camera)
 	// Uniform
 	glUniformMatrix4fv(m_shader->GetUniWVP(), 1, GL_FALSE, &wvp[0][0]);
 	m_shader->SetUniformFloat("u_normalEnabled", m_shader->GetNormalEnabled());
+	m_shader->SetUniformFloat("u_specularEnabled", m_shader->GetSpecularEnabled());
 	m_shader->SetUniformInt("u_instanceEnabled", m_enableInstancing);
 	m_shader->SetUniformFloat("u_time", glfwGetTime());
 	m_shader->SetUniformMat4("u_modelToWorld", m_world);

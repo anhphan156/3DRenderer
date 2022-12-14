@@ -9,9 +9,9 @@ Camera::Camera() {
 	m_up = vec3(0.f, 1.f, 0.f);
 }
 
-Camera::Camera(Resolution _resolution) {
-	m_position = glm::vec3(0.f, 0.f, 26.f);
-	m_lookAt = glm::vec3(0.f, 0.f, 0.f);
+Camera::Camera(Resolution _resolution, const vec3& position, const vec3& lookAt) {
+	m_position = position;
+	m_lookAt = lookAt;
 	m_up = vec3(0.f, 1.f, 0.f);
 	m_forward = glm::normalize(m_lookAt - m_position);
 	m_right = glm::cross(m_forward, m_up);

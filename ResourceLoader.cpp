@@ -20,6 +20,7 @@ void ResourceLoader::Load() {
 	ModelInit("sphere.obj");
 	ModelInit("fighter.obj");
 	ModelInit("fish.obj");
+	ModelInit("asteroid.obj");
 
 	m_font->Create((*m_shaders)["font"].get(), "Arial.ttf", 100);
 
@@ -45,19 +46,34 @@ void ResourceLoader::Load() {
 	SceneInit(m_scenes[3], "Res/Scenes/Scene4.txt");
 }
 
+void ResourceLoader::Cleanup()
+{
+	for (auto& scene : m_scenes) {
+		for (auto& m : scene->m_lights) m.Cleanup();
+		for (auto& m : scene->m_objects) m.Cleanup();
+		for (auto& m : scene->m_transluscentObjects) m.Cleanup();
+		scene->m_postProcessor->Cleanup();
+		if(scene->m_skybox) scene->m_skybox->Cleanup();
+	}
+
+	for (const auto& shader : *m_shaders) shader.second->Cleanup();
+	m_font->Cleanup();
+}
+
 void ResourceLoader::ShaderInit(shared_ptr<ShaderMap> shaderMap) const {
 	std::ifstream shaderConfig("Res/shaders.config");
 
 	std::string shaderName, shaderFileName, textureName;
 	int textureCount;
-	float normalEnabled;
+	float normalEnabled, specularEnabled;
 
 	while (shaderConfig) {
-		shaderConfig >> shaderName >> shaderFileName >> textureCount >> normalEnabled;
+		shaderConfig >> shaderName >> shaderFileName >> textureCount >> normalEnabled >> specularEnabled;
 
 		(*shaderMap)[shaderName] = make_shared<Shader>();
 		(*shaderMap)[shaderName]->LoadShaders(("Res/Shaders/" + shaderFileName + ".vert").c_str(), ("Res/Shaders/" + shaderFileName + ".frag").c_str());
 		(*shaderMap)[shaderName]->SetNormalEnabled(normalEnabled);
+		(*shaderMap)[shaderName]->SetSpecularEnabled(specularEnabled);
 
 		for (int i = 0; i < textureCount; i++) {
 			shaderConfig >> textureName;
@@ -110,7 +126,7 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene, char* filename) {
 	int instance;
 	std::string type, name, model, shader, lightType, postprocessingName;
 	float lightStrength;
-	vec3 position, scale, cameraPos, cameraDir;
+	vec3 position, scale, cameraPos, cameraLookAt;
 	glm::vec4 rotation;
 
 	while (sceneFile) { 
@@ -159,10 +175,8 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene, char* filename) {
 		}
 
 		if (type == "camera") {
-			sceneFile >> cameraPos.x >> cameraPos.y >> cameraPos.z >> cameraDir.x >> cameraDir.y >> cameraDir.z;
-			scene->m_camera = Camera(WindowController::GetInstance().GetResolution());
-			scene->m_camera.SetCameraPosition(cameraPos);
-			scene->m_camera.SetCameraDirection(cameraDir);
+			sceneFile >> cameraPos.x >> cameraPos.y >> cameraPos.z >> cameraLookAt.x >> cameraLookAt.y >> cameraLookAt.z;
+			scene->m_camera = Camera(WindowController::GetInstance().GetResolution(), cameraPos, cameraLookAt);
 		}
 
 		if (type == "skybox") scene->m_skybox = m_skybox; 

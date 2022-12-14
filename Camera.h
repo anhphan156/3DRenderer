@@ -3,11 +3,12 @@
 #define CAMERA_H
 
 #include "StandardIncludes.h"
+#include <functional>
 
 class Camera {
 public:
 	Camera();
-	Camera(Resolution);
+	Camera(Resolution, const vec3& position, const vec3& lookAt);
 	virtual ~Camera();
 
 	mat4 getProjection() const { return m_projection; };
@@ -19,11 +20,10 @@ public:
 	vec3 getLocation() { return m_position; };
 	vec3 getWSCamera() const;
 
-	void SetCameraPosition(const vec3& position) { m_position = position; }
-	void SetCameraDirection(const vec3& direction) { m_lookAt = direction; }
-
 	void cameraDisplacement(vec3 displacement);
 	void cameraTurn(float yaw, float pitch);
+
+	std::function<void(float)> OnUpdate = [](float dt) {};
 
 private:
 

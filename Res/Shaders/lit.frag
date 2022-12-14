@@ -33,6 +33,7 @@ struct Light {
 uniform vec2 u_resolution;
 uniform float u_time;
 uniform float u_normalEnabled = 0.0;
+uniform float u_specularEnabled = 0.0;
 
 uniform Textures u_textures;
 uniform Light u_light[NR_LIGHTS];
@@ -47,14 +48,18 @@ void main(){
 	vec4 albedoSampler = texture(u_textures.sampler0, v2f_texCoords).xyzw;	
 	vec3 albedoMap = albedoSampler.xyz;
 	float albedoAlpha = albedoSampler.w;
-	vec3 normalMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
-	vec3 specularMap = texture(u_textures.sampler2, v2f_texCoords).xyz;	
 
 	vec3 normal = v2f_wsNormal;
 	if(u_normalEnabled == 1.0){
+		vec3 normalMap = texture(u_textures.sampler1, v2f_texCoords).xyz;	
 		normalMap = normalMap * 2.f - 1.f;
 		normal = normalize(v2f_TBN * normalMap);
 	}
+
+	vec3 specularMap = vec3(0.0); 
+	if(u_specularEnabled == 1.0){
+		specularMap = texture(u_textures.sampler2, v2f_texCoords).xyz;	
+	}	
 
 	vec3 spotlights = vec3(0.f);
 

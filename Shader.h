@@ -30,7 +30,9 @@ public:
 	void SetUniformMat4(const char* _name, const mat4& _value) const;
 
 	void SetNormalEnabled(float normalEnabled) { m_normalEnabled = normalEnabled; }
+	void SetSpecularEnabled(float specularEnabled) { m_specularEnabled = specularEnabled; }
 	float GetNormalEnabled() { return m_normalEnabled; }
+	float GetSpecularEnabled() { return m_specularEnabled; }
 
 	void AddTexture(const shared_ptr<class Texture>);
 	void ClearTexture();
@@ -57,6 +59,7 @@ private:
 	GLuint m_uniWVP;
 
 	float m_normalEnabled;
+	float m_specularEnabled;
 
 	vector<shared_ptr<class Texture>> m_textures;
 };

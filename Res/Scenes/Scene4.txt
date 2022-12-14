@@ -1,6 +1,7 @@
-l 1 light sphere.obj bulb point 6.0 0.0 5.0 34.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0
+l 1 light sphere.obj bulb point 7.5 0.0 5.0 34.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0
 o 1 fighter fighter.obj fighter 0.0 0.0 0.0 0.01 0.01 0.01 0.0 0.0 0.0 0.0
+o 100 asteroid asteroid.obj asteroid 0.0 0.0 0.0 0.1 0.1 0.1 0.0 0.0 0.0 0.0
 postprocessing normal
 skybox
-camera 0.0 0.0 34.0 0.0 0.0 35.0
+camera 0.0 0.0 25.0 0.0 0.0 26.0
 end
