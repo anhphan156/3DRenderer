@@ -1,4 +1,5 @@
 #include "Scripting.h"
+#include "WindowController.h"
 #include "ResourceLoader.h"
 #include "Mesh.h"
 
@@ -21,5 +22,6 @@ void Scripting::S1LightScript() {
 	scene1->m_lights[0].OnUpdate = [this, scene1](float dt) {
 		scene1->m_lights[0].SetSpecularColor(m_S1SpecularColor);
 		scene1->m_lights[0].SetSpecularStrength(m_S1SpecularStrength);
+		scene1->m_lights[0].SetPosition(scene1->m_lights[0].GetPosition() + m_S1MouseVelocity * dt);
 	};
 }

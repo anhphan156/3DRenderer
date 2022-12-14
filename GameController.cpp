@@ -93,11 +93,15 @@ void GameController::Run() {
 	do {
 		// Input
 		glfwPollEvents();
+		glfwGetCursorPos(m_window, &xpos, &ypos);
 		keyInputHandling();
 		mouseInputHandling();
-
 		System::Windows::Forms::Application::DoEvents();
+
+		const vec3 mouseVelocity = MouseMovement();
+
 		Scripting::GetInstance().S1SetSpecularValues(vec3(toolWindow->specularR, toolWindow->specularG, toolWindow->specularB), toolWindow->specularStrength);
+		Scripting::GetInstance().S1SetMouseVelocity(mouseVelocity);
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -151,4 +155,20 @@ void GameController::Cleanup() {
 	m_postProcessor.Cleanup();
 	m_f->Cleanup();
 	m_skybox->Cleanup();
+}
+
+vec3 GameController::MouseMovement() const
+{
+	auto res = WindowController::GetInstance().GetResolution();
+	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT)) {
+		double xvec = xpos - res.m_width / 2.f; 
+		double yvec = ypos - res.m_height / 2.f;
+		return vec3(xvec, yvec * -1, 0.f) / 150.f;
+	}
+	else if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_MIDDLE)) {
+		double yvec = ypos - res.m_height / 2.f;
+		return vec3(0.f, 0.f, yvec) / 20.f;
+	}
+
+	return vec3(0.f);
 }

@@ -24,6 +24,7 @@ public:
 	void Framerate();
 	void Render();
 	void Cleanup();
+	vec3 MouseMovement() const;
 
 private:
 	Camera m_camera;
@@ -39,6 +40,7 @@ private:
 	float dt = 1 / FPS;
 	float framecount = 0.f;
 	float timePreviousFrame = 0.f;
+	double xpos, ypos;
 };
 
 #endif // !GAME_CONTROLLER_H
