@@ -28,6 +28,8 @@ void Scripting::S3WaterScript()
 	auto scene3 = ResourceLoader::GetInstance().GetScene(2);
 	scene3->m_postProcessor->OnUpdate = [this, scene3]() {
 		scene3->m_postProcessor->GetShader()->SetUniformFloat("u_frequency", m_frequency);
+		scene3->m_postProcessor->GetShader()->SetUniformFloat("u_amplitude", m_amplitude);
+		scene3->m_postProcessor->GetShader()->SetUniformFloat("u_tintblue", m_tintblue);
 	};
 }
 
@@ -46,3 +48,6 @@ void Scripting::S1LightScript() {
 		scene1->m_lights[0].SetPosition(scene1->m_lights[0].GetPosition() + m_MouseVelocity * dt);
 	};
 }
+
+void Scripting::OnResetLight() { ResourceLoader::GetInstance().GetScene(0)->m_lights[0].SetPosition(vec3(0.f)); }
+void Scripting::OnWireframeRender(bool isActive, bool isGameMode2) { if (isGameMode2) { glPolygonMode(GL_FRONT_AND_BACK, isActive ? GL_LINE : GL_FILL); } }

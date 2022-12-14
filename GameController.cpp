@@ -10,7 +10,6 @@
 #include "ToolWindow.h"
 
 using OpenGLTechniques::ToolWindow;
-void OnResetLight() { ResourceLoader::GetInstance().GetScene(1)->m_lights[0].SetPosition(vec3(0.f)); }
 
 GameController::GameController() {
 	m_camera = {};
@@ -80,7 +79,6 @@ void GameController::Run() {
 	// Tool window
 	ToolWindow^ toolWindow = gcnew ToolWindow();
 	toolWindow->Show();
-	toolWindow->OnResetLight = &OnResetLight;
 
 	// scripts
 	Scripting::GetInstance().Start();
@@ -99,6 +97,8 @@ void GameController::Run() {
 		Scripting::GetInstance().S1SetSpecularValues(vec3(toolWindow->specularR, toolWindow->specularG, toolWindow->specularB), toolWindow->specularStrength);
 		Scripting::GetInstance().SetMouseVelocity(MouseMovement());
 		Scripting::GetInstance().SetFrequency(toolWindow->frequency);
+		Scripting::GetInstance().SetAmplitude(toolWindow->amplitude);
+		Scripting::GetInstance().SetTint(toolWindow->tintblue);
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

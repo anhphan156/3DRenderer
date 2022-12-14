@@ -1,5 +1,6 @@
 #pragma once
-#include <functional>
+
+#include "Scripting.h"
 
 namespace OpenGLTechniques {
 
@@ -16,13 +17,14 @@ namespace OpenGLTechniques {
 	public ref class ToolWindow : public System::Windows::Forms::Form
 	{
 	public:
-		void (*OnResetLight)();
 		static int gameMode = 0;
 		static int specularStrength;
 		static float specularR;
 		static float specularG;
-	   static float specularB;
-		   static float frequency;
+	    static float specularB;
+	    static float frequency;
+		static float amplitude;
+		static bool tintblue;
 
 		ToolWindow(void)
 		{
@@ -385,10 +387,11 @@ namespace OpenGLTechniques {
 			this->checkBox4->AutoSize = true;
 			this->checkBox4->Location = System::Drawing::Point(47, 586);
 			this->checkBox4->Name = L"checkBox4";
-			this->checkBox4->Size = System::Drawing::Size(80, 17);
+			this->checkBox4->Size = System::Drawing::Size(112, 17);
 			this->checkBox4->TabIndex = 25;
-			this->checkBox4->Text = L"checkBox4";
+			this->checkBox4->Text = L"Wireframe Render";
 			this->checkBox4->UseVisualStyleBackColor = true;
+			this->checkBox4->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow::checkBox4_CheckedChanged);
 			// 
 			// label12
 			// 
@@ -402,9 +405,12 @@ namespace OpenGLTechniques {
 			// trackBar5
 			// 
 			this->trackBar5->Location = System::Drawing::Point(147, 532);
+			this->trackBar5->Maximum = 100;
 			this->trackBar5->Name = L"trackBar5";
 			this->trackBar5->Size = System::Drawing::Size(260, 45);
 			this->trackBar5->TabIndex = 27;
+			this->trackBar5->Value = 1;
+			this->trackBar5->Scroll += gcnew System::EventHandler(this, &ToolWindow::trackBar5_Scroll);
 			// 
 			// label13
 			// 
@@ -420,10 +426,11 @@ namespace OpenGLTechniques {
 			this->checkBox5->AutoSize = true;
 			this->checkBox5->Location = System::Drawing::Point(47, 622);
 			this->checkBox5->Name = L"checkBox5";
-			this->checkBox5->Size = System::Drawing::Size(80, 17);
+			this->checkBox5->Size = System::Drawing::Size(68, 17);
 			this->checkBox5->TabIndex = 29;
-			this->checkBox5->Text = L"checkBox5";
+			this->checkBox5->Text = L"Tint Blue";
 			this->checkBox5->UseVisualStyleBackColor = true;
+			this->checkBox5->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow::checkBox5_CheckedChanged);
 			// 
 			// ToolWindow
 			// 
@@ -489,21 +496,27 @@ namespace OpenGLTechniques {
 
 		frequency = (float)trackBar4->Value / 100.f;
 		label11->Text = frequency.ToString();
+		amplitude = (float)trackBar5->Value / 100.f;
+		label13->Text = amplitude.ToString();
 	}
 	private: System::Void radioMoveLight_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 		gameMode = 0;
+		Scripting::GetInstance().OnWireframeRender(false, true);
 	}
 	private: System::Void radioTransform_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 		gameMode = 1;
+		Scripting::GetInstance().OnWireframeRender(false, true);
 	}
 	private: System::Void radioWaterScene_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 		gameMode = 2;
+		Scripting::GetInstance().OnWireframeRender(checkBox4->Checked, gameMode == 2);
 	}
 	private: System::Void radioSpaceScene_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 		gameMode = 3;
+		Scripting::GetInstance().OnWireframeRender(false, true);
 	}
 	private: System::Void ResetLightBtn_Click(System::Object^ sender, System::EventArgs^ e) {
-		OnResetLight();
+		Scripting::GetInstance().OnResetLight();
 	}
 	private: System::Void SpecularStrengthTrackBar_Scroll(System::Object^ sender, System::EventArgs^ e) {
 		specularStrength = SpecularStrengthTrackBar->Value;
@@ -524,6 +537,16 @@ namespace OpenGLTechniques {
 	private: System::Void trackBar4_Scroll(System::Object^ sender, System::EventArgs^ e) {
 		frequency = (float)trackBar4->Value / 100.f;
 		label11->Text = frequency.ToString();
+	}
+	private: System::Void trackBar5_Scroll(System::Object^ sender, System::EventArgs^ e) {
+		amplitude = (float)trackBar5->Value / 100.f;
+		label13->Text = amplitude.ToString();
+	}
+	private: System::Void checkBox4_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		Scripting::GetInstance().OnWireframeRender(checkBox4->Checked, gameMode == 2);
+	}
+	private: System::Void checkBox5_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		tintblue = checkBox5->Checked;
 	}
 };
 }
