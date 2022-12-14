@@ -17,11 +17,12 @@ namespace OpenGLTechniques {
 	{
 	public:
 		void (*OnResetLight)();
-		static int gameMode = 1;
+		static int gameMode = 0;
 		static int specularStrength;
 		static float specularR;
 		static float specularG;
-		static float specularB;
+	   static float specularB;
+		   static float frequency;
 
 		ToolWindow(void)
 		{
@@ -42,6 +43,20 @@ namespace OpenGLTechniques {
 				delete components;
 			}
 		}
+	private: System::Windows::Forms::CheckBox^ checkBox4;
+	public:
+	private: System::Windows::Forms::Label^ label12;
+	private: System::Windows::Forms::TrackBar^ trackBar5;
+	private: System::Windows::Forms::Label^ label13;
+	private: System::Windows::Forms::CheckBox^ checkBox5;
+	private: System::Windows::Forms::TrackBar^ trackBar4;
+	public:
+	private: System::Windows::Forms::Label^ label10;
+	private: System::Windows::Forms::Label^ label11;
+	private: System::Windows::Forms::CheckBox^ checkBox1;
+	public:
+	private: System::Windows::Forms::CheckBox^ checkBox2;
+	private: System::Windows::Forms::CheckBox^ checkBox3;
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Label^ label3;
@@ -98,10 +113,23 @@ namespace OpenGLTechniques {
 			this->trackBar1 = (gcnew System::Windows::Forms::TrackBar());
 			this->trackBar2 = (gcnew System::Windows::Forms::TrackBar());
 			this->trackBar3 = (gcnew System::Windows::Forms::TrackBar());
+			this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
+			this->checkBox2 = (gcnew System::Windows::Forms::CheckBox());
+			this->checkBox3 = (gcnew System::Windows::Forms::CheckBox());
+			this->trackBar4 = (gcnew System::Windows::Forms::TrackBar());
+			this->label10 = (gcnew System::Windows::Forms::Label());
+			this->label11 = (gcnew System::Windows::Forms::Label());
+			this->checkBox4 = (gcnew System::Windows::Forms::CheckBox());
+			this->label12 = (gcnew System::Windows::Forms::Label());
+			this->trackBar5 = (gcnew System::Windows::Forms::TrackBar());
+			this->label13 = (gcnew System::Windows::Forms::Label());
+			this->checkBox5 = (gcnew System::Windows::Forms::CheckBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SpecularStrengthTrackBar))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar3))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar4))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar5))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// radioMoveLight
@@ -126,6 +154,7 @@ namespace OpenGLTechniques {
 			this->radioTransform->TabStop = true;
 			this->radioTransform->Text = L"Transform";
 			this->radioTransform->UseVisualStyleBackColor = true;
+			this->radioTransform->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow::radioTransform_CheckedChanged);
 			// 
 			// radioWaterScene
 			// 
@@ -137,17 +166,19 @@ namespace OpenGLTechniques {
 			this->radioWaterScene->TabStop = true;
 			this->radioWaterScene->Text = L"Water Scene";
 			this->radioWaterScene->UseVisualStyleBackColor = true;
+			this->radioWaterScene->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow::radioWaterScene_CheckedChanged);
 			// 
 			// radioSpaceScene
 			// 
 			this->radioSpaceScene->AutoSize = true;
-			this->radioSpaceScene->Location = System::Drawing::Point(32, 546);
+			this->radioSpaceScene->Location = System::Drawing::Point(32, 659);
 			this->radioSpaceScene->Name = L"radioSpaceScene";
 			this->radioSpaceScene->Size = System::Drawing::Size(90, 17);
 			this->radioSpaceScene->TabIndex = 3;
 			this->radioSpaceScene->TabStop = true;
 			this->radioSpaceScene->Text = L"Space Scene";
 			this->radioSpaceScene->UseVisualStyleBackColor = true;
+			this->radioSpaceScene->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow::radioSpaceScene_CheckedChanged);
 			// 
 			// ResetLightBtn
 			// 
@@ -290,11 +321,126 @@ namespace OpenGLTechniques {
 			this->trackBar3->Value = 100;
 			this->trackBar3->Scroll += gcnew System::EventHandler(this, &ToolWindow::trackBar3_Scroll);
 			// 
+			// checkBox1
+			// 
+			this->checkBox1->AutoSize = true;
+			this->checkBox1->Location = System::Drawing::Point(47, 331);
+			this->checkBox1->Name = L"checkBox1";
+			this->checkBox1->Size = System::Drawing::Size(80, 17);
+			this->checkBox1->TabIndex = 19;
+			this->checkBox1->Text = L"checkBox1";
+			this->checkBox1->UseVisualStyleBackColor = true;
+			// 
+			// checkBox2
+			// 
+			this->checkBox2->AutoSize = true;
+			this->checkBox2->Location = System::Drawing::Point(47, 367);
+			this->checkBox2->Name = L"checkBox2";
+			this->checkBox2->Size = System::Drawing::Size(80, 17);
+			this->checkBox2->TabIndex = 20;
+			this->checkBox2->Text = L"checkBox2";
+			this->checkBox2->UseVisualStyleBackColor = true;
+			// 
+			// checkBox3
+			// 
+			this->checkBox3->AutoSize = true;
+			this->checkBox3->Location = System::Drawing::Point(47, 400);
+			this->checkBox3->Name = L"checkBox3";
+			this->checkBox3->Size = System::Drawing::Size(80, 17);
+			this->checkBox3->TabIndex = 21;
+			this->checkBox3->Text = L"checkBox3";
+			this->checkBox3->UseVisualStyleBackColor = true;
+			// 
+			// trackBar4
+			// 
+			this->trackBar4->Location = System::Drawing::Point(147, 470);
+			this->trackBar4->Maximum = 400;
+			this->trackBar4->Minimum = 1;
+			this->trackBar4->Name = L"trackBar4";
+			this->trackBar4->Size = System::Drawing::Size(260, 45);
+			this->trackBar4->TabIndex = 22;
+			this->trackBar4->Value = 100;
+			this->trackBar4->Scroll += gcnew System::EventHandler(this, &ToolWindow::trackBar4_Scroll);
+			// 
+			// label10
+			// 
+			this->label10->AutoSize = true;
+			this->label10->Location = System::Drawing::Point(44, 470);
+			this->label10->Name = L"label10";
+			this->label10->Size = System::Drawing::Size(57, 13);
+			this->label10->TabIndex = 23;
+			this->label10->Text = L"Frequency";
+			// 
+			// label11
+			// 
+			this->label11->AutoSize = true;
+			this->label11->Location = System::Drawing::Point(417, 470);
+			this->label11->Name = L"label11";
+			this->label11->Size = System::Drawing::Size(41, 13);
+			this->label11->TabIndex = 24;
+			this->label11->Text = L"label11";
+			// 
+			// checkBox4
+			// 
+			this->checkBox4->AutoSize = true;
+			this->checkBox4->Location = System::Drawing::Point(47, 586);
+			this->checkBox4->Name = L"checkBox4";
+			this->checkBox4->Size = System::Drawing::Size(80, 17);
+			this->checkBox4->TabIndex = 25;
+			this->checkBox4->Text = L"checkBox4";
+			this->checkBox4->UseVisualStyleBackColor = true;
+			// 
+			// label12
+			// 
+			this->label12->AutoSize = true;
+			this->label12->Location = System::Drawing::Point(44, 532);
+			this->label12->Name = L"label12";
+			this->label12->Size = System::Drawing::Size(41, 13);
+			this->label12->TabIndex = 26;
+			this->label12->Text = L"label12";
+			// 
+			// trackBar5
+			// 
+			this->trackBar5->Location = System::Drawing::Point(147, 532);
+			this->trackBar5->Name = L"trackBar5";
+			this->trackBar5->Size = System::Drawing::Size(260, 45);
+			this->trackBar5->TabIndex = 27;
+			// 
+			// label13
+			// 
+			this->label13->AutoSize = true;
+			this->label13->Location = System::Drawing::Point(417, 532);
+			this->label13->Name = L"label13";
+			this->label13->Size = System::Drawing::Size(41, 13);
+			this->label13->TabIndex = 28;
+			this->label13->Text = L"label13";
+			// 
+			// checkBox5
+			// 
+			this->checkBox5->AutoSize = true;
+			this->checkBox5->Location = System::Drawing::Point(47, 622);
+			this->checkBox5->Name = L"checkBox5";
+			this->checkBox5->Size = System::Drawing::Size(80, 17);
+			this->checkBox5->TabIndex = 29;
+			this->checkBox5->Text = L"checkBox5";
+			this->checkBox5->UseVisualStyleBackColor = true;
+			// 
 			// ToolWindow
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(470, 575);
+			this->ClientSize = System::Drawing::Size(470, 688);
+			this->Controls->Add(this->checkBox5);
+			this->Controls->Add(this->label13);
+			this->Controls->Add(this->trackBar5);
+			this->Controls->Add(this->label12);
+			this->Controls->Add(this->checkBox4);
+			this->Controls->Add(this->label11);
+			this->Controls->Add(this->label10);
+			this->Controls->Add(this->trackBar4);
+			this->Controls->Add(this->checkBox3);
+			this->Controls->Add(this->checkBox2);
+			this->Controls->Add(this->checkBox1);
 			this->Controls->Add(this->trackBar3);
 			this->Controls->Add(this->trackBar2);
 			this->Controls->Add(this->trackBar1);
@@ -323,6 +469,8 @@ namespace OpenGLTechniques {
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar2))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar3))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar4))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar5))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -336,11 +484,23 @@ namespace OpenGLTechniques {
 		label7->Text = specularR.ToString();
 		specularG = (float)trackBar2->Value / 100.f;
 		label8->Text = specularG.ToString();
-		specularB = (float)trackBar2->Value / 100.f;
+		specularB = (float)trackBar3->Value / 100.f;
 		label9->Text = specularB.ToString();
+
+		frequency = (float)trackBar4->Value / 100.f;
+		label11->Text = frequency.ToString();
 	}
 	private: System::Void radioMoveLight_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		gameMode = 0;
+	}
+	private: System::Void radioTransform_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 		gameMode = 1;
+	}
+	private: System::Void radioWaterScene_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		gameMode = 2;
+	}
+	private: System::Void radioSpaceScene_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		gameMode = 3;
 	}
 	private: System::Void ResetLightBtn_Click(System::Object^ sender, System::EventArgs^ e) {
 		OnResetLight();
@@ -360,6 +520,10 @@ namespace OpenGLTechniques {
 	private: System::Void trackBar3_Scroll(System::Object^ sender, System::EventArgs^ e) {
 		specularB = (float)trackBar3->Value / 100.f;
 		label9->Text = specularB.ToString();
+	}
+	private: System::Void trackBar4_Scroll(System::Object^ sender, System::EventArgs^ e) {
+		frequency = (float)trackBar4->Value / 100.f;
+		label11->Text = frequency.ToString();
 	}
 };
 }

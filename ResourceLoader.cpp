@@ -18,6 +18,7 @@ void ResourceLoader::Load() {
 	ModelInit("skybox.obj");
 	ModelInit("sphere.obj");
 	ModelInit("fighter.obj");
+	ModelInit("fish.obj");
 
 	m_font->Create((*m_shaders)["font"].get(), "Arial.ttf", 100);
 
@@ -29,9 +30,20 @@ void ResourceLoader::Load() {
 		"Res/Textures/cm1/front.jpg",
 		"Res/Textures/cm1/back.jpg",
 	});
+	
+	m_postProcessors["normal"] = make_shared<PostProcessor>();
+	m_postProcessors["normal"]->Create((*m_shaders)["normalPostprocessor"].get());
+
+	m_postProcessors["water"] = make_shared<PostProcessor>();
+	m_postProcessors["water"]->Create((*m_shaders)["waterPostprocessor"].get());
+
 
 	SceneInit(m_scenes[0], "Res/Scenes/Scene1.txt");
 	SceneInit(m_scenes[1], "Res/Scenes/Scene2.txt");
+	SceneInit(m_scenes[2], "Res/Scenes/Scene3.txt");
+	//SceneInit(m_scenes[3], "Res/Scenes/Scene4.txt");
+
+	//m_scenes[3]->m_skybox = m_skybox; // automate this later
 }
 
 void ResourceLoader::ShaderInit(shared_ptr<ShaderMap> shaderMap) const {
@@ -97,13 +109,16 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene, char* filename) {
 	std::ifstream sceneFile(filename);
 
 	int instance;
-	std::string type, name, model, shader, lightType;
+	std::string type, name, model, shader, lightType, postprocessingName;
 	float lightStrength;
 	vec3 position, scale;
 	glm::vec4 rotation;
 
 	while (sceneFile) { 
 		sceneFile >> type;
+
+		if (type == "end") continue;
+		scene->m_postProcessor = m_postProcessors["normal"];
 
 		if (type == "l") {
 			sceneFile >> instance >> name >> model >> shader >> lightType >> lightStrength >>
@@ -138,6 +153,11 @@ void ResourceLoader::SceneInit(shared_ptr<Scene> scene, char* filename) {
 			else if (type == "to") {
 				scene->m_transluscentObjects.push_back(mesh);
 			}
+		}
+
+		if (type == "postprocessing") {
+			sceneFile >> postprocessingName;
+			scene->m_postProcessor = m_postProcessors[postprocessingName];
 		}
 	}
 

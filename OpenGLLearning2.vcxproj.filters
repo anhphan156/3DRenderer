@@ -148,10 +148,16 @@
     <None Include="Res\Shaders\skybox.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\postprocessor.frag">
+    <None Include="Res\Shaders\normalPostprocessor.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Res\Shaders\postprocessor.vert">
+    <None Include="Res\Shaders\normalPostprocessor.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\waterPostprocessor.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\waterPostprocessor.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

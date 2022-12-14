@@ -4,6 +4,7 @@
 
 #include "StandardIncludes.h"
 #include "Texture.h"
+#include <functional>
 
 class PostProcessor {
 public:
@@ -14,6 +15,10 @@ public:
 	void Cleanup();
 	void Start();
 	void End();
+
+	class Shader* GetShader() { return m_postShader; }
+
+	std::function<void()> OnUpdate;
 
 private:
 	GLuint m_framebuffer;

@@ -190,10 +190,12 @@
     <None Include="Res\Shaders\font.vert" />
     <None Include="Res\Shaders\metaball.frag" />
     <None Include="Res\Shaders\metaball.vert" />
-    <None Include="Res\Shaders\postprocessor.frag" />
-    <None Include="Res\Shaders\postprocessor.vert" />
+    <None Include="Res\Shaders\normalPostprocessor.frag" />
+    <None Include="Res\Shaders\normalPostprocessor.vert" />
     <None Include="Res\Shaders\skybox.frag" />
     <None Include="Res\Shaders\skybox.vert" />
+    <None Include="Res\Shaders\waterPostprocessor.frag" />
+    <None Include="Res\Shaders\waterPostprocessor.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Res\Scenes\Scene.txt" />

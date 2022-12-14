@@ -23,7 +23,7 @@ public:
 	shared_ptr<ShaderMap> GetShaderMap() { return m_shaders; }
 	shared_ptr<Scene> GetScene(int index) { return m_scenes[index]; }
 	shared_ptr<Font> GetFont() { return m_font; }
-	shared_ptr<Skybox> GetSkybox() { return m_skybox; }
+	//shared_ptr<Skybox> GetSkybox() { return m_skybox; }
 
 private:
 	void ShaderInit(shared_ptr<ShaderMap> shaderMap) const;
@@ -33,6 +33,7 @@ private:
 	shared_ptr<ShaderMap> m_shaders;
 	shared_ptr<ModelMap> m_models;
 	shared_ptr<Skybox> m_skybox;
+	std::map<std::string, shared_ptr<PostProcessor>> m_postProcessors;
 	shared_ptr<Font> m_font;
 	shared_ptr<Scene> m_scenes[4];
 };

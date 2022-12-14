@@ -34,7 +34,6 @@ private:
 	shared_ptr<Scene> m_activeScene;
 	shared_ptr<Font> m_f;
 	shared_ptr<Skybox> m_skybox;
-	PostProcessor m_postProcessor;
 	std::map<float, Mesh*> sorted;
 
 	float dt = 1 / FPS;

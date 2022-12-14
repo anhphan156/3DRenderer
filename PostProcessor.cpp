@@ -11,6 +11,7 @@ PostProcessor::PostProcessor()
 	m_vertexBuffer = 0;
 	m_postShader = nullptr;
 
+	OnUpdate = []() {};
 }
 
 PostProcessor::~PostProcessor()
@@ -47,6 +48,8 @@ void PostProcessor::End()
 	m_postShader->SetUniformFloat("u_time", glfwGetTime());
 	m_postShader->SetTextureSampler("u_textures.sampler0", GL_TEXTURE0, 0, m_textureColorbuffer);
 	m_postShader->SetTextureSampler("u_textures.sampler1", GL_TEXTURE1, 1, m_textureNormalbuffer);
+
+	OnUpdate();
 
 	BindVertices();
 	glDrawArrays(GL_TRIANGLES, 0, 6);
