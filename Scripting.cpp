@@ -7,21 +7,32 @@ void Scripting::Start()
 {
 	S1FighterScript();
 	S1LightScript();
+	S2FighterScript();
+}
+
+void Scripting::S2FighterScript()
+{
+	auto scene2 = ResourceLoader::GetInstance().GetScene(1);
+	scene2->m_objects[0].OnUpdate = [this, scene2](float dt) { 
+		if (m_MouseVelocity != vec3(0.f)) {
+			auto fighter = scene2->m_objects[0];
+			fighter.SetRotation(dot(m_MouseVelocity, m_MouseVelocity) / 15.f, m_MouseVelocity); 
+		}
+	};
 }
 
 void Scripting::S1FighterScript()
 {
-	auto scene1 = ResourceLoader::GetInstance().GetScene(1);
+	auto scene1 = ResourceLoader::GetInstance().GetScene(0);
 	scene1->m_objects[0].OnUpdate = [scene1](float dt) { 
 		scene1->m_objects[0].SetRotation(glfwGetTime(), vec3(1.f, 0.f, 0.f)); 
 	};
-
 }
 void Scripting::S1LightScript() {
-	auto scene1 = ResourceLoader::GetInstance().GetScene(1);
+	auto scene1 = ResourceLoader::GetInstance().GetScene(0);
 	scene1->m_lights[0].OnUpdate = [this, scene1](float dt) {
 		scene1->m_lights[0].SetSpecularColor(m_S1SpecularColor);
 		scene1->m_lights[0].SetSpecularStrength(m_S1SpecularStrength);
-		scene1->m_lights[0].SetPosition(scene1->m_lights[0].GetPosition() + m_S1MouseVelocity * dt);
+		scene1->m_lights[0].SetPosition(scene1->m_lights[0].GetPosition() + m_MouseVelocity * dt);
 	};
 }

@@ -102,7 +102,7 @@ void GameController::Run() {
 		const vec3 mouseVelocity = MouseMovement();
 
 		Scripting::GetInstance().S1SetSpecularValues(vec3(toolWindow->specularR, toolWindow->specularG, toolWindow->specularB), toolWindow->specularStrength);
-		Scripting::GetInstance().S1SetMouseVelocity(mouseVelocity);
+		Scripting::GetInstance().SetMouseVelocity(mouseVelocity);
 
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

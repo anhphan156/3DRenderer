@@ -33,6 +33,8 @@ public:
 	void SetScale(const vec3& scale) { m_scale = scale; }
 
 	vec3 GetPosition() const { return m_position; }
+	float GetRotationAngle() const { return m_angle; }
+	vec3 GetRotationAxis() const { return m_rotationAxis; }
 
 	std::function<void(float)> OnUpdate;
 

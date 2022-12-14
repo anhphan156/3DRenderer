@@ -30,7 +30,8 @@ void ResourceLoader::Load() {
 		"Res/Textures/cm1/back.jpg",
 	});
 
-	SceneInit(m_scenes[1], "Res/Scenes/Scene1.txt");
+	SceneInit(m_scenes[0], "Res/Scenes/Scene1.txt");
+	SceneInit(m_scenes[1], "Res/Scenes/Scene2.txt");
 }
 
 void ResourceLoader::ShaderInit(shared_ptr<ShaderMap> shaderMap) const {

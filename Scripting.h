@@ -14,7 +14,9 @@ public:
 	void Start();
 
 	void S1SetSpecularValues(vec3 color, float strength) { m_S1SpecularColor = color; m_S1SpecularStrength = strength; };
-	void S1SetMouseVelocity(vec3 v) { m_S1MouseVelocity = v; }
+	void SetMouseVelocity(vec3 v) { m_MouseVelocity = v; }
+
+	void S2FighterScript();
 	void S1FighterScript();
 	void S1LightScript();
 
@@ -23,7 +25,7 @@ private:
 
 	float m_S1SpecularStrength;
 	vec3 m_S1SpecularColor;
-	vec3 m_S1MouseVelocity;
+	vec3 m_MouseVelocity;
 };
 
 #endif

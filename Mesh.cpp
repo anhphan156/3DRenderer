@@ -25,6 +25,8 @@ Mesh::Mesh() {
 	m_lightColor = vec3(1.f);
 	m_specularColor = vec3(3.f);
 	m_specularStrength = 8.f;
+
+	OnUpdate = [](float) {};
 }
 
 Mesh::~Mesh() {
