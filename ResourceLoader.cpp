@@ -15,8 +15,8 @@ ResourceLoader::ResourceLoader() {
 void ResourceLoader::Load() {
 	ShaderInit(m_shaders);
 
-	ModelInit("sphere.obj");
 	ModelInit("skybox.obj");
+	ModelInit("sphere.obj");
 	ModelInit("fighter.obj");
 
 	m_font->Create((*m_shaders)["font"].get(), "Arial.ttf", 100);

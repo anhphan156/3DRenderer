@@ -10,6 +10,7 @@
 #include "ToolWindow.h"
 
 using OpenGLTechniques::ToolWindow;
+void OnResetLight() { ResourceLoader::GetInstance().GetScene(1)->m_lights[0].SetPosition(vec3(0.f)); }
 
 GameController::GameController() {
 	m_camera = {};
@@ -173,4 +174,3 @@ vec3 GameController::MouseMovement() const
 	return vec3(0.f);
 }
 
-void OnResetLight() { ResourceLoader::GetInstance().GetScene(1)->m_lights[0].SetPosition(vec3(0.f)); }
