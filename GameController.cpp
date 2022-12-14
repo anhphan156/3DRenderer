@@ -85,7 +85,7 @@ void GameController::Run() {
 	// Tool window
 	ToolWindow^ toolWindow = gcnew ToolWindow();
 	toolWindow->Show();
-	toolWindow->OnResetLight = []() -> void {};
+	toolWindow->OnResetLight = &OnResetLight;
 
 	// scripts
 	Scripting::GetInstance().Start();
@@ -172,3 +172,5 @@ vec3 GameController::MouseMovement() const
 
 	return vec3(0.f);
 }
+
+void OnResetLight() { ResourceLoader::GetInstance().GetScene(1)->m_lights[0].SetPosition(vec3(0.f)); }

@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 
 namespace OpenGLTechniques {
 
@@ -15,7 +16,7 @@ namespace OpenGLTechniques {
 	public ref class ToolWindow : public System::Windows::Forms::Form
 	{
 	public:
-		static void (*OnResetLight)();
+		void (*OnResetLight)();
 		static int gameMode = 1;
 		static int specularStrength;
 		static float specularR;
