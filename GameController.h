@@ -18,9 +18,6 @@ public:
 	void Initialize();
 	void Run();
 
-	void keyInputHandling();
-	void mouseInputHandling();
-
 	void Framerate();
 	void Render();
 	vec3 MouseMovement();

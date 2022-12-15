@@ -25,8 +25,9 @@ void Scripting::S2FighterScript()
 			if(m_rotate)
 				fighter.SetRotation(dot(m_MouseVelocity, m_MouseVelocity) * .1f, vec3(-m_MouseVelocity.y, m_MouseVelocity.x, m_MouseVelocity.z));
 
-			if (m_scale)
-				fighter.SetScale(m_MouseVelocity * .05f);
+			if (m_scale) {
+				fighter.SetScale((m_MouseVelocity + 1.f) * .005f);
+			}
 		}
 	};
 }
@@ -68,7 +69,7 @@ void Scripting::S1LightScript() {
 void Scripting::OnResetLight() { ResourceLoader::GetInstance().GetScene(0)->m_lights[0].SetPosition(vec3(0.f)); }
 void Scripting::OnResetTransform() {
 	ResourceLoader::GetInstance().GetScene(1)->m_objects[0].SetPosition(vec3(0.f)); 
-	ResourceLoader::GetInstance().GetScene(1)->m_objects[0].SetScale(vec3(1.f)); 
-	//ResourceLoader::GetInstance().GetScene(1)->m_objects[0].SetRotation(0.f, vec3(1.f)); 
+	ResourceLoader::GetInstance().GetScene(1)->m_objects[0].SetScale(vec3(.01f)); 
+	ResourceLoader::GetInstance().GetScene(1)->m_objects[0].SetRotation(0.f, vec3(1.f)); 
 }
 void Scripting::OnWireframeRender(bool isActive, bool isGameMode2) { if (isGameMode2) { glPolygonMode(GL_FRONT_AND_BACK, isActive ? GL_LINE : GL_FILL); } }

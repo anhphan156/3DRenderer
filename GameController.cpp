@@ -14,40 +14,6 @@ using OpenGLTechniques::ToolWindow;
 GameController::GameController() {}
 GameController::~GameController(){}
 
-void GameController::keyInputHandling() {
-	vec3 cameraVelocity = vec3(0.f);
-	if (glfwGetKey(m_window, GLFW_KEY_A) != GLFW_RELEASE) cameraVelocity = -m_activeScene->m_camera.getRight();
-	if (glfwGetKey(m_window, GLFW_KEY_D) != GLFW_RELEASE) cameraVelocity = m_activeScene->m_camera.getRight();
-	if (glfwGetKey(m_window, GLFW_KEY_W) != GLFW_RELEASE) cameraVelocity = m_activeScene->m_camera.getForward();
-	if (glfwGetKey(m_window, GLFW_KEY_S) != GLFW_RELEASE) cameraVelocity = -m_activeScene->m_camera.getForward();
-	if (glfwGetKey(m_window, GLFW_KEY_Q) != GLFW_RELEASE) cameraVelocity = -m_activeScene->m_camera.getUp();
-	if (glfwGetKey(m_window, GLFW_KEY_E) != GLFW_RELEASE) cameraVelocity = m_activeScene->m_camera.getUp();
-
-	m_activeScene->m_camera.cameraDisplacement(cameraVelocity * 10.f * dt);
-}
-
-void GameController::mouseInputHandling() {
-	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
-		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		return;
-	}
-	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	static double old_xpos, old_ypos;
-
-	double xpos, ypos;
-	glfwGetCursorPos(m_window, &xpos, &ypos);
-
-	double dX = (xpos - old_xpos) * .0002f;
-	double dY = (ypos - old_ypos) * .0002f;
-	old_xpos = xpos; old_ypos = ypos;
-
-	if (dX == 0.f || dY == 0.f) return;
-
-	m_activeScene->m_camera.cameraTurn(-dX, -dY);
-}
-
-
 void GameController::Initialize() {
 	m_window = WindowController::GetInstance().GetWindow(); // glfwInit()
 	M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW");
@@ -85,8 +51,6 @@ void GameController::Run() {
 		// Input
 		glfwPollEvents();
 		glfwGetCursorPos(m_window, &xpos, &ypos);
-		keyInputHandling();
-		mouseInputHandling();
 		System::Windows::Forms::Application::DoEvents();
 
 		Scripting::GetInstance().S1SetSpecularValues(vec3(toolWindow->specularR, toolWindow->specularG, toolWindow->specularB), toolWindow->specularStrength);
