@@ -405,9 +405,9 @@ namespace OpenGLTechniques {
 			this->label12->AutoSize = true;
 			this->label12->Location = System::Drawing::Point(44, 532);
 			this->label12->Name = L"label12";
-			this->label12->Size = System::Drawing::Size(41, 13);
+			this->label12->Size = System::Drawing::Size(53, 13);
 			this->label12->TabIndex = 26;
-			this->label12->Text = L"label12";
+			this->label12->Text = L"Amplitude";
 			// 
 			// trackBar5
 			// 
