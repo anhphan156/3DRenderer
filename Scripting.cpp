@@ -20,14 +20,14 @@ void Scripting::S2FighterScript()
 		if (m_MouseVelocity != vec3(0.f)) {
 			auto& fighter = scene2->m_objects[0];
 			if(m_translate)
-				fighter.SetPosition(m_MouseVelocity);
+				fighter.SetPosition(fighter.GetPosition() + m_MouseVelocity * dt);
 
-			if(m_rotate)
+			if (m_rotate) {
 				fighter.SetRotation(dot(m_MouseVelocity, m_MouseVelocity) * .1f, vec3(-m_MouseVelocity.y, m_MouseVelocity.x, m_MouseVelocity.z));
-
-			if (m_scale) {
-				fighter.SetScale((m_MouseVelocity + 1.f) * .005f);
 			}
+
+			if (m_scale) 
+				fighter.SetScale(fighter.GetScale() + m_MouseVelocity * dt * .002f);
 		}
 	};
 }
