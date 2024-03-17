@@ -1,2 +1,2 @@
 # LightOfSight
-![Teacup](https://imgur.com/a/neuj05J)
+![Teacup](https://i.imgur.com/Mverrd0.mp4)
